@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30503.244
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoodBank", "GoodBank\GoodBank.csproj", "{B5FFA8C0-B328-4DEB-A349-0CDE85B6F7B1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Interfaces and Shared Data", "Interaction_UI_CodeBehind\Interfaces and Shared Data.csproj", "{ED50DA80-1EC3-49D6-9CE2-68EFEEC78EBC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UI", "UI\UI.csproj", "{8CAAE1AD-3D0B-4AE5-B54D-243002F35B39}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankEngine", "BankEngine\BankEngine.csproj", "{B427BE6F-3C1B-4E05-B28D-A4333511A3D4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Binding UI with CodeBehind", "Binding UI with CodeBehind\Binding UI with CodeBehind.csproj", "{51FF6AE0-8144-4665-80BB-19D1E5CB45A8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Imitation", "Imitation\Imitation.csproj", "{0272C61F-50DC-40EE-BE2A-AC32CCED4016}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B5FFA8C0-B328-4DEB-A349-0CDE85B6F7B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5FFA8C0-B328-4DEB-A349-0CDE85B6F7B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5FFA8C0-B328-4DEB-A349-0CDE85B6F7B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5FFA8C0-B328-4DEB-A349-0CDE85B6F7B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED50DA80-1EC3-49D6-9CE2-68EFEEC78EBC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED50DA80-1EC3-49D6-9CE2-68EFEEC78EBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED50DA80-1EC3-49D6-9CE2-68EFEEC78EBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED50DA80-1EC3-49D6-9CE2-68EFEEC78EBC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8CAAE1AD-3D0B-4AE5-B54D-243002F35B39}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CAAE1AD-3D0B-4AE5-B54D-243002F35B39}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CAAE1AD-3D0B-4AE5-B54D-243002F35B39}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CAAE1AD-3D0B-4AE5-B54D-243002F35B39}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B427BE6F-3C1B-4E05-B28D-A4333511A3D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B427BE6F-3C1B-4E05-B28D-A4333511A3D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B427BE6F-3C1B-4E05-B28D-A4333511A3D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B427BE6F-3C1B-4E05-B28D-A4333511A3D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51FF6AE0-8144-4665-80BB-19D1E5CB45A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51FF6AE0-8144-4665-80BB-19D1E5CB45A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51FF6AE0-8144-4665-80BB-19D1E5CB45A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51FF6AE0-8144-4665-80BB-19D1E5CB45A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0272C61F-50DC-40EE-BE2A-AC32CCED4016}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0272C61F-50DC-40EE-BE2A-AC32CCED4016}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0272C61F-50DC-40EE-BE2A-AC32CCED4016}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0272C61F-50DC-40EE-BE2A-AC32CCED4016}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {014A9244-0058-4842-A0CA-E11CEC5830ED}
+	EndGlobalSection
+EndGlobal

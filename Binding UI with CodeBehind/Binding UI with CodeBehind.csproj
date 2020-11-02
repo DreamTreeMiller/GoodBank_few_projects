@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RootNamespace>Binding_UI_with_CodeBehind</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BankEngine\BankEngine.csproj" />
+    <ProjectReference Include="..\Interaction_UI_CodeBehind\Interfaces and Shared Data.csproj" />
+  </ItemGroup>
+
+</Project>

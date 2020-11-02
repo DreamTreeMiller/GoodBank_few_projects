@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Binding UI with CodeBehind\Binding UI with CodeBehind.csproj" />
+    <ProjectReference Include="..\Imitation\Imitation.csproj" />
+    <ProjectReference Include="..\Interaction_UI_CodeBehind\Interfaces and Shared Data.csproj" />
+    <ProjectReference Include="..\UI\UI.csproj" />
+  </ItemGroup>
+
+</Project>

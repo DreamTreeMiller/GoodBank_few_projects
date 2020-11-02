@@ -1,0 +1,172 @@
+﻿<Window x:Class="Department_Window.DepartmentWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Department_Window"
+        mc:Ignorable="d"
+        Title="Богатые клиенты" 
+		Height="700" Width="750"
+		MinHeight="470" MinWidth="600"
+		WindowStartupLocation="CenterScreen"
+		Background="LightCyan"
+		>
+	<Window.Resources>
+		<!-- Это выравнивание закоголовков дата гриды по центру-->
+		<Style TargetType="{x:Type DataGridColumnHeader}">
+			<Setter Property="HorizontalAlignment" Value="Stretch"/>
+			<Setter Property="HorizontalContentAlignment" Value="Center"/>
+		</Style>
+	</Window.Resources>
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition MinHeight="40" MaxHeight="40"/> 	<!-- 0. Заголовок окна ВИП клиенты-->
+			<RowDefinition MinHeight="30" MaxHeight="30"/>	<!-- 1. Меню "Выбрать клиента" "Выбрать счёт" "Поиск"-->
+			<RowDefinition Height="*" MinHeight="120"/>		<!-- 2. Клиенты-->
+			<RowDefinition Height="Auto" />					<!-- 3. разделитель GridSplitter -->
+			<RowDefinition Height="*" MinHeight="170"/>		<!-- 4. Cчета-->
+		</Grid.RowDefinitions>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition MinWidth="10" MaxWidth="10"/>	<!-- Отступ слева-->
+			<ColumnDefinition Width="*"/>
+			<ColumnDefinition MinWidth="10" MaxWidth="10"/> <!-- Отступ справа-->
+		</Grid.ColumnDefinitions>
+		<TextBlock x:Name="MainTitle" 
+				   Grid.Row="0" Grid.Column="1"
+				   VerticalAlignment="Center"
+				   HorizontalAlignment="Center"
+				   Foreground="Maroon"
+				   FontWeight="Bold"
+				   FontSize="16" 
+				   />
+		<TextBlock x:Name="BankTodayDate"
+				   Grid.Row="0" Grid.Column="1"
+				   VerticalAlignment="Center"
+				   HorizontalAlignment="Right"
+				   Margin="0,0,20,0"
+				   FontWeight="Bold"
+				   FontSize="14"
+				   Foreground="DarkSlateGray"
+				   />
+		<!-- Менюшка - показать клиента, добавить клиента, показать счет, поиск -->
+		<UniformGrid x:Name="WinMenuBar" 
+					 Grid.Row="1" Grid.Column="1"
+					 Rows="1" Columns="4"
+					 Height="30"
+					 VerticalAlignment="Center"
+					 HorizontalAlignment="Stretch" 
+					 >
+			<Button x:Name="WinMenu_SelectClient"
+					Content="Показать персону"
+					Foreground="DarkSlateGray"
+					FontSize="14"
+					FontWeight="Bold"
+					BorderThickness="0" 
+					Click="WinMenu_SelectClient_Click"
+					>
+				<Button.Style>
+					<Style TargetType="{x:Type Button}">
+						<Setter Property="Background" Value="Aquamarine"/>
+						<Setter Property="Template">
+							<Setter.Value>
+								<ControlTemplate TargetType="{x:Type Button}">
+									<Border Background="{TemplateBinding Background}">
+										<ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+									</Border>
+								</ControlTemplate>
+							</Setter.Value>
+						</Setter>
+						<Style.Triggers>
+							<Trigger Property="IsMouseOver" Value="True">
+								<Setter Property="Background" Value="Cyan"/>
+							</Trigger>
+						</Style.Triggers>
+					</Style>
+				</Button.Style>
+				<Button.ToolTip>
+					<ToolTip>
+						Открыть карточку работы с клиентом
+					</ToolTip>
+				</Button.ToolTip>
+			</Button>
+			<Button x:Name="WinMenu_AddClient"
+					Content="Добавить персону"
+					Foreground="DarkBlue"
+					FontSize="14"
+					FontWeight="Bold"
+					BorderThickness="0" 
+					Click="WinMenu_AddClient_Click"
+					>
+				<Button.Style>
+					<Style TargetType="{x:Type Button}">
+						<Setter Property="Background" Value="PaleTurquoise"/>
+						<Setter Property="Template">
+							<Setter.Value>
+								<ControlTemplate TargetType="{x:Type Button}">
+									<Border Background="{TemplateBinding Background}">
+										<ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+									</Border>
+								</ControlTemplate>
+							</Setter.Value>
+						</Setter>
+						<Style.Triggers>
+							<Trigger Property="IsMouseOver" Value="True">
+								<Setter Property="Background" Value="Cyan"/>
+							</Trigger>
+						</Style.Triggers>
+					</Style>
+				</Button.Style>
+				<Button.ToolTip>
+					<ToolTip>
+						Внести данные новго клиента
+					</ToolTip>
+				</Button.ToolTip>
+			</Button>
+			<Button x:Name="WinMenu_SelectAccount"
+					Content="Карточка счета"
+					Foreground="DarkSlateGray"
+					FontSize="14"
+					FontWeight="Bold"
+					BorderThickness="0" 
+					Click="WinMenu_SelectAccount_Click"
+					>
+				<Button.Style>
+					<Style TargetType="{x:Type Button}">
+						<Setter Property="Background" Value="Aquamarine"/>
+						<Setter Property="Template">
+							<Setter.Value>
+								<ControlTemplate TargetType="{x:Type Button}">
+									<Border Background="{TemplateBinding Background}">
+										<ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+									</Border>
+								</ControlTemplate>
+							</Setter.Value>
+						</Setter>
+						<Style.Triggers>
+							<Trigger Property="IsMouseOver" Value="True">
+								<Setter Property="Background" Value="Cyan"/>
+							</Trigger>
+						</Style.Triggers>
+					</Style>
+				</Button.Style>
+				<Button.ToolTip>
+					<ToolTip>
+						Открыть карточку работы со счетом
+					</ToolTip>
+				</Button.ToolTip>
+			</Button>
+		</UniformGrid>
+		<!-- Чекбоксы, список клиентов и сводные данные-->
+		<ContentPresenter x:Name="ClientsList"
+						  Grid.Row="2" Grid.Column="1"
+						  />
+		<GridSplitter Grid.Row="3" Grid.Column="1" 
+					  Height="4"
+					  HorizontalAlignment="Stretch"
+					  Background="DarkGray" 
+					  />
+		<ContentPresenter x:Name="AccountsList"
+						  Grid.Row="4" Grid.Column="1"
+						  />
+	</Grid>
+</Window>
