@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using Imitation;
 using Generate_Clients_and_Accounts;
 using UI_Search;
+using System.Threading;
 
 namespace GoodBankNS
 {
@@ -38,6 +39,8 @@ namespace GoodBankNS
 			BankTodayDate.Text = $"Сегодня {GoodBankTime.Today:dd MMMM yyyy} г.";
 		}
 
+		#region Client type select menu handler
+
 		private void VipClientsDeptButton_Click(object sender, RoutedEventArgs e)
 		{
 			DepartmentWindow vipClientsWin = new DepartmentWindow(WindowID.DepartmentVIP, BA);
@@ -56,11 +59,18 @@ namespace GoodBankNS
 			orgClientsWin.ShowDialog();
 		}
 
+		#endregion
+
+		#region Bank manager button handler
+
 		private void BankManagerButton_Click(object sender, RoutedEventArgs e)
 		{
 			DepartmentWindow allClientsWin = new DepartmentWindow(WindowID.DepartmentALL, BA);
 			allClientsWin.ShowDialog();
 		}
+		#endregion
+
+		#region Time machine button handler
 
 		private void TimeMachineButton_Click(object sender, RoutedEventArgs e)
 		{
@@ -70,15 +80,9 @@ namespace GoodBankNS
 						  + "Пересчитаны проценты на всех счетах.");
 
 		}
+		#endregion
 
-		private void GenerateButton_Click(object sender, RoutedEventArgs e)
-		{
-			var gw = new GenerateWindow();
-			var result = gw.ShowDialog();
-			if (result != true) return;
-			Generate.Bank(BA, gw.vipClients, gw.simClients, gw.orgClients);
-			MessageBox.Show("Клиенты и счета созданы!");
-		}
+		#region Search menu handler
 
 		private void SearchPeopleButton_Click(object sender, RoutedEventArgs e)
 		{
@@ -120,5 +124,45 @@ namespace GoodBankNS
 		{
 
 		}
+
+		#endregion
+
+		#region Data Source button handler
+
+		private void DataSource_Click(object sender, RoutedEventArgs e)
+		{
+
+
+		}
+
+		private void GenerateButton_Click(object sender, RoutedEventArgs e)
+		{
+			var gw = new GenerateWindow();
+			var result = gw.ShowDialog();
+			if (result != true) return;
+
+			//var pths = new ParameterizedThreadStart(
+			//	o =>
+			//	{
+			//		var b = o as Bag;
+			//		Generate.Bank(BA, b.Vip, b.Sim, b.Org);
+			//	});
+
+			//Thread thread = new Thread(pths);
+			//thread.Start(new Bag(gw.vipClients, gw.simClients, gw.orgClients));
+
+			Generate.Bank(BA, gw.vipClients, gw.simClients, gw.orgClients);
+			MessageBox.Show("Клиенты и счета созданы!");
+		}
+
+		#endregion
+	}
+
+	class Bag
+	{
+		public int Vip { get; set; } = 10;
+		public int Sim { get; set; } = 10;
+		public int Org { get; set; } = 10;
+		public Bag (int v, int s, int o) { Vip = v; Sim = s; Org = o; }
 	}
 }
