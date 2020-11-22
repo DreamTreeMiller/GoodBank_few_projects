@@ -2,9 +2,10 @@
 using Interfaces_Data;
 using System.Collections.ObjectModel;
 
-namespace Interfaces_Actions
+namespace InterfacesAsync
 {
-	public interface IAccountsActions
+
+	interface IAccountActionsAsync
 	{
 		IAccount GetAccountByID(uint id);
 
@@ -28,7 +29,7 @@ namespace Interfaces_Actions
 		ObservableCollection<IAccount> GetTopupableAccountsToWireFrom(uint sourceAccID);
 
 
-		IAccountDTO AddAccount(IAccountDTO acc); 
+		IAccountDTO AddAccount(IAccountDTO acc);
 
 		IAccountDTO GenerateAccount(IAccountDTO acc);
 

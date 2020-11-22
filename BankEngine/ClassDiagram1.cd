@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="BankInside.GoodBank" Collapsed="true">
+    <Position X="13.75" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEAAAAAARACACICBgECAiAIgAIAAAgAAAAAKBAIAAAQ=</HashCode>
+      <FileName>Bank Inside\GoodBank.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Enumerables.Account" Collapsed="true">
+    <Position X="6.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gUEBAAAAwAICUAABAEgAACAgECgAEoAAgAAAAASgEAA=</HashCode>
+      <FileName>Account Classes\Account.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Enumerables.AccountCredit" Collapsed="true">
+    <Position X="4" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAAAAAAABAAgAAAAAACAAAAAAAAAAAAAIAAA=</HashCode>
+      <FileName>Account Classes\AccountCredit.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Enumerables.AccountCurrent" Collapsed="true">
+    <Position X="6.25" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAAAAAAABAAgAAAAAACAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Account Classes\AccountCurrent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Enumerables.AccountDeposit" Collapsed="true">
+    <Position X="8.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAQAAAQAABAAgAAIAAgCAAAAAACAAAAAAIAAA=</HashCode>
+      <FileName>Account Classes\AccountDeposit.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ClientClasses.Client" Collapsed="true">
+    <Position X="6.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAgAggCAEkAAACAAAAAAAIAAAAAACAIAAAAAAAAA=</HashCode>
+      <FileName>Client Classes\Client.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ClientClasses.ClientVIP" Collapsed="true">
+    <Position X="4" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAEAAAAAAAAAACAAQAAQAAAAAAAAAAAAAAAAAAIg=</HashCode>
+      <FileName>Client Classes\ClientVIP.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ClientClasses.СlientORG" Collapsed="true">
+    <Position X="6.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAACAAAAAAQAQAAAAAAEAAAAACACAA=</HashCode>
+      <FileName>Client Classes\СlientORG.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ClientClasses.СlientSIM" Collapsed="true">
+    <Position X="8.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAEAAAAAAAAAACAAQAAQAAAAAAAAAAAAAAAAAAIg=</HashCode>
+      <FileName>Client Classes\СlientSIM.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Transaction_Class.Transaction" Collapsed="true">
+    <Position X="11" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEgAAIEAAAAAAAAACgAAAAAAAAAABEAAIAAAI=</HashCode>
+      <FileName>Transaction Class\Transaction.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

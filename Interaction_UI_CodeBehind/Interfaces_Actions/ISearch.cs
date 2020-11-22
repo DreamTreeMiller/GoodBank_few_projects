@@ -2,7 +2,7 @@
 using Search_Engine;
 using System.Collections.ObjectModel;
 
-namespace Interfaces_Actions
+namespace Interfaces
 {
 	public interface ISearch
 	{

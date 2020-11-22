@@ -9,6 +9,8 @@ namespace Generate_Clients_and_Accounts
 	/// </summary>
 	public partial class GenerateWindow : Window
 	{
+		#region Поля и свойства для ввода данных в окне
+
 		public int vipClients;
 		public string VIPclients 
 		{ 
@@ -52,6 +54,10 @@ namespace Generate_Clients_and_Accounts
 			}
 		}
 
+		#endregion
+
+		#region Validation of fields
+
 		private bool IsInputValid(string input, out int tmp)
 		{
 			if (String.IsNullOrEmpty(input))
@@ -72,6 +78,8 @@ namespace Generate_Clients_and_Accounts
 			}
 			return true;
 		}
+
+		#endregion
 
 		public GenerateWindow()
 		{

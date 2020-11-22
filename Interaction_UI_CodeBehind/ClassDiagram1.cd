@@ -1,0 +1,314 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="BankTime.GoodBankTime" Collapsed="true">
+    <Position X="9.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAIAAgAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>BankTime\GoodBankTime.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DTO.AccountDTO" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="7.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAEBAAEAAAICAAAAAAgAAKBgkAgAEoAAQAAAAASoEBA=</HashCode>
+      <FileName>DTO\AccountDTO.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DTO.AccountOperationException" Collapsed="true">
+    <Position X="9.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DTO\AccountOperationException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DTO.ClientDTO" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="13" Y="0.5" Width="1.5" />
+    <Members>
+      <Method Name="ClientDTO" Hidden="true" />
+      <Method Name="Clone" Hidden="true" />
+      <Method Name="NotifyMainNameOrDirName" Hidden="true" />
+      <Method Name="NotifyPropertyChanged" Hidden="true" />
+      <Method Name="UpdateMyself" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>QAEAAkAgACIEgYAACAEUAIAAoAAAAEAWAIAAAEQIEBk=</HashCode>
+      <FileName>DTO\ClientDTO.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Enumerables.Error">
+    <Position X="14.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAA=</HashCode>
+      <FileName>Enumerables\ExceptionErrorCodes.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Search_Engine.FirstNameComparator" Collapsed="true">
+    <Position X="7.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAABAAAAAAAA=</HashCode>
+      <FileName>Search Engine\ComparatorsIndividual.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Search_Engine.MiddleNameComparator" Collapsed="true">
+    <Position X="13" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAABAAAAAAAA=</HashCode>
+      <FileName>Search Engine\ComparatorsIndividual.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Search_Engine.LastNameComparator" Collapsed="true">
+    <Position X="11.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAABAAAAAAAA=</HashCode>
+      <FileName>Search Engine\ComparatorsIndividual.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Search_Engine.StartDateComparator" Collapsed="true">
+    <Position X="13" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAABAAAAAAAA=</HashCode>
+      <FileName>Search Engine\ComparatorsIndividual.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Search_Engine.EndDateComparator" Collapsed="true">
+    <Position X="13" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAABAAAAAAAA=</HashCode>
+      <FileName>Search Engine\ComparatorsIndividual.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Search_Engine.PassportNumberComparator" Collapsed="true">
+    <Position X="7.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAABAAAAAAAA=</HashCode>
+      <FileName>Search Engine\ComparatorsIndividual.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Search_Engine.OrgNameComparator" Collapsed="true">
+    <Position X="14.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAABAAAAAAAA=</HashCode>
+      <FileName>Search Engine\ComparatorsOrganization.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Search_Engine.DirectorFirstNameComparator" Collapsed="true">
+    <Position X="14.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAABAAAAAAAA=</HashCode>
+      <FileName>Search Engine\ComparatorsOrganization.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Search_Engine.DirectorMiddleNameComparator" Collapsed="true">
+    <Position X="9.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAABAAAAAAAA=</HashCode>
+      <FileName>Search Engine\ComparatorsOrganization.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Search_Engine.DirectorLastNameComparator" Collapsed="true">
+    <Position X="7.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAABAAAAAAAA=</HashCode>
+      <FileName>Search Engine\ComparatorsOrganization.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Search_Engine.RegistrationStartDateComparator" Collapsed="true">
+    <Position X="11.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAABAAAAAAAA=</HashCode>
+      <FileName>Search Engine\ComparatorsOrganization.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Search_Engine.RegistrationEndDateComparator" Collapsed="true">
+    <Position X="9.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAABAAAAAAAA=</HashCode>
+      <FileName>Search Engine\ComparatorsOrganization.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Search_Engine.TINComparator" Collapsed="true">
+    <Position X="7.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAABAAAAAAAA=</HashCode>
+      <FileName>Search Engine\ComparatorsOrganization.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Search_Engine.TelephoneComparator" Collapsed="true">
+    <Position X="14.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAABAAAAAAAA=</HashCode>
+      <FileName>Search Engine\ComparatorsShared.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Search_Engine.EmailComparator" Collapsed="true">
+    <Position X="11.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAABAAAAAAAA=</HashCode>
+      <FileName>Search Engine\ComparatorsShared.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Search_Engine.AddressComparator" Collapsed="true">
+    <Position X="11.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAABAAAAAAAA=</HashCode>
+      <FileName>Search Engine\ComparatorsShared.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="Interfaces.IAccountsActions" Collapsed="true">
+    <Position X="11.25" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEAAAAAARACACACBAAAAgAAAAAAAAAAAAAAKAAIAAAQ=</HashCode>
+      <FileName>Interfaces_Actions\IAccountsActions.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Interfaces.IClientsActions" Collapsed="true">
+    <Position X="14.75" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAIAAAACAAAAAAAAAAAAAAAACBAAAAAQ=</HashCode>
+      <FileName>Interfaces_Actions\IClientsActions.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Interfaces.ISearch" Collapsed="true">
+    <Position X="9.5" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAA=</HashCode>
+      <FileName>Interfaces_Actions\ISearch.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Interfaces.ITransactions" Collapsed="true">
+    <Position X="13" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Interfaces_Actions\ITransactions.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="InterfacesAsync.IAccountActionsAsync" Collapsed="true">
+    <Position X="7.75" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEAAAAAARACACACBAAAAgAAAAAAAAAAAAAAKAAIAAAQ=</HashCode>
+      <FileName>Interfaces_Async\IAccountActionsAsync.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Interfaces_Data.IAccount" Collapsed="true">
+    <Position X="0.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gEEBAAAAQAICAAABAEgAACAgEAgAEoAAgAAAAASgEAA=</HashCode>
+      <FileName>Interfaces_Data\IAccount.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Interfaces_Data.IAccountDeposit" Collapsed="true">
+    <Position X="0.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAQAAAAAAAAIAAgAAAAAAAAAAAAAAIAAA=</HashCode>
+      <FileName>Interfaces_Data\IAccountDeposit.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Interfaces_Data.IAccountDTO" Collapsed="true">
+    <Position X="9.5" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAEBAAEAAAICAAAAAAgAAKBgkAgAEoAAQAAAAASoEBA=</HashCode>
+      <FileName>Interfaces_Data\IAccountDTO.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Interfaces_Data.IClient" Collapsed="true">
+    <Position X="3" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAgAgACAEgAAAAAAAAAAAIAAAAAACAIAAAAAAAAA=</HashCode>
+      <FileName>Interfaces_Data\IClient.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Interfaces_Data.IClientDTO" Collapsed="true">
+    <Position X="13" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAEAAkAgACAEgAAAAAAQAAAAIAAAAEAGAIAAAAAAEAg=</HashCode>
+      <FileName>Interfaces_Data\IClientDTO.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Interfaces_Data.IClientOrg" Collapsed="true">
+    <Position X="0.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAQAQAAAAAAEAAAAACACAA=</HashCode>
+      <FileName>Interfaces_Data\IClientOrg.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Interfaces_Data.IClientSimple" Collapsed="true">
+    <Position X="3" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAEAAAAAAAAAAAAAQAAQAAAAAAAAAAAAAAAAAAIg=</HashCode>
+      <FileName>Interfaces_Data\IClientSimple.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Interfaces_Data.IClientVIP" Collapsed="true">
+    <Position X="5.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAEAAAAAAAAAAAAAQAAQAAAAAAAAAAAAAAAAAAIg=</HashCode>
+      <FileName>Interfaces_Data\IClientVIP.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Interfaces_Data.IGoodBank" Collapsed="true">
+    <Position X="7.75" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Interfaces_Data\IGoodBank.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Interfaces_Data.ITransaction" Collapsed="true">
+    <Position X="11.25" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEAAAIAAAAAAAAAACgAAAAAAAAAABEAAIAAAI=</HashCode>
+      <FileName>Interfaces_Data\ITransaction.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Enum Name="Enumerables.AccountType" Collapsed="true">
+    <Position X="9.5" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAABAACAAAAAAAAAQAAAAAAAAAAAAAI=</HashCode>
+      <FileName>Enumerables\AccountEnums.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Enumerables.AccountStatus" Collapsed="true">
+    <Position X="7.75" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAACAAAA=</HashCode>
+      <FileName>Enumerables\AccountEnums.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Enumerables.OperationType" Collapsed="true">
+    <Position X="14.75" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAAAACAAAAAAABAAAAAAACAAAIAIAAAAAAAAQQAAA=</HashCode>
+      <FileName>Enumerables\AccountEnums.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Enumerables.RecalcPeriod" Collapsed="true">
+    <Position X="7.75" Y="8.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAQAABAAgA=</HashCode>
+      <FileName>Enumerables\AccountEnums.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Enumerables.ClientType" Collapsed="true">
+    <Position X="11.25" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAIAAAAAAIgA=</HashCode>
+      <FileName>Enumerables\ClientEnums.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Enumerables.ExceptionErrorCodes" Collapsed="true">
+    <Position X="13" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAAAEAgAAAABQAAIAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Enumerables\ExceptionErrorCodes.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Delegate Name="Search_Engine.Compare" Collapsed="true">
+    <Position X="7.75" Y="9.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAEAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Search Engine\CompareDelegate.cs</FileName>
+    </TypeIdentifier>
+  </Delegate>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

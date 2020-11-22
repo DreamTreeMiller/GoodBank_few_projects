@@ -4,6 +4,7 @@ using System;
 using DTO;
 using Enumerables;
 using BankTime;
+using System.Threading.Tasks;
 
 namespace Imitation
 {
@@ -20,6 +21,92 @@ namespace Imitation
 			GenerateSIMclientsAndAccounts(sim);
 			GenerateORGclientsAndAccounts(org);
 		}
+
+		public static void BankAsync(BankActions ba, int vip, int sim, int org)
+		{
+			BA = ba;
+			Parallel.For(0, vip-1, GenerateVIPclientsAndAccountsAsync);
+			Parallel.For(0, sim-1, GenerateSIMclientsAndAccountsAsync);
+			Parallel.For(0, org-1, GenerateORGclientsAndAccountsAsync);
+		}
+
+		#region Создание клиентов
+
+		private static void GenerateVIPclientsAndAccountsAsync(int num)
+		{
+			string FN, MN, LN;
+
+			// Half will be men, half women
+			if ((num & 1) == 0)
+			{   // Male names
+				FN = GenMFN(); MN = GenMMN(); LN = GenMLN();
+			}
+			else
+			{   // Female names
+				FN = GenFFN(); MN = GenFMN(); LN = GenFLN();
+			}
+
+			// Генерируем контейнер для передачи данных в бекэнд
+			IClientDTO client =
+				new ClientDTO(ClientType.VIP, FN, MN, LN,
+								GenBirthDate(), GenPassportNum(), GenTel(), GenEmail(),
+								"Тропики, Лазурный берег, Жемчужный дворец, комната 8");
+			// Присваивание client необходимо, т.к. AddClient генерирует уникальный ID
+			client = BA.Clients.AddClient(client);
+			GenerateAccountsForClient(client);
+		}
+
+		private static void GenerateSIMclientsAndAccountsAsync(int num)
+		{
+			string FN, MN, LN;
+
+			// Half will be men, half women
+			if ((num & 1) == 0)
+			{   // Male names
+				FN = GenMFN(); MN = GenMMN(); LN = GenMLN();
+			}
+			else
+			{   // Female names
+				FN = GenFFN(); MN = GenFMN(); LN = GenFLN();
+			}
+
+			// Генерируем контейнер для передачи данных в бекэнд
+			IClientDTO client =
+				new ClientDTO(ClientType.Simple, FN, MN, LN,
+								GenBirthDate(), GenPassportNum(), GenTel(), GenEmail(),
+								"Мой адрес не дом и не улица. Там жыл Вася.");
+			// Присваивание client необходимо, т.к. AddClient генерирует уникальный ID
+			client = BA.Clients.AddClient(client);
+			GenerateAccountsForClient(client);
+		}
+
+		private static void GenerateORGclientsAndAccountsAsync(int num)
+		{
+			string DFN, DMN, DLN;
+			int regcode;
+
+			// Half will be men, half women
+			if ((num & 1) == 0)
+			{   // Male names
+				DFN = GenMFN(); DMN = GenMMN(); DLN = GenMLN();
+			}
+			else
+			{   // Female names
+				DFN = GenFFN(); DMN = GenFMN(); DLN = GenFLN();
+			}
+
+			// Генерируем контейнер для передачи данных в бекэнд
+			IClientDTO client =
+				new ClientDTO(ClientType.Organization, GenOrgName(), DFN, DMN, DLN,
+								GenRegDate(), GenTIN(out regcode),
+								GenTel(), GenEmail(), GenOrgAddress(regcode));
+			// Присваивание client необходимо, т.к. AddClient генерирует уникальный ID
+			client = BA.Clients.AddClient(client);
+			GenerateAccountsForClient(client);
+		}
+
+		#endregion
+
 
 		#region Создание клиентов
 
