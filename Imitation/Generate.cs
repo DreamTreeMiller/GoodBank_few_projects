@@ -258,6 +258,9 @@ namespace Imitation
 			return Names.FLN[r.Next(0, Names.FLN.Length)];
 		}
 
+		#endregion
+
+		#region Генерация назв. организации, ИНН, № паспорта, тел, эл.п, адреса, дат
 		private static string GenOrgName()
 		{
 			return $"Организация {orgCount++}";

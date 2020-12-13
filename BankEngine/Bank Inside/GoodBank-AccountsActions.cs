@@ -5,8 +5,6 @@ using DTO;
 using BankTime;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System;
-using System.Threading;
 
 namespace BankInside
 {

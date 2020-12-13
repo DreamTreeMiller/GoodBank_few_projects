@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BankDataBaseEngine\BankDataBaseEngine.csproj" />
     <ProjectReference Include="..\Binding UI with CodeBehind\Binding UI with CodeBehind.csproj" />
     <ProjectReference Include="..\Imitation\Imitation.csproj" />
     <ProjectReference Include="..\Interaction_UI_CodeBehind\Interfaces and Shared Data.csproj" />

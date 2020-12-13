@@ -1,5 +1,6 @@
 ﻿using Interfaces_Actions;
 using BankInside;
+using BankDataBaseEngine;
 
 namespace Binding_UI_CodeBehind
 {
@@ -11,6 +12,7 @@ namespace Binding_UI_CodeBehind
 		public ISearch			Search;
 
 		private GoodBank		bank = new GoodBank();
+		//private GoodBankDB bank = new GoodBankDB();
 
 		public BankActions()
 		{

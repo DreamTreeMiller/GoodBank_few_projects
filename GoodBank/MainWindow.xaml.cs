@@ -10,6 +10,8 @@ using Generate_Clients_and_Accounts;
 using UI_Search;
 using System.Threading;
 
+using BankDataBaseEngine;
+
 namespace GoodBankNS
 {
 	/// <summary>
@@ -22,6 +24,9 @@ namespace GoodBankNS
 
 		public MainWindow()
 		{
+			// Test
+			GoodBankDB gb = new GoodBankDB();
+
 			InitializeComponent();
 			InitializeBank();
 			InitializeWelcomeScreenMessages();
@@ -30,7 +35,7 @@ namespace GoodBankNS
 
 		private void InitializeBank()
 		{
-			BA		 = new BankActions();
+			BA = new BankActions();
 		}
 
 		private void InitializeWelcomeScreenMessages()
@@ -131,7 +136,8 @@ namespace GoodBankNS
 
 		private void DataSource_Click(object sender, RoutedEventArgs e)
 		{
-
+			var sdsw = new SelectDataSourceWindow();
+			if (sdsw.ShowDialog() != true) return;
 
 		}
 
@@ -140,16 +146,6 @@ namespace GoodBankNS
 			var gw = new GenerateWindow();
 			var result = gw.ShowDialog();
 			if (result != true) return;
-
-			//var pths = new ParameterizedThreadStart(
-			//	o =>
-			//	{
-			//		var b = o as Bag;
-			//		Generate.Bank(BA, b.Vip, b.Sim, b.Org);
-			//	});
-
-			//Thread thread = new Thread(pths);
-			//thread.Start(new Bag(gw.vipClients, gw.simClients, gw.orgClients));
 
 			Generate.Bank(BA, gw.vipClients, gw.simClients, gw.orgClients);
 			MessageBox.Show("Клиенты и счета созданы!");
