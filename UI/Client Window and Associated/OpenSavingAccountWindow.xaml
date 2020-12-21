@@ -1,4 +1,4 @@
-﻿<Window x:Class="Client_Window.OpenCurrentAccountWindow"
+﻿<Window x:Class="Client_Window.OpenSavingAccountWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -160,7 +160,7 @@
 					 Rows="1" Columns="2" 
 					 Margin="0,10,0,0"
 					 >
-			<Button Name="btnOk_OpenCurrentAccount"
+			<Button Name="btnOk_OpenSavingAccount"
 					IsDefault="True" 
 					Content="OK"
 					FontWeight="Bold"
@@ -168,7 +168,7 @@
 					Height="30"
 					Width="70" 
 					BorderThickness="0"
-					Click="btnOk_OpenCurrentAccount_Click" 
+					Click="btnOk_OpenSavingAccount_Click" 
 					>
 				<!-- Закруглённые углы-->
 				<Button.Resources>
@@ -197,7 +197,7 @@
 					</Style>
 				</Button.Style>
 			</Button>
-			<Button Name="btnCancel_OpenCurrentAccount"
+			<Button Name="btnCancel_OpenSavingAccount"
 					IsCancel="True"
 					Content="Отмена" 
 					FontWeight="Bold"

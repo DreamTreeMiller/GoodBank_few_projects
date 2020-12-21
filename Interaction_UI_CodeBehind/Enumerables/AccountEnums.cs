@@ -2,10 +2,10 @@
 {
 	public enum AccountType
 	{
-		Current,
-		Deposit,
-		Credit,
-		Total
+		Saving  = 0,
+		Deposit = 1,
+		Credit  = 2,
+		Total   = 3
 	}
 
 	public enum AccountStatus
@@ -28,9 +28,9 @@
 
 	public enum RecalcPeriod
 	{
-		Monthly,
-		Annually,
-		AtTheEnd,
-		NoRecalc
+		Monthly		= 0,
+		Annually	= 1,
+		AtTheEnd	= 2,
+		NoRecalc	= 3
 	}
 }

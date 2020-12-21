@@ -22,7 +22,7 @@ namespace DTO
 
 		public string		CurrentAmount	
 		{
-			get => AccType == AccountType.Current ? $"{Balance:N2}" : "";
+			get => AccType == AccountType.Saving ? $"{Balance:N2}" : "";
 		}
 
 		public string		DepositAmount

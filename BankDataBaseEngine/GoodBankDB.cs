@@ -8,18 +8,11 @@ using System.Diagnostics;
 
 namespace BankDataBaseEngine
 {
-	public class GoodBankDB : IGoodBank
+	public partial class GoodBankDB : IGoodBank
 	{
 		private string   masterCS = default;
 		private string GoodBankCS = default;
 		private string   gbdbName = default;
-
-		private Dictionary<string,string> tables = new Dictionary<string, string>()
-			{{"VIPclients", "id INT NOT NULL" },
-			 {"SIMclients", "id INT NOT NULL" },
-			 {"ORGclients", "id INT NOT NULL" },
-			 {"Accounts", "id INT NOT NULL" },
-			 {"Transactions", "id INT NOT NULL" }};
 
 		/// <summary>
 		/// Инициализирует рабочую базу данных. 
@@ -263,26 +256,26 @@ namespace BankDataBaseEngine
 					Debug.WriteLine("Exception " + ex.Message);
 				}
 			}
+			// Если база не содержит ни одной таблицы - создать
 			if (tablesList.Count == 0)
 			{
 				foreach (var keyValuePair in tables)
-					CreateTable(keyValuePair.Key);
+					CreateTable(keyValuePair.Key, keyValuePair.Value);
 			}
 			else
+			// Если уже есть таблицы, то создать недостающие
 			{
 				foreach (string tn in tablesList)
-					if (!tables.ContainsKey(tn)) CreateTable(tn);
+					if (!tables.ContainsKey(tn)) CreateTable(tn,tables[tn]);
 			}
 		}
 
-		private void CreateTable(string tableName)
+		private void CreateTable(string tableName, string script)
 		{ 
 			using (SqlConnection gbConn = SetGoodBankConnection())
 			{
 				gbConn.Open();
-				string cmdLine = $"CREATE TABLE {tableName} (" +
-					tables[tableName] +
-					");";
+				string cmdLine = script;
 				SqlCommand command = new SqlCommand(cmdLine, gbConn);
 				try
 				{
@@ -291,7 +284,7 @@ namespace BankDataBaseEngine
 				catch (Exception ex)
 				{
 					WriteLine();
-					WriteLine($"CREATE TABLE {tableName}; Catch block!!!");
+					WriteLine($"CREATE TABLE [dbo].[{tableName}]; Catch block!!!");
 					WriteLine("Exception = " + ex.Message);
 				}
 			}

@@ -340,7 +340,7 @@
 					</ItemsPanelTemplate>
 				</Menu.ItemsPanel>
 				<MenuItem Header="   Открыть новый   ">
-					<MenuItem x:Name="OpenCurrentAccountButton"	Header="Открыть текущий счет"	Click="OpenCurrentAccountButton_Click" />
+					<MenuItem x:Name="OpenSavingAccountButton"	Header="Открыть текущий счет"	Click="OpenSavingAccountButton_Click" />
 					<MenuItem x:Name="OpenDepositButton"		Header="Открыть вклад"			Click="OpenDepositButton_Click" />
 					<MenuItem x:Name="OpenCreditButton"			Header="Выдать кредит"			Click="OpenCreditButton_Click" />
 				</MenuItem>

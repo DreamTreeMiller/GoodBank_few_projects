@@ -151,7 +151,7 @@ namespace DTO
 			}
 		}
 
-		public int			NumberOfCurrentAccounts { get; } = 0;
+		public int			NumberOfSavingAccounts { get; } = 0;
 		public int			NumberOfDeposits		{ get; } = 0;
 		public int			NumberOfCredits			{ get; } = 0;
 		public int			NumberOfClosedAccounts	{ get; } = 0;
@@ -226,7 +226,7 @@ namespace DTO
 			_telephone				= c.Telephone;
 			_email					= c.Email;
 			_address				= c.Address;
-			NumberOfCurrentAccounts = c.NumberOfCurrentAccounts;
+			NumberOfSavingAccounts = c.NumberOfSavingAccounts;
 			NumberOfDeposits		= c.NumberOfDeposits;
 			NumberOfCredits			= c.NumberOfCredits;
 			NumberOfClosedAccounts  = c.NumberOfClosedAccounts;
@@ -281,7 +281,7 @@ namespace DTO
 			_telephone				= c._telephone;
 			_email					= c._email;
 			_address				= c._address;
-			NumberOfCurrentAccounts	= c.NumberOfCurrentAccounts;
+			NumberOfSavingAccounts	= c.NumberOfSavingAccounts;
 			NumberOfDeposits		= c.NumberOfDeposits;
 			NumberOfCredits			= c.NumberOfCredits;
 			NumberOfClosedAccounts	= c.NumberOfClosedAccounts;

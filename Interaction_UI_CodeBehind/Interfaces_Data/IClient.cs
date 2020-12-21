@@ -11,7 +11,7 @@
 		string Email { get; set; }
 		string Address { get; set; }
 
-		int NumberOfCurrentAccounts { get; set; }
+		int NumberOfSavingAccounts { get; set; }
 		int NumberOfDeposits { get; set; }
 		int NumberOfCredits { get; set; }
 		int NumberOfClosedAccounts { get; set; }

@@ -315,13 +315,19 @@ namespace Client_Window
 		{
 			var passnum = PassportNumEntryBox.Text;
 			if (String.IsNullOrEmpty(passnum)) return;
-			if (!ValidPassportNum(ref passnum))
+			if (ValidPassportNum(ref passnum))
+			{
+				PassportNumEntryBox.Text = passnum;
+			}
+			else
+			{
 				// код возвращения фокуса в поле
 				Dispatcher.BeginInvoke((ThreadStart)delegate
 				{
 					PassportNumEntryBox.Focus();
 					PassportNumEntryBox.SelectionStart = PassportNumEntryBox.Text.Length;
 				});
+			}
 		}
 
 		private void RegistrationDateEntryBox_SelectedDateChanged(object sender, SelectionChangedEventArgs e)

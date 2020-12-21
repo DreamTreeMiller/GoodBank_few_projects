@@ -14,9 +14,9 @@ namespace Data_Grid_User_Controls
 		{
 			if (value != null) 
 			{
-				// AccType == AccountType.Current && CurrentAccountsCB.IsChecked == True
+				// AccType == AccountType.Saving && SavingAccountsCB.IsChecked == True
 				if ((value[0] as AccountDTO).Closed == null &&
-					(value[0] as AccountDTO).AccType == AccountType.Current)
+					(value[0] as AccountDTO).AccType == AccountType.Saving)
 					return (bool)value[1] ? Visibility.Visible : Visibility.Collapsed;
 
 				// AccType == AccountType.Deposit && DepositCB.IsChecked == True

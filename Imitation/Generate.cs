@@ -108,16 +108,16 @@ namespace Imitation
 
 		private static void GenerateAccountsForClient(IClientDTO client)
 		{
-			GenerateCurrentAccounts(client, r.Next(0, 6));
+			GenerateSavingAccounts(client, r.Next(0, 6));
 			GenerateDeposits(client, r.Next(0, 6));
 			GenerateCredits(client, r.Next(0, 6));
 		}
 
-		private static void GenerateCurrentAccounts(IClientDTO c, int num) 
+		private static void GenerateSavingAccounts(IClientDTO c, int num) 
 		{
 			for (int i = 0; i < num; i++)
 				BA.Accounts.GenerateAccount(
-					 new AccountDTO(c.ClientType, c.ID, AccountType.Current,
+					 new AccountDTO(c.ClientType, c.ID, AccountType.Saving,
 									r.Next(0,100) * 1000, 					// сумма на текущем счеты
 									0,										// процент по вкладу
 					false, 0, "не используется",

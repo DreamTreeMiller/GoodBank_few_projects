@@ -136,6 +136,9 @@ namespace GoodBankNS
 
 		private void DataSource_Click(object sender, RoutedEventArgs e)
 		{
+			// Пока не сделал выбор источника
+			GenerateButton_Click(sender, e); return;
+
 			var sdsw = new SelectDataSourceWindow();
 			if (sdsw.ShowDialog() != true) return;
 

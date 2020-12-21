@@ -9,8 +9,6 @@ namespace Enumerables
 	{
 		public override AccountType AccType { get => AccountType.Deposit; }
 
-		public override double Balance { get; set; }
-
 		/// <summary>
 		/// ID счета, куда перечислять проценты.
 		/// При капитализации, совпадает с ИД счета депозита

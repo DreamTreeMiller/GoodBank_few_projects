@@ -5,10 +5,9 @@ using System;
 
 namespace Enumerables
 {
-	public class AccountCurrent : Account
+	public class AccountSaving : Account
 	{
-		public override AccountType AccType { get => AccountType.Current; }
-		public override double Balance { get; set; }
+		public override AccountType AccType { get => AccountType.Saving; }
 
 		/// <summary>
 		/// Создание счета на основе введенных данных
@@ -29,7 +28,7 @@ namespace Enumerables
 		/// WithdrawalAllowed	=					--> ture
 		/// RecalcPeriod  =							--> No recalc period
 		/// EndDate		  =							--> null 
-		public AccountCurrent(IAccountDTO acc, Action<Transaction> writeloghandler)
+		public AccountSaving(IAccountDTO acc, Action<Transaction> writeloghandler)
 			: base(acc.ClientID, acc.ClientType, acc.Compounding, acc.Interest,
 				   true, true, RecalcPeriod.NoRecalc, 0, writeloghandler)
 		{
@@ -56,7 +55,7 @@ namespace Enumerables
 		/// </summary>
 		/// <param name="acc"></param>
 		/// <param name="opened"></param>
-		public AccountCurrent(IAccountDTO acc, DateTime opened, Action<Transaction> writeloghandler)
+		public AccountSaving(IAccountDTO acc, DateTime opened, Action<Transaction> writeloghandler)
 			: base(acc.ClientID, acc.ClientType, acc.Compounding, acc.Interest,
 				   opened,
 				   true, true, RecalcPeriod.NoRecalc, 0,
@@ -84,7 +83,7 @@ namespace Enumerables
 			if (IsBlocked) return 0;
 
 			NumberOfTopUpsInDay = 0;
-			// Do nothing since no interest recalculation for current account
+			// Do nothing since no interest recalculation for Saving account
 			return 0;
 		}
 

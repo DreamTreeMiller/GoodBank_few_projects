@@ -29,9 +29,9 @@ namespace BankInside
 			var client = GetClientByID(acc.ClientID);
 			switch(acc.AccType)
 			{
-				case AccountType.Current:
-					newAcc = new AccountCurrent(acc, WriteLog);
-					client.NumberOfCurrentAccounts++;
+				case AccountType.Saving:
+					newAcc = new AccountSaving(acc, WriteLog);
+					client.NumberOfSavingAccounts++;
 					break;
 				case AccountType.Deposit:
 					newAcc = new AccountDeposit(acc, WriteLog);
@@ -58,9 +58,9 @@ namespace BankInside
 			var client = GetClientByID(acc.ClientID);
 			switch (acc.AccType)
 			{
-				case AccountType.Current:
-					newAcc = new AccountCurrent(acc, acc.Opened, WriteLog);
-					client.NumberOfCurrentAccounts++;
+				case AccountType.Saving:
+					newAcc = new AccountSaving(acc, acc.Opened, WriteLog);
+					client.NumberOfSavingAccounts++;
 					break;
 				case AccountType.Deposit:
 					newAcc = new AccountDeposit(acc, acc.Opened, WriteLog);
@@ -95,7 +95,7 @@ namespace BankInside
 					acc = accounts[i];
 					switch(acc.AccType)
 					{
-						case AccountType.Current:
+						case AccountType.Saving:
 							totalCurr += acc.Balance;
 							break;
 						case AccountType.Deposit:
@@ -118,7 +118,7 @@ namespace BankInside
 					acc = accounts[i];
 					switch (acc.AccType)
 					{
-						case AccountType.Current:
+						case AccountType.Saving:
 							totalCurr += acc.Balance;
 							break;
 						case AccountType.Deposit:
@@ -154,7 +154,7 @@ namespace BankInside
 					acc = accounts[i];
 					switch (acc.AccType)
 					{
-						case AccountType.Current:
+						case AccountType.Saving:
 							totalCurr += acc.Balance;
 							break;
 						case AccountType.Deposit:
@@ -193,7 +193,7 @@ namespace BankInside
 			{
 				var acc = accounts[i];
 				if (acc.ClientID == clientID &&
-					acc.AccType == AccountType.Current &&
+					acc.AccType == AccountType.Saving &&
 					acc.Topupable)
 					accList.Add(new AccountDTO(client, acc));
 			}
@@ -306,8 +306,8 @@ namespace BankInside
 
 			switch(acc.AccType)
 			{
-				case AccountType.Current:
-					client.NumberOfCurrentAccounts--;
+				case AccountType.Saving:
+					client.NumberOfSavingAccounts--;
 					break;
 				case AccountType.Deposit:
 					client.NumberOfDeposits--;

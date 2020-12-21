@@ -112,12 +112,12 @@ namespace Client_Window
 
 		}
 
-		private void OpenCurrentAccountButton_Click(object sender, RoutedEventArgs e)
+		private void OpenSavingAccountButton_Click(object sender, RoutedEventArgs e)
 		{
-			OpenCurrentAccountWindow ocawin = new OpenCurrentAccountWindow();
+			OpenSavingAccountWindow ocawin = new OpenSavingAccountWindow();
 			var result = ocawin.ShowDialog();
 			if (result != true) return;
-			IAccountDTO newAcc = new AccountDTO(client.ClientType, client.ID, AccountType.Current,
+			IAccountDTO newAcc = new AccountDTO(client.ClientType, client.ID, AccountType.Saving,
 				ocawin.startAmount, 0, false, 0, "не используется", ocawin.Opened, true, true, RecalcPeriod.NoRecalc, 0, 0);
 
 			// Добавляем счет в базу в бэкенд
@@ -186,7 +186,7 @@ namespace Client_Window
 			// Получаем список текущих счетов клиента, 
 			// на один из которых нужно перечислить выданный кредит
 			// Этот список будет выпадающим списком в окошке ввода данных вклада
-			var creditRecipientAccounts = BA.Accounts.GetClientAccounts(client.ID, AccountType.Current);
+			var creditRecipientAccounts = BA.Accounts.GetClientAccounts(client.ID, AccountType.Saving);
 
 			// Клиент может получить кредит наличными
 			// создаем и добавляем этот элемент списка в список счетов для накопления процентов

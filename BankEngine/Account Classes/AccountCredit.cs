@@ -8,7 +8,6 @@ namespace Enumerables
 	public class AccountCredit : Account
 	{
 		public override AccountType AccType { get => AccountType.Credit; }
-		public override double		Balance { get; set; }
 		public double				AccumulatedInterest { get; set; }
 
 		/// <summary>

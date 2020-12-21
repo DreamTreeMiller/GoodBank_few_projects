@@ -21,13 +21,13 @@ namespace Client_Window
 	/// <summary>
 	/// Interaction logic for OpenAccountWindow.xaml
 	/// </summary>
-	public partial class OpenCurrentAccountWindow : Window
+	public partial class OpenSavingAccountWindow : Window
 	{
 		public double startAmount = 0;
 
 		public DateTime	Opened { get; } = GoodBankTime.Today;
 
-		public OpenCurrentAccountWindow()
+		public OpenSavingAccountWindow()
 		{
 			InitializeComponent();
 			BankTodayDate.Text = $"Сегодня {GoodBankTime.Today:dd.MM.yyyy} г.";
@@ -83,7 +83,7 @@ namespace Client_Window
 			return true;
 		}
 
-		private void btnOk_OpenCurrentAccount_Click(object sender, RoutedEventArgs e)
+		private void btnOk_OpenSavingAccount_Click(object sender, RoutedEventArgs e)
 		{
 			if (IsInputValid(StartAmountEntryBox.Text, out double tmp))
 			{

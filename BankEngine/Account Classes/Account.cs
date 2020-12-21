@@ -73,7 +73,7 @@ namespace Enumerables
 		/// Вклад	- сумма вклада
 		/// Кредит	- сумма долга
 		/// </summary>
-		public abstract double	Balance				{ get; set; }
+		public double			Balance				{ get; set; }
 
 		/// <summary>
 		/// Процент. 0 для текущего, прирорст для вклада, минус для долга
@@ -134,7 +134,7 @@ namespace Enumerables
 
 		#region Поля противодействия отмыванию денег
 
-		protected int NumberOfTopUpsInDay = 0;
+		protected int			NumberOfTopUpsInDay = 0;
 
 		public bool				IsBlocked			{ get; set; } = false;
 

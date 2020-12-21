@@ -210,7 +210,7 @@ namespace Window_Name_Tags
 		{
 			switch (accType)
 			{
-				case AccountType.Current:
+				case AccountType.Saving:
 					SystemWindowTitle = "Карточка счета * Текущий";
 					WindowHeader	  = "ДАННЫЕ ТЕКУЩЕГО СЧЕТА";
 

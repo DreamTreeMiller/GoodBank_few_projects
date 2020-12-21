@@ -43,7 +43,7 @@ namespace ClientClasses
 		public string	Email					{ get; set; }
 		public string	Address					{ get; set; }
 
-		public int		NumberOfCurrentAccounts	{ get; set; }
+		public int		NumberOfSavingAccounts	{ get; set; }
 		public int		NumberOfDeposits		{ get; set; }
 		public int		NumberOfCredits			{ get; set; }
 		public int		NumberOfClosedAccounts	{ get; set; }
@@ -64,7 +64,7 @@ namespace ClientClasses
 			Telephone				= tel;
 			Email					= email;
 			Address					= address;
-			NumberOfCurrentAccounts	= 0;
+			NumberOfSavingAccounts	= 0;
 			NumberOfDeposits		= 0;
 			NumberOfCredits			= 0;
 			NumberOfClosedAccounts	= 0;

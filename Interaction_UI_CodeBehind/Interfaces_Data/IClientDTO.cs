@@ -17,7 +17,7 @@ namespace Interfaces_Data
 		string Telephone { get; set; }
 		string Email { get; set; }
 		string Address { get; set; }
-		int NumberOfCurrentAccounts { get; }
+		int NumberOfSavingAccounts { get; }
 		int NumberOfDeposits { get; }
 		int NumberOfCredits { get; }
 		int NumberOfClosedAccounts { get; }
