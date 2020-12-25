@@ -138,14 +138,14 @@
 					</ToolTip>
 				</Button.ToolTip>
 			</Button>
-			<Button x:Name="DataSource"
+			<Button x:Name="GenerateData"
 					Grid.Row="0" Grid.Column="4"
-					Content="Источник данных"
+					Content="Генерировать данные"
 					Foreground="DarkSlateGray"
 					FontSize="14"
 					FontWeight="Bold"
 					BorderThickness="0" 
-					Click="DataSource_Click"
+					Click="GenerateData_Click"
 					>
 				<Button.Style>
 					<Style TargetType="{x:Type Button}">

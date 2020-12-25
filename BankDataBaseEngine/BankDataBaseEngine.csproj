@@ -10,6 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BankEngine\BankEngine.csproj" />
     <ProjectReference Include="..\Interaction_UI_CodeBehind\Interfaces and Shared Data.csproj" />
   </ItemGroup>
 

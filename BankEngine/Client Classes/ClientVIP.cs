@@ -20,6 +20,7 @@ namespace ClientClasses
 		public ClientVIP(IClientDTO newClient)
 			: base(newClient.Telephone, newClient.Email, newClient.Address)
 		{
+			uint id = ID;
 			FirstName		= newClient.FirstName;
 			MiddleName		= newClient.MiddleName;
 			LastName		= newClient.LastName;
