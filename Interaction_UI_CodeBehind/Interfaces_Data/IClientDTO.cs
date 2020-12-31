@@ -5,7 +5,7 @@ namespace Interfaces_Data
 {
 	public interface IClientDTO
 	{
-		uint ID { get; }
+		int ID { get; }
 		ClientType ClientType { get; set; }
 		string FirstName { get; set; }
 		string MiddleName { get; set; }

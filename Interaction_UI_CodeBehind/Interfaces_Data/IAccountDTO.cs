@@ -7,9 +7,9 @@ namespace Interfaces_Data
 	{
 		ClientType	ClientType		{ get; set; }
 		string		ClientName		{ get; set; }
-		uint		ClientID		{ get; set; }
+		int		ClientID		{ get; set; }
 		AccountType	AccType			{ get; set; }
-		uint		AccID				{ get; }
+		int		AccID				{ get; }
 		string		AccountNumber	{ get; set; }
 		double		Balance			{ get; set; }
 		string		CurrentAmount	{ get; }
@@ -26,7 +26,7 @@ namespace Interfaces_Data
 		/// ID счета, куда перечислять проценты.
 		/// При капитализации, совпадает с ИД счета депозита
 		/// </summary>
-		uint		InterestAccumulationAccID		{ get; set; }
+		int		InterestAccumulationAccID		{ get; set; }
 
 		string		InterestAccumulationAccNum		{ get; set; }
 

@@ -10,7 +10,7 @@ namespace ClientClasses
 		/// <summary>
 		/// Текущий ID счета
 		/// </summary>
-		private static uint staticID;
+		private static int staticID;
 
 		/// <summary>
 		/// Статический конструктор. Обнуляет счетчик ID
@@ -24,7 +24,7 @@ namespace ClientClasses
 		/// Герерирует следующий ID
 		/// </summary>
 		/// <returns>New unique ID</returns>
-		private static uint NextID()
+		private static int NextID()
 		{
 			staticID++;
 			return staticID;
@@ -37,7 +37,7 @@ namespace ClientClasses
 		/// <summary>
 		/// ID клиента в базе
 		/// </summary>
-		public uint		ID						{ get; }
+		public int		ID						{ get; }
 
 		public string	Telephone				{ get; set; }
 		public string	Email					{ get; set; }

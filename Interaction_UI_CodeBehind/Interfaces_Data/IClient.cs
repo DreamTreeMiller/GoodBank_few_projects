@@ -5,7 +5,7 @@
 		/// <summary>
 		/// ID клиента в базе
 		/// </summary>
-		uint ID { get; }
+		int ID { get; }
 
 		string Telephone { get; set; }
 		string Email { get; set; }

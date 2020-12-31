@@ -7,7 +7,7 @@
 		/// При капитализации, совпадает с ИД счета депозита
 		/// Без капитализации равен 0
 		/// </summary>
-		uint InterestAccumulationAccID { get; }
+		int InterestAccumulationAccID { get; }
 
 		/// <summary>
 		/// Номер счета, куда перечислять проценты.

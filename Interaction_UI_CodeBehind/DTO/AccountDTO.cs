@@ -13,10 +13,10 @@ namespace DTO
 	public class AccountDTO : IAccountDTO
 	{
 		public ClientType	ClientType		{ get; set; }
-		public uint			ClientID		{ get; set; }
+		public int			ClientID		{ get; set; }
 		public string		ClientName		{ get; set; }
 		public AccountType	AccType			{ get; set; }
-		public uint			AccID			{ get; } = 0;
+		public int			AccID			{ get; } = 0;
 		public string		AccountNumber	{ get; set; }
 		public double		Balance			{ get; set; }
 
@@ -48,7 +48,7 @@ namespace DTO
 		/// При капитализации, совпадает с ИД счета депозита
 		/// 0 - если внутренний счет
 		/// </summary>
-		public uint			InterestAccumulationAccID	{ get; set; }
+		public int			InterestAccumulationAccID	{ get; set; }
 
 
 		public string		InterestAccumulationAccNum	{ get; set; }
@@ -108,9 +108,9 @@ namespace DTO
 		/// Данные получены от ручного ввода
 		/// 14 полей!!! ужас!!!
 		/// </summary>
-		public AccountDTO(ClientType ct, uint clientID, AccountType accType,
+		public AccountDTO(ClientType ct, int clientID, AccountType accType,
 						  double balance, double interest, 
-						  bool compounding, uint interestAccumAccID, string interestAccumAccNum, DateTime opened, 
+						  bool compounding, int interestAccumAccID, string interestAccumAccNum, DateTime opened, 
 						  bool topup, bool withdraw, RecalcPeriod recalc, int duration, int monthsElapsed)
 
 		{

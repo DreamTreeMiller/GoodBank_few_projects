@@ -17,7 +17,7 @@ namespace Interfaces_Data
 		/// Это избыточное поле, но так быстрее найти данные владельца 
 		/// при показе счетов одного типа клиентов
 		/// </summary>
-		uint			ClientID		{ get; set; }
+		int			ClientID		{ get; set; }
 
 		/// <summary>
 		/// Тип счета текущий, вклад или кредит
@@ -27,7 +27,7 @@ namespace Interfaces_Data
 		/// <summary>
 		/// Уникальный ID счёта - используем для базы
 		/// </summary>
-		uint			AccID				{ get; }
+		int			AccID				{ get; }
 
 		/// <summary>
 		/// Уникальный номер счёта. 
