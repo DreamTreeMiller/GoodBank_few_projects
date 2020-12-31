@@ -14,7 +14,7 @@ namespace Enumerables
 		/// При капитализации, совпадает с ИД счета депозита
 		/// Без капитализации равен 0
 		/// </summary>
-		public uint InterestAccumulationAccID { get; } = 0;
+		public int InterestAccumulationAccID { get; } = 0;
 
 		/// <summary>
 		/// Номер счета, куда перечислять проценты.

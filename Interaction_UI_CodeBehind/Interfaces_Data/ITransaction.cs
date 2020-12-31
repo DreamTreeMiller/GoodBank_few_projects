@@ -8,12 +8,12 @@ namespace Interfaces_Data
 		/// <summary>
 		/// Уникальный ID транзакции
 		/// </summary>
-		uint			TransactionID		{ get; }
+		int			TransactionID		{ get; }
 
 		/// <summary>
 		/// Счет, над которым совершено действие
 		/// </summary>
-		uint			TransactionAccountID { get; }
+		int			TransactionAccountID { get; }
 
 		/// <summary>
 		/// Дата и время транзакции

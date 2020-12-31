@@ -10,8 +10,6 @@ using Generate_Clients_and_Accounts;
 using UI_Search;
 using System.Threading;
 
-using BankDataBaseEngine;
-
 namespace GoodBankNS
 {
 	/// <summary>
@@ -24,9 +22,6 @@ namespace GoodBankNS
 
 		public MainWindow()
 		{
-			// Test
-			GoodBankDB gb = new GoodBankDB();
-
 			InitializeComponent();
 			InitializeBank();
 			InitializeWelcomeScreenMessages();

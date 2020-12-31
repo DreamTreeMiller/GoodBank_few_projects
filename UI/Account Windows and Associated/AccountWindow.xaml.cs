@@ -19,7 +19,7 @@ namespace Account_Windows
 	{
 		#region Account Fields in Window
 
-		private uint		AccID;
+		private int		AccID;
 		private AccountType	accountType;
 		private string		accountNumber;
 		public	string		AccountNumber
@@ -293,7 +293,7 @@ namespace Account_Windows
 			if (result != true) return;
 
 			double wireAmount = eaawin.amount;
-			uint    destAccID = eaawin.destinationAccount.AccID;
+			int    destAccID = eaawin.destinationAccount.AccID;
 
 			try
 			{

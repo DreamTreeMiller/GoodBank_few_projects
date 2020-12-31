@@ -6,7 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BankDataBaseEngine\BankDataBaseEngine.csproj" />
     <ProjectReference Include="..\BankEngine\BankEngine.csproj" />
     <ProjectReference Include="..\Interaction_UI_CodeBehind\Interfaces and Shared Data.csproj" />
   </ItemGroup>

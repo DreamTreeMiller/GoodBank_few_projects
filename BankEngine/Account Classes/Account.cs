@@ -13,7 +13,7 @@ namespace Enumerables
 		/// <summary>
 		/// Текущий ID счета
 		/// </summary>
-		private static uint		staticID;
+		private static int		staticID;
 
 		/// <summary>
 		/// Статический конструктор. Обнуляет счетчик ID
@@ -27,7 +27,7 @@ namespace Enumerables
 		/// Герерирует следующий ID
 		/// </summary>
 		/// <returns>New unique ID</returns>
-		private static uint		NextID()
+		private static int		NextID()
 		{
 			staticID++;
 			return staticID;
@@ -47,7 +47,7 @@ namespace Enumerables
 		/// <summary>
 		/// ID владельца счета. 
 		/// </summary>
-		public uint				ClientID			{ get; set; }
+		public int				ClientID			{ get; set; }
 
 		/// <summary>
 		/// Тип счета текущий, вклад или кредит
@@ -58,7 +58,7 @@ namespace Enumerables
 		/// <summary>
 		/// Уникальный ID счёта - используем для базы
 		/// </summary>
-		public uint				AccID				{ get; }
+		public int				AccID				{ get; }
 
 		/// <summary>
 		/// Уникальный номер счёта. 
@@ -150,7 +150,7 @@ namespace Enumerables
 		/// <param name="compounding"></param>
 		/// <param name="compAccID"></param>
 		/// <param name="interest"></param>
-		public Account( uint clientID, ClientType clientType, bool compounding, double interest,
+		public Account( int clientID, ClientType clientType, bool compounding, double interest,
 						bool topup, bool withdrawal, RecalcPeriod recalc, int duration,
 						Action<Transaction> writeloghandler)
 		{
@@ -179,7 +179,7 @@ namespace Enumerables
 		/// <param name="compounding"></param>
 		/// <param name="compAccID"></param>
 		/// <param name="interest"></param>
-		public Account(uint clientID, ClientType clientType, bool compounding, double interest,
+		public Account(int clientID, ClientType clientType, bool compounding, double interest,
 						DateTime opened,
 						bool topup, bool withdrawal, RecalcPeriod recalc, int duration,
 						Action<Transaction> writeloghandler)

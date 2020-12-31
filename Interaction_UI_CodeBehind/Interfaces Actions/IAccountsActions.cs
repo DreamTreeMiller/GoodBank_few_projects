@@ -6,7 +6,7 @@ namespace Interfaces_Actions
 {
 	public interface IAccountsActions
 	{
-		IAccount GetAccountByID(uint id);
+		IAccount GetAccountByID(int id);
 
 		/// <summary>
 		/// Находит список всех счетов, принадлежащих клиентам данного типа
@@ -19,26 +19,26 @@ namespace Interfaces_Actions
 			GetAccountsList(ClientType clientType);
 
 		(ObservableCollection<IAccountDTO> accList, double totalCurr, double totalDeposit, double totalCredit)
-			GetClientAccounts(uint ID);
+			GetClientAccounts(int ID);
 
-		ObservableCollection<IAccountDTO> GetClientAccounts(uint clientID, AccountType accType);
+		ObservableCollection<IAccountDTO> GetClientAccounts(int clientID, AccountType accType);
 
-		ObservableCollection<IAccountDTO> GetClientAccountsToAccumulateInterest(uint ID);
+		ObservableCollection<IAccountDTO> GetClientAccountsToAccumulateInterest(int ID);
 
-		ObservableCollection<IAccount> GetTopupableAccountsToWireFrom(uint sourceAccID);
+		ObservableCollection<IAccount> GetTopupableAccountsToWireFrom(int sourceAccID);
 
 
 		IAccountDTO AddAccount(IAccountDTO acc); 
 
 		IAccountDTO GenerateAccount(IAccountDTO acc);
 
-		IAccount TopUpCash(uint accID, double cashAmount);
+		IAccount TopUpCash(int accID, double cashAmount);
 
-		IAccount WithdrawCash(uint accID, double amount);
+		IAccount WithdrawCash(int accID, double amount);
 
-		IAccount CloseAccount(uint accID, out double accumulatedAmount);
+		IAccount CloseAccount(int accID, out double accumulatedAmount);
 
-		void Wire(uint sourceAccID, uint destAccID, double amount);
+		void Wire(int sourceAccID, int destAccID, double amount);
 
 		/// <summary>
 		/// Увеличивает внутреннюю дату на 1 месяц и пересчитывает проценты у всех счетов

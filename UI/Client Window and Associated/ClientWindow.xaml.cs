@@ -151,7 +151,7 @@ namespace Client_Window
 			// его ID == 0, AccountNumber == "внутренний счет"
 
 			int		AccumAccIndx		= odwin.AccumulationAccount.SelectedIndex;
-			uint	AccumulationAccID	= (odwin.AccumulationAccount.Items[AccumAccIndx] as AccountDTO).AccID;
+			int	AccumulationAccID	= (odwin.AccumulationAccount.Items[AccumAccIndx] as AccountDTO).AccID;
 			string	InterestAccumAccNum =
 				(odwin.AccumulationAccount.Items[AccumAccIndx] as AccountDTO).AccountNumber;
 
@@ -201,7 +201,7 @@ namespace Client_Window
 			// Получаем номер счета в базе счетов, на котором будет перечислена выданная сумма
 			// Если было выбрано "получить наличными", то его ID == 0
 			int		CreRecipAccIndx		  =  ocrwin.CreditRecipientAccount.SelectedIndex;
-			uint	CreditRecipientAccID  = (ocrwin.CreditRecipientAccount.Items[CreRecipAccIndx] as AccountDTO).AccID;
+			int	CreditRecipientAccID  = (ocrwin.CreditRecipientAccount.Items[CreRecipAccIndx] as AccountDTO).AccID;
 			string	CreditRecipientAccNum =
 				(ocrwin.CreditRecipientAccount.Items[CreRecipAccIndx] as AccountDTO).AccountNumber;
 

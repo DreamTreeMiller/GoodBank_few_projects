@@ -5,8 +5,6 @@ using System.Configuration;
 using Interfaces_Data;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Interfaces_Data;
-using System.Collections.Generic;
 
 namespace BankInside
 {

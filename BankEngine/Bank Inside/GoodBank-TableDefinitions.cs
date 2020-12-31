@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace BankInside
 {
@@ -9,22 +7,22 @@ namespace BankInside
 		private Dictionary<string, string> tables = new Dictionary<string, string>()
 		{{"Clients", @"
 CREATE TABLE [dbo].[Clients] (
-	[ID]						BIGINT			NOT NULL PRIMARY KEY,
-	[Telephone]					NVARCHAR (30),	
-	[Email]						NVARCHAR (128),
+	[ID]						INT			IDENTITY(1,1) NOT NULL PRIMARY KEY,
+	[Telephone]					NVARCHAR (20),	-- better 30
+	[Email]						NVARCHAR (70),	-- better 128
 	[Address]					NVARCHAR (256),
-	[NumberOfSavingAccounts]	INT	DEFAULT 0	NOT NULL,
-	[NumberOfDeposits]			INT	DEFAULT 0	NOT NULL,		
-	[NumberOfCredits]			INT	DEFAULT 0	NOT NULL,			
-	[NumberOfClosedAccounts]	INT	DEFAULT 0	NOT NULL
+	[NumberOfSavingAccounts]	INT				DEFAULT 0	NOT NULL,
+	[NumberOfDeposits]			INT				DEFAULT 0	NOT NULL,		
+	[NumberOfCredits]			INT				DEFAULT 0	NOT NULL,			
+	[NumberOfClosedAccounts]	INT				DEFAULT 0	NOT NULL
 );"
 		 },
 
 		 {"VIPclients", @"
 CREATE TABLE [dbo].[VIPclients] (
-	[id]				BIGINT			NOT NULL PRIMARY KEY,
+	[id]				INT			NOT NULL PRIMARY KEY,
 	[FirstName]			NVARCHAR (50)	NOT NULL,
-	[MiddleName]		NVARCHAR (50)	NOT NULL,
+	[MiddleName]		NVARCHAR (50),
 	[LastName]			NVARCHAR (50)	NOT NULL,
 	[PassportNumber]	NVARCHAR (11)	NOT NULL,
 	[BirthDate]			DATE			NOT NULL
@@ -33,9 +31,9 @@ CREATE TABLE [dbo].[VIPclients] (
 
 		 {"SIMclients", @"
 CREATE TABLE [dbo].[SIMclients] (
-	[id]				BIGINT			NOT NULL PRIMARY KEY,
+	[id]				INT			NOT NULL PRIMARY KEY,
 	[FirstName]			NVARCHAR (50)	NOT NULL,
-	[MiddleName]		NVARCHAR (50)	NOT NULL,
+	[MiddleName]		NVARCHAR (50),
 	[LastName]			NVARCHAR (50)	NOT NULL,
 	[PassportNumber]	NVARCHAR (11)	NOT NULL,
 	[BirthDate]			DATE			NOT NULL
@@ -43,7 +41,7 @@ CREATE TABLE [dbo].[SIMclients] (
 		 },
 		 {"ORGclients", @"
 CREATE TABLE [dbo].[ORGclients] (
-	[id]				BIGINT			NOT NULL PRIMARY KEY,	
+	[id]				INT			NOT NULL PRIMARY KEY,	
 	[OrgName]			NVARCHAR (256)	NOT NULL,
 	[DirectorFirstName]	NVARCHAR (50),
 	[DirectorMiddleName]NVARCHAR (50),
@@ -55,7 +53,7 @@ CREATE TABLE [dbo].[ORGclients] (
 
 		 {"Accounts", @"
 CREATE TABLE [dbo].[Accounts] (
-	[AccID]				BIGINT			NOT NULL PRIMARY KEY,	-- уникальный ид счета
+	[AccID]				INT			IDENTITY (1, 1) NOT NULL PRIMARY KEY,	-- уникальный ид счета
 	[AccType]			TINYINT			NOT NULL,	-- Account type
 													-- 0 - Saving,
 													-- 1 - Deposit,
@@ -92,7 +90,7 @@ CREATE TABLE [dbo].[Accounts] (
 
 		 {"DepositAccounts", @"
 CREATE TABLE [dbo].[DepositAccounts] (
-	[id]							BIGINT				NOT NULL PRIMARY KEY,
+	[id]							INT				NOT NULL PRIMARY KEY,
 	[InterestAccumulationAccID]		BIGINT DEFAULT 0,
 	[InterestAccumulationAccNum]	NVARCHAR (15),
 	[AccumulatedInterest]			MONEY DEFAULT 0
@@ -101,13 +99,15 @@ CREATE TABLE [dbo].[DepositAccounts] (
 
 		 {"CreditAccounts", @"
 CREATE TABLE [dbo].[CreditAccounts] (
-	[id]					BIGINT			NOT NULL PRIMARY KEY,
+	[id]					INT			NOT NULL PRIMARY KEY,
 	[AccumulatedInterest]	MONEY DEFAULT 0
 );"
 		 },
 
-		 {"Transactions",
-		"id INT NOT NULL"
+		 {"Transactions", @"
+CREATE TABLE [dbo].[Transactions] (
+	[id] INT NOT NULL PRIMARY KEY
+);"
 		}};
 	}
 }

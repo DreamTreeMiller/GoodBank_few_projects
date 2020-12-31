@@ -5,6 +5,6 @@ namespace Interfaces_Actions
 {
 	public interface ITransactions
 	{
-		ObservableCollection<ITransaction> GetAccountTransactionsLog(uint accID);
+		ObservableCollection<ITransaction> GetAccountTransactionsLog(int accID);
 	}
 }

@@ -20,7 +20,7 @@ namespace BankInside
 		/// </summary>
 		/// <param name="account"></param>
 		/// <returns></returns>
-		public ObservableCollection<ITransaction> GetAccountTransactionsLog(uint accID)
+		public ObservableCollection<ITransaction> GetAccountTransactionsLog(int accID)
 		{
 			ObservableCollection<ITransaction> accountLog = new ObservableCollection<ITransaction>();
 			foreach (var t in log)

@@ -12,7 +12,7 @@ namespace BankInside
 	{
 		private List<Account> accounts;
 
-		public IAccount GetAccountByID(uint id)
+		public IAccount GetAccountByID(int id)
 		{
 			return accounts.Find(a => a.AccID == id);
 		}
@@ -141,7 +141,7 @@ namespace BankInside
 		/// возвращает коллекцию счетов и общую сумму каждой группы счетов - текущие, вклады, кредиты
 		/// </returns>
 		public (ObservableCollection<IAccountDTO> accList, double totalCurr, double totalDeposit, double totalCredit)
-			GetClientAccounts(uint clientID)
+			GetClientAccounts(int clientID)
 		{
 			ObservableCollection<IAccountDTO> accList = new ObservableCollection<IAccountDTO>();
 			var client = GetClientByID(clientID);
@@ -169,7 +169,7 @@ namespace BankInside
 			return (accList, totalCurr, totalDeposit, totalCredit);
 		}
 
-		public ObservableCollection<IAccountDTO> GetClientAccounts(uint clientID, AccountType accType)
+		public ObservableCollection<IAccountDTO> GetClientAccounts(int clientID, AccountType accType)
 		{
 			ObservableCollection<IAccountDTO> accList = new ObservableCollection<IAccountDTO>();
 			var client = GetClientByID(clientID);
@@ -184,7 +184,7 @@ namespace BankInside
 
 		}
 
-		public ObservableCollection<IAccountDTO> GetClientAccountsToAccumulateInterest(uint clientID)
+		public ObservableCollection<IAccountDTO> GetClientAccountsToAccumulateInterest(int clientID)
 		{
 			ObservableCollection<IAccountDTO> accList = new ObservableCollection<IAccountDTO>();
 			var client = GetClientByID(clientID);
@@ -200,7 +200,7 @@ namespace BankInside
 			return accList;
 		}
 
-		public ObservableCollection<IAccount> GetTopupableAccountsToWireFrom(uint sourceAccID)
+		public ObservableCollection<IAccount> GetTopupableAccountsToWireFrom(int sourceAccID)
 		{
 			ObservableCollection<IAccount> accList = new ObservableCollection<IAccount>();
 			for (int i = 0; i < accounts.Count; i++)
@@ -211,7 +211,7 @@ namespace BankInside
 			return accList;
 		}
 
-		public IAccount TopUpCash(uint accID, double cashAmount)
+		public IAccount TopUpCash(int accID, double cashAmount)
 		{
 			IAccount acc = GetAccountByID(accID);
 			if (acc.IsBlocked)
@@ -227,7 +227,7 @@ namespace BankInside
 			return acc;
 		}
 
-		public IAccount WithdrawCash(uint accID, double cashAmount)
+		public IAccount WithdrawCash(int accID, double cashAmount)
 		{
 			IAccount acc = GetAccountByID(accID);
 			if (acc.IsBlocked)
@@ -252,7 +252,7 @@ namespace BankInside
 		/// <param name="sourceAccID"></param>
 		/// <param name="destAccID"></param>
 		/// <param name="wireAmount"></param>
-		public void Wire(uint sourceAccID, uint destAccID, double wireAmount)
+		public void Wire(int sourceAccID, int destAccID, double wireAmount)
 		{
 			var sourceAcc = GetAccountByID(sourceAccID);
 			if (sourceAcc.IsBlocked)
@@ -287,7 +287,7 @@ namespace BankInside
 		/// </summary>
 		/// <param name="accID"></param>
 		/// <returns></returns>
-		public IAccount CloseAccount(uint accID, out double accumulatedAmount)
+		public IAccount CloseAccount(int accID, out double accumulatedAmount)
 		{
 			IAccount acc = GetAccountByID(accID);
 			if (acc.Closed != null)
@@ -329,7 +329,7 @@ namespace BankInside
 				double currInterest = acc.RecalculateInterest();
 				if (acc is AccountDeposit)
 				{
-					uint destAccID = (acc as AccountDeposit).InterestAccumulationAccID;
+					int destAccID = (acc as AccountDeposit).InterestAccumulationAccID;
 					if (!(acc as AccountDeposit).Compounding && 
 						destAccID    != 0 && 
 						currInterest != 0)

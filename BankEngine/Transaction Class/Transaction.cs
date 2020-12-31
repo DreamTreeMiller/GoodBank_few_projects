@@ -11,7 +11,7 @@ namespace Transaction_Class
 		/// <summary>
 		/// Текущий ID счета
 		/// </summary>
-		private static uint staticID;
+		private static int staticID;
 
 		/// <summary>
 		/// Статический конструктор. Обнуляет счетчик ID
@@ -25,7 +25,7 @@ namespace Transaction_Class
 		/// Герерирует следующий ID
 		/// </summary>
 		/// <returns>New unique ID</returns>
-		private static uint NextID()
+		private static int NextID()
 		{
 			staticID++;
 			return staticID;
@@ -36,12 +36,12 @@ namespace Transaction_Class
 		/// <summary>
 		/// Уникальный ID транзакции
 		/// </summary>
-		public uint				TransactionID		{ get; }
+		public int				TransactionID		{ get; }
 
 		/// <summary>
 		/// Счет, над которым совершено действие
 		/// </summary>
-		public uint TransactionAccountID { get; }
+		public int TransactionAccountID { get; }
 
 		/// <summary>
 		/// Дата и время транзакции
@@ -83,7 +83,7 @@ namespace Transaction_Class
 		/// <param name="amount">Сумма операции. Плюс - вклад, минус - снятие</param>
 		/// <param name="interest">Процент в операции. 0 - текщий счет</param>
 		/// <param name="comment">Комментарий</param>
-		public Transaction(uint senderAccID,
+		public Transaction(int senderAccID,
 							DateTime dt,
 							string sourceAcc,
 							string destinationAcc,
