@@ -36,6 +36,7 @@ namespace BankInside
 			// Checks if the db has all tables
 			// If some table is missing creates it
 			CheckThenCreateTables();
+			PopulateTables();
 		}
 
 		/// <summary>

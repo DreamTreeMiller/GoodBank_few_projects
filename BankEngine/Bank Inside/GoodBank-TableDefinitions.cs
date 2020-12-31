@@ -106,7 +106,14 @@ CREATE TABLE [dbo].[CreditAccounts] (
 
 		 {"Transactions", @"
 CREATE TABLE [dbo].[Transactions] (
-	[id] INT NOT NULL PRIMARY KEY
+	[TransactionID]			INT				IDENTITY(1,1) NOT NULL PRIMARY KEY
+	[TransactionAccountID]	INT				NOT NULL,
+	[TransactionDateTime]	DATETIME		NOT NULL,
+	[SourceAccount]			NVARCHAR (15)	NOT NULL,
+	[DestinationAccount]	NVARCHAR (15)	NOT NULL,
+	[OperationType]			TINYINT			NOT NULL,
+	[Amount]				MONEY			NOT NULL,
+	[Comment]				NVARCHAR (256)
 );"
 		}};
 	}

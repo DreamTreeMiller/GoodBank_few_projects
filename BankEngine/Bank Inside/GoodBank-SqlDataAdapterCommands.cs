@@ -14,13 +14,14 @@ namespace BankInside
 	public partial class GoodBank : IClientsActions
 	{
 
-		public	SqlDataAdapter	da,
-								daClients, daVIPclients, daSIMclients, daORGclients;
+		public SqlDataAdapter	da,
+								daClients, daVIPclients, daSIMclients, daORGclients,
+								daAccounts, daDeposits, daCredits, // no da for Saving accounts
+								daTransactions;
 		public  DataSet			ds;
-		private DataTable		dt;
 		private SqlConnection	gbConn;
 
-		public DataSet PopulateTables()
+		public void PopulateTables()
 		{
 			ds = new DataSet();
 			da = new SqlDataAdapter();
@@ -63,9 +64,8 @@ namespace BankInside
 			sqlCommand = @"SELECT * FROM [dbo].[Transactions];";
 			da.SelectCommand = new SqlCommand(sqlCommand, gbConn);
 			da.Fill(ds, "Transactions");
-
-			return ds;
 		}
+
 		private void SetupClientsSqlDataAdapter()
 		{
 			string sqlCommand;

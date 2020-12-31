@@ -11,8 +11,6 @@ namespace BankInside
 {
 	public partial class GoodBank : IClientsActions
 	{
-		private List<Client> clients;
-
 		/// <summary>
 		/// Находит клиента с указанным ID
 		/// </summary>
@@ -20,6 +18,9 @@ namespace BankInside
 		/// <returns></returns>
 		public IClient GetClientByID(int id)
 		{
+			string sqlCommand = @"
+SELECT 
+";
 			return clients.Find(c => c.ID == id);
 		}
 
@@ -47,50 +48,55 @@ namespace BankInside
 	{
 		DataRow[] newRow = new DataRow[1];
 		newRow[0] = ds.Tables["Clients"].NewRow();
-		//newRow["ID"]		= c.ID;				// Уникальный ID клиента
-		newRow[0]["Telephone"] = c.Telephone;
-		newRow[0]["Email"] = c.Email;
-		newRow[0]["Address"] = c.Address;
+
+		newRow[0]["Telephone"]	= c.Telephone;
+		newRow[0]["Email"]		= c.Email;
+		newRow[0]["Address"]	= c.Address;
+
 		ds.Tables["Clients"].Rows.Add(newRow[0]);
 		daClients.Update(newRow);
 
 		int id = (int)newRow[0]["ID"];
 
-		DataRow newClientTypeRow;
+		DataRow[] newClientTypeRow = new DataRow[1];
 		switch (c.ClientType)
 		{
 			case ClientType.VIP:
-				newClientTypeRow = ds.Tables["VIPclients"].NewRow();
-				newClientTypeRow["id"] = id; // c.ID;  // Foreign Key для связи с таблицей Clients
-				newClientTypeRow["FirstName"] = c.FirstName;
-				newClientTypeRow["MiddleName"] = c.MiddleName;
-				newClientTypeRow["LastName"] = c.LastName;
-				newClientTypeRow["PassportNumber"] = c.PassportOrTIN;
-				newClientTypeRow["BirthDate"] = c.CreationDate;
+				newClientTypeRow[0] = ds.Tables["VIPclients"].NewRow();
+				newClientTypeRow[0]["id"]				= id;  // Foreign Key для связи с таблицей Clients
+				newClientTypeRow[0]["FirstName"]		= c.FirstName;
+				newClientTypeRow[0]["MiddleName"]		= c.MiddleName;
+				newClientTypeRow[0]["LastName"]			= c.LastName;
+				newClientTypeRow[0]["PassportNumber"]	= c.PassportOrTIN;
+				newClientTypeRow[0]["BirthDate"]		= c.CreationDate;
+
 				ds.Tables["VIPclients"].Rows.Add(newClientTypeRow);
+				daVIPclients.Update(newClientTypeRow);
 				break;
 
 			case ClientType.Simple:
-				newClientTypeRow = ds.Tables["SIMclients"].NewRow();
-				newClientTypeRow["id"] = id; // c.ID;  // Foreign Key для связи с таблицей Clients
-				newClientTypeRow["FirstName"] = c.FirstName;
-				newClientTypeRow["MiddleName"] = c.MiddleName;
-				newClientTypeRow["LastName"] = c.LastName;
-				newClientTypeRow["PassportNumber"] = c.PassportOrTIN;
-				newClientTypeRow["BirthDate"] = c.CreationDate;
+				newClientTypeRow[0] = ds.Tables["SIMclients"].NewRow();
+				newClientTypeRow[0]["id"] = id; // c.ID;  // Foreign Key для связи с таблицей Clients
+				newClientTypeRow[0]["FirstName"] = c.FirstName;
+				newClientTypeRow[0]["MiddleName"] = c.MiddleName;
+				newClientTypeRow[0]["LastName"] = c.LastName;
+				newClientTypeRow[0]["PassportNumber"] = c.PassportOrTIN;
+				newClientTypeRow[0]["BirthDate"] = c.CreationDate;
 				ds.Tables["SIMclients"].Rows.Add(newClientTypeRow);
+				daSIMclients.Update(newClientTypeRow);
 				break;
 
 			case ClientType.Organization:
-				newClientTypeRow = ds.Tables["ORGclients"].NewRow();
-				newClientTypeRow["id"] = id; // c.ID;  // Foreign Key для связи с таблицей Clients
-				newClientTypeRow["OrgName"] = c.MainName;
-				newClientTypeRow["DirectorFirstName"] = c.FirstName;
-				newClientTypeRow["DirectorMiddleName"] = c.MiddleName;
-				newClientTypeRow["DirectorLastName"] = c.LastName;
-				newClientTypeRow["TIN"] = c.PassportOrTIN;
-				newClientTypeRow["RegistrationDate"] = c.CreationDate;
+				newClientTypeRow[0] = ds.Tables["ORGclients"].NewRow();
+				newClientTypeRow[0]["id"]					= id; // Foreign Key для связи с таблицей Clients
+				newClientTypeRow[0]["OrgName"]				= c.MainName;
+				newClientTypeRow[0]["DirectorFirstName"]	= c.FirstName;
+				newClientTypeRow[0]["DirectorMiddleName"]	= c.MiddleName;
+				newClientTypeRow[0]["DirectorLastName"]		= c.LastName;
+				newClientTypeRow[0]["TIN"]					= c.PassportOrTIN;
+				newClientTypeRow[0]["RegistrationDate"]		= c.CreationDate;
 				ds.Tables["ORGclients"].Rows.Add(newClientTypeRow);
+				daORGclients.Update(newClientTypeRow);
 				break;
 		}
 	}
