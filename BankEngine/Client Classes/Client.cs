@@ -1,4 +1,6 @@
 ﻿using Interfaces_Data;
+using System.Data;
+using BankInside;
 
 namespace ClientClasses
 {
@@ -68,6 +70,20 @@ namespace ClientClasses
 			NumberOfDeposits		= 0;
 			NumberOfCredits			= 0;
 			NumberOfClosedAccounts	= 0;
+
+			// Creating DB entry
+			DataRow[] newRow = new DataRow[1];
+			newRow[0] = GoodBank.ds.Tables["Clients"].NewRow();
+
+			newRow[0]["Telephone"]	= tel;
+			newRow[0]["Email"]		= email;
+			newRow[0]["Address"]	= address;
+
+			GoodBank.ds.Tables["Clients"].Rows.Add(newRow[0]);
+			GoodBank.daClients.Update(newRow);
+
+			ID = (int)newRow[0]["ID"];
+
 		}
 
 		#endregion

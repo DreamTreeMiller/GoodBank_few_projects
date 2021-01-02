@@ -100,7 +100,6 @@ namespace Client_Window
 				MessageBox.Show("Выберите счет для показа");
 				return;
 			}
-			IClient client = BA.Clients.GetClientByID(account.ClientID);
 			AccountWindow accountWindow = new AccountWindow(BA, account);
 			accountWindow.ShowDialog();
 			if (accountWindow.accountsNeedUpdate)

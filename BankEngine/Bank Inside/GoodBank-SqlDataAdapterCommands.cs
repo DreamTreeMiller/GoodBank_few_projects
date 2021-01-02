@@ -14,12 +14,12 @@ namespace BankInside
 	public partial class GoodBank : IClientsActions
 	{
 
-		public SqlDataAdapter	da,
-								daClients, daVIPclients, daSIMclients, daORGclients,
-								daAccounts, daDeposits, daCredits, // no da for Saving accounts
-								daTransactions;
-		public  DataSet			ds;
-		private SqlConnection	gbConn;
+		internal static SqlDataAdapter	da,
+			daClients, daVIPclients, daSIMclients, daORGclients,
+			daAccounts, daDeposits, daCredits, // no da for Saving accounts
+			daTransactions;
+		internal static DataSet			ds;
+		internal static SqlConnection	gbConn;
 
 		public void PopulateTables()
 		{
