@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 using Interfaces_Data;
+using Binding_UI_CodeBehind;
 
 namespace Data_Grid_User_Controls
 {
@@ -11,11 +12,13 @@ namespace Data_Grid_User_Controls
 	/// </summary>
 	public partial class ClientsList : UserControl
 	{
+		BankActions BA;
 		#region Accessors to UserControl properties
 
 		public void SetClientsDataGridItemsSource(ObservableCollection<IClientDTO> clientsList)
 		{
-			ClientsDataGrid.ItemsSource = clientsList;
+			ClientsDataGrid.DataContext = BA.SqlDA.ds.Tables["Clients"].DefaultView;
+			//ClientsDataGrid.ItemsSource = clientsList;
 		}
 
 		public void SetClientsTotal(int clientsTotal)
@@ -29,9 +32,10 @@ namespace Data_Grid_User_Controls
 		}
 
 		#endregion
-		public ClientsList(ClientsViewNameTags tags)
+		public ClientsList(ClientsViewNameTags tags, BankActions ba)
 		{
 			InitializeComponent();
+			BA = ba;
 			ClientsDataGrid.Items.Clear(); // Почему-то вставляется пустой элемент после инициализации
 										   // надо удалить, чтобы корректно всё работало
 			InitializeColumnsTags(tags);

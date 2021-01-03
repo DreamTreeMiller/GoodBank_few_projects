@@ -87,6 +87,9 @@ namespace BankInside
 		{
 			ObservableCollection<IAccountDTO> accList = new ObservableCollection<IAccountDTO>();
 			double totalCurr = 0, totalDeposit = 0, totalCredit = 0;
+
+			return (accList, 0,0,0); // Temporal solution
+
 			IAccount acc;
 			if (clientType == ClientType.All)
 			{

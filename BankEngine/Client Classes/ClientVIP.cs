@@ -27,19 +27,6 @@ namespace ClientClasses
 			LastName		= newClient.LastName;
 			PassportNumber	= newClient.PassportOrTIN;
 			BirthDate		= (DateTime)newClient.CreationDate;
-
-			// Запись ВИП клиента в базу
-			DataRow[] newClientRow = new DataRow[1];
-			newClientRow[0] = GoodBank.ds.Tables["VIPclients"].NewRow();
-			newClientRow[0]["id"]				= ID;  // Foreign Key для связи с таблицей Clients
-			newClientRow[0]["FirstName"]		= FirstName;
-			newClientRow[0]["MiddleName"]		= MiddleName;
-			newClientRow[0]["LastName"]			= LastName;
-			newClientRow[0]["PassportNumber"]	= PassportNumber;
-			newClientRow[0]["BirthDate"]		= BirthDate;
-
-			GoodBank.ds.Tables["VIPclients"].Rows.Add(newClientRow);
-			GoodBank.daVIPclients.Update(newClientRow);
 		}
 
 		public override void UpdateMyself(IClientDTO updatedClient)

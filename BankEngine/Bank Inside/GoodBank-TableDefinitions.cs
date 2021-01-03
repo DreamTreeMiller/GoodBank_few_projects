@@ -5,8 +5,8 @@ namespace BankInside
 	public partial class GoodBank
 	{
 		private Dictionary<string, string> tables = new Dictionary<string, string>()
-		{{"Clients", @"
-CREATE TABLE [dbo].[Clients] (
+		{{"ClientsMain", @"
+CREATE TABLE [dbo].[ClientsMain] (
 	[ID]						INT			IDENTITY(1,1) NOT NULL PRIMARY KEY,
 	[Telephone]					NVARCHAR (20),	-- better 30
 	[Email]						NVARCHAR (70),	-- better 128

@@ -61,6 +61,7 @@
 			<DataGrid x:Name="ClientsDataGrid"
 					  Grid.Row="1" 
 					  IsReadOnly="True"
+					  ItemsSource="{Binding}"
 					  AutoGenerateColumns="False"
 					  CanUserResizeColumns="True"
 					  GridLinesVisibility="None"
@@ -126,7 +127,7 @@
 										Binding="{Binding Address}" 
 										Visibility="Collapsed"
 										/>
-					<DataGridTextColumn Header="Текущие"	Binding="{Binding NumberOfCurrentAccounts}" />
+					<DataGridTextColumn Header="Текущие"	Binding="{Binding NumberOfSavingAccounts}" />
 					<DataGridTextColumn Header="Вклады"		Binding="{Binding NumberOfDeposits}" />
 					<DataGridTextColumn Header="Кредиты"	Binding="{Binding NumberOfCredits}" />
 					<DataGridTextColumn x:Name="NummberOfClosedAccountsColumn" 

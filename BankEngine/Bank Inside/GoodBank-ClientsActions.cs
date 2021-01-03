@@ -11,6 +11,7 @@ namespace BankInside
 {
 	public partial class GoodBank : IClientsActions
 	{
+		private List<Client> clients;
 		/// <summary>
 		/// Находит клиента с указанным ID
 		/// </summary>
@@ -47,14 +48,14 @@ SELECT
 	public void InsertClient(IClientDTO c)
 	{
 		DataRow[] newRow = new DataRow[1];
-		newRow[0] = ds.Tables["Clients"].NewRow();
+		newRow[0] = ds.Tables["ClientsMain"].NewRow();
 
 		newRow[0]["Telephone"]	= c.Telephone;
 		newRow[0]["Email"]		= c.Email;
 		newRow[0]["Address"]	= c.Address;
 
-		ds.Tables["Clients"].Rows.Add(newRow[0]);
-		daClients.Update(newRow);
+		ds.Tables["ClientsMain"].Rows.Add(newRow[0]);
+		daClientsMain.Update(newRow);
 
 		int id = (int)newRow[0]["ID"];
 
@@ -70,7 +71,7 @@ SELECT
 				newClientTypeRow[0]["PassportNumber"]	= c.PassportOrTIN;
 				newClientTypeRow[0]["BirthDate"]		= c.CreationDate;
 
-				ds.Tables["VIPclients"].Rows.Add(newClientTypeRow);
+				ds.Tables["VIPclients"].Rows.Add(newClientTypeRow[0]);
 				daVIPclients.Update(newClientTypeRow);
 				break;
 
@@ -82,7 +83,7 @@ SELECT
 				newClientTypeRow[0]["LastName"] = c.LastName;
 				newClientTypeRow[0]["PassportNumber"] = c.PassportOrTIN;
 				newClientTypeRow[0]["BirthDate"] = c.CreationDate;
-				ds.Tables["SIMclients"].Rows.Add(newClientTypeRow);
+				ds.Tables["SIMclients"].Rows.Add(newClientTypeRow[0]);
 				daSIMclients.Update(newClientTypeRow);
 				break;
 
@@ -95,7 +96,7 @@ SELECT
 				newClientTypeRow[0]["DirectorLastName"]		= c.LastName;
 				newClientTypeRow[0]["TIN"]					= c.PassportOrTIN;
 				newClientTypeRow[0]["RegistrationDate"]		= c.CreationDate;
-				ds.Tables["ORGclients"].Rows.Add(newClientTypeRow);
+				ds.Tables["ORGclients"].Rows.Add(newClientTypeRow[0]);
 				daORGclients.Update(newClientTypeRow);
 				break;
 		}
@@ -104,6 +105,9 @@ SELECT
 	public ObservableCollection<IClientDTO> GetClientsList<TClient>()
 		{
 			ObservableCollection<IClientDTO> clientsList = new ObservableCollection<IClientDTO>();
+			
+			return clientsList; // temporal insert
+
 			foreach (var c in clients)
 				if (c is TClient) clientsList.Add(new ClientDTO(c));
 			return clientsList;

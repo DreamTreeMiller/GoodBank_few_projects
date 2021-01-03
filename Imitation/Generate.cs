@@ -108,6 +108,8 @@ namespace Imitation
 
 		private static void GenerateAccountsForClient(IClientDTO client)
 		{
+			return;  // temporal injection
+
 			GenerateSavingAccounts(client, r.Next(0, 6));
 			GenerateDeposits(client, r.Next(0, 6));
 			GenerateCredits(client, r.Next(0, 6));

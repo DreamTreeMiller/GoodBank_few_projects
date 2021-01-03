@@ -323,15 +323,15 @@ namespace DTO
 		public void UpdateMyself(ClientDTO c)
 		{
 			if (ClientType == ClientType.Organization)
-				MainName	= c.MainName;
-			FirstName		= c.FirstName;
-			MiddleName		= c.MiddleName;
-			LastName		= c.LastName;
-			CreationDate	= c.CreationDate;
-			PassportOrTIN	= c.PassportOrTIN;
-			Telephone		= c.Telephone;
-			Email			= c.Email;
-			Address			= c.Address;
+				MainName		= c.MainName;
+				FirstName		= c.FirstName;
+				MiddleName		= c.MiddleName;
+				LastName		= c.LastName;
+				CreationDate	= c.CreationDate;
+				PassportOrTIN	= c.PassportOrTIN;
+				Telephone		= c.Telephone;
+				Email			= c.Email;
+				Address			= c.Address;
 		}
 	}
 }

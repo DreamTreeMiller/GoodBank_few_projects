@@ -57,7 +57,7 @@ namespace Department_Window
 
 			// Создаем область для списка клиентов. Вставляем нужные надписи
 			clntag				= new ClientsViewNameTags(wid);
-			clientsListView		= new ClientsList(clntag);
+			clientsListView		= new ClientsList(clntag, BA);
 			ClientsList.Content = clientsListView;
 
 			// Создаем область для списка счетов. Вставляем нужные надписи

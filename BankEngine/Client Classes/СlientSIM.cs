@@ -40,19 +40,6 @@ namespace ClientClasses
 			Telephone		= updatedClient.Telephone;
 			Email			= updatedClient.Email;
 			Address			= updatedClient.Address;
-
-			// Запись ВИП клиента в базу
-			DataRow[] newClientRow = new DataRow[1];
-			newClientRow[0] = GoodBank.ds.Tables["SIMclients"].NewRow();
-			newClientRow[0]["id"]				= ID;  // Foreign Key для связи с таблицей Clients
-			newClientRow[0]["FirstName"]		= FirstName;
-			newClientRow[0]["MiddleName"]		= MiddleName;
-			newClientRow[0]["LastName"]			= LastName;
-			newClientRow[0]["PassportNumber"]	= PassportNumber;
-			newClientRow[0]["BirthDate"]		= BirthDate;
-
-			GoodBank.ds.Tables["SIMclients"].Rows.Add(newClientRow);
-			GoodBank.daSIMclients.Update(newClientRow);
 		}
 	}
 }

@@ -11,14 +11,14 @@ using DTO;
 
 namespace BankInside
 {
-	public partial class GoodBank : IClientsActions
+	public partial class GoodBank : IClientsActions, ISqlDA 
 	{
-
-		internal static SqlDataAdapter	da,
-			daClients, daVIPclients, daSIMclients, daORGclients,
+		public DataSet			ds			{ get; set; }
+		public SqlDataAdapter	daClients	{ get; set; }
+		public SqlDataAdapter	da,
+			daClientsMain, daVIPclients, daSIMclients, daORGclients,
 			daAccounts, daDeposits, daCredits, // no da for Saving accounts
 			daTransactions;
-		internal static DataSet			ds;
 		internal static SqlConnection	gbConn;
 
 		public void PopulateTables()
@@ -29,10 +29,83 @@ namespace BankInside
 			string sqlCommand;
 			gbConn = SetGoodBankConnection();
 
-			sqlCommand = @"SELECT * FROM [dbo].[Clients];";
+			sqlCommand = @"
+SELECT	 [ID] 
+		,[ClientType] 
+		,[ClientTypeTag] 
+		,[MainName]
+		,[DirectorName]
+		,[CreationDate]
+		,[PassportOrTIN]
+		,[Telephone]
+		,[Email]
+		,[Address]
+		,[NumberOfSavingAccounts]
+		,[NumberOfDeposits]
+		,[NumberOfCredits]
+		,[NumberOfClosedAccounts]
+FROM	(SELECT
+			 [ClientsMain].[ID] AS [ID],
+			 0 AS [ClientType],		-- VIP
+			 N'ВИП' AS [ClientTypeTag], 
+			 [LastName] + ' ' + [FirstName] + ' ' + [MiddleName] AS [MainName],
+			 '' AS [DirectorName],
+			 [BirthDate] AS [CreationDate],
+			 [PassportNumber] AS [PassportOrTIN],
+			 [Telephone],
+			 [Email],
+			 [Address]
+			,[NumberOfSavingAccounts]
+			,[NumberOfDeposits]
+			,[NumberOfCredits]
+			,[NumberOfClosedAccounts]
+		FROM	[VIPclients], [ClientsMain]
+		WHERE	[ClientsMain].[ID] = [VIPclients].[id] 
+		) AS vip
+UNION SELECT
+		[ClientsMain].[ID] AS [ID],
+		1 AS [ClientType],			-- Simple
+		N'Физик' AS [ClientTypeTag], 
+		[LastName] + ' ' + [FirstName] + ' ' + [MiddleName] AS [MainName],
+		'' AS [DirectorName],
+		[BirthDate] AS [CreationDate],
+		[PassportNumber] AS [PassportOrTIN],
+		[Telephone],
+		[Email],
+		[Address]
+		,[NumberOfSavingAccounts]
+		,[NumberOfDeposits]
+		,[NumberOfCredits]
+		,[NumberOfClosedAccounts]
+FROM	[SIMclients], [ClientsMain]
+WHERE	[ClientsMain].[ID] = [SIMclients].[id]
+UNION SELECT
+		[ClientsMain].[ID] AS [ID],
+		2 AS [ClientType],			-- Organization
+		N'Юрик' AS [ClientTypeTag], 
+		[OrgName] AS [MainName],
+		[DirectorLastName] + ' ' + [DirectorFirstName] + ' ' + [DirectorMiddleName] AS [DirectorName],
+		[RegistrationDate] AS [CreationDate],
+		[TIN] AS [PassportOrTIN],
+		[Telephone],
+		[Email],
+		[Address]
+		,[NumberOfSavingAccounts]
+		,[NumberOfDeposits]
+		,[NumberOfCredits]
+		,[NumberOfClosedAccounts]
+FROM	[ORGclients], [ClientsMain]
+WHERE	[ClientsMain].[ID] = [ORGclients].[id]
+ORDER BY [ClientType] ASC
+";
 			da.SelectCommand = new SqlCommand(sqlCommand, gbConn);
 			da.Fill(ds, "Clients");
 			SetupClientsSqlDataAdapter();
+
+			sqlCommand = @"SELECT * FROM [dbo].[ClientsMain];";
+			da.SelectCommand = new SqlCommand(sqlCommand, gbConn);
+			da.Fill(ds, "ClientsMain");
+			SetupClientsMainSqlDataAdapter();
 
 			sqlCommand = @"SELECT * FROM [dbo].[VIPclients];";
 			da.SelectCommand = new SqlCommand(sqlCommand, gbConn);
@@ -68,32 +141,36 @@ namespace BankInside
 
 		private void SetupClientsSqlDataAdapter()
 		{
+
+		}
+		private void SetupClientsMainSqlDataAdapter()
+		{
 			string sqlCommand;
-			daClients = new SqlDataAdapter();
+			daClientsMain = new SqlDataAdapter();
 
 			sqlCommand = @"
-			INSERT INTO [dbo].[Clients] ([Telephone], [Email], [Address])
+			INSERT INTO [dbo].[ClientsMain] ([Telephone], [Email], [Address])
 					VALUES (@telephone, @email, @address);
 			SET @id=@@IDENTITY
 			;";
-			daClients.InsertCommand = new SqlCommand(sqlCommand, gbConn);
-			var id = daClients.InsertCommand.Parameters.Add("@id",		 SqlDbType.Int,	 4,	  "ID");
+			daClientsMain.InsertCommand = new SqlCommand(sqlCommand, gbConn);
+			var id = daClientsMain.InsertCommand.Parameters.Add("@id",		 SqlDbType.Int,	 4,	  "ID");
 			id.Direction = ParameterDirection.Output;
 
-			daClients.InsertCommand.Parameters.Add("@telephone", SqlDbType.NVarChar, 30,  "Telephone");
-			daClients.InsertCommand.Parameters.Add("@email",	 SqlDbType.NVarChar, 128, "Email");
-			daClients.InsertCommand.Parameters.Add("@address",	 SqlDbType.NVarChar, 256, "Address");
+			daClientsMain.InsertCommand.Parameters.Add("@telephone", SqlDbType.NVarChar, 30,  "Telephone");
+			daClientsMain.InsertCommand.Parameters.Add("@email",	 SqlDbType.NVarChar, 128, "Email");
+			daClientsMain.InsertCommand.Parameters.Add("@address",	 SqlDbType.NVarChar, 256, "Address");
 
 			sqlCommand = @"
-			UPDATE [dbo].[Clients] 
+			UPDATE [dbo].[ClientsMain] 
 			SET [Telephone]=@telephone, [Email]=@email, [Address]=@address
 			WHERE [ID]=@id
 			;";
-			daClients.UpdateCommand = new SqlCommand(sqlCommand, gbConn);
-			daClients.UpdateCommand.Parameters.Add("@id",		 SqlDbType.Int,		 4,   "ID");
-			daClients.UpdateCommand.Parameters.Add("@telephone", SqlDbType.NVarChar, 30,  "Telephone");
-			daClients.UpdateCommand.Parameters.Add("@email",	 SqlDbType.NVarChar, 128, "Email");
-			daClients.UpdateCommand.Parameters.Add("@address",	 SqlDbType.NVarChar, 256, "Address");
+			daClientsMain.UpdateCommand = new SqlCommand(sqlCommand, gbConn);
+			daClientsMain.UpdateCommand.Parameters.Add("@id",		 SqlDbType.Int,		 4,   "ID");
+			daClientsMain.UpdateCommand.Parameters.Add("@telephone", SqlDbType.NVarChar, 30,  "Telephone");
+			daClientsMain.UpdateCommand.Parameters.Add("@email",	 SqlDbType.NVarChar, 128, "Email");
+			daClientsMain.UpdateCommand.Parameters.Add("@address",	 SqlDbType.NVarChar, 256, "Address");
 		}
 
 		private void SetupVIPclientsSqlDataAdapter()
