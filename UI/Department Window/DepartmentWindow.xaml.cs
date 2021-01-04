@@ -9,6 +9,7 @@ using Data_Grid_User_Controls;
 using Window_Name_Tags;
 using System.Collections.ObjectModel;
 using System.Windows;
+using System.Data;
 
 namespace Department_Window
 {
@@ -17,17 +18,17 @@ namespace Department_Window
 	/// </summary>
 	public partial class DepartmentWindow : Window
 	{
-		private BankActions				BA;
-		private WindowID				wid;
+		private BankActions			BA;
+		private WindowID			wid;
 
-		private WindowNameTags			deptwinnametags;
-		private ClientsList				clientsListView;
-		private ClientsViewNameTags		clntag;
-		private WindowID				addClientWID;
-		ObservableCollection<IClientDTO> clientsList = new ObservableCollection<IClientDTO>();
+		private WindowNameTags		deptwinnametags;
+		private ClientsList			clientsListView;
+		private ClientsViewNameTags	clntag;
+		private WindowID			addClientWID;
+		private DataView			clientsTable;
 
-		private ClientType				ClientTypeForAccountsList;
-		private AccountsList			accountsListView;
+		private ClientType			ClientTypeForAccountsList;
+		private AccountsList		accountsListView;
 		ObservableCollection<IAccountDTO> accountsList = new ObservableCollection<IAccountDTO>();
 
 		public DepartmentWindow(WindowID wid, BankActions ba)
@@ -70,28 +71,28 @@ namespace Department_Window
 			switch (wid)
 			{
 				case WindowID.DepartmentVIP:
-					clientsList = BA.Clients.GetClientsList<IClientVIP>();
+					clientsTable = BA.Clients.GetClientsTable(ClientType.VIP);
 					ClientTypeForAccountsList	= ClientType.VIP;
 					addClientWID				= WindowID.AddClientVIP;
 					break;
 				case WindowID.DepartmentSIM:
-					clientsList = BA.Clients.GetClientsList<IClientSimple>();
+					clientsTable = BA.Clients.GetClientsTable(ClientType.Simple);
 					ClientTypeForAccountsList	= ClientType.Simple;
 					addClientWID				= WindowID.AddClientSIM;
 					break;
 				case WindowID.DepartmentORG:
-					clientsList = BA.Clients.GetClientsList<IClientOrg>();
+					clientsTable = BA.Clients.GetClientsTable(ClientType.Organization);
 					ClientTypeForAccountsList	= ClientType.Organization;
 					addClientWID				= WindowID.AddClientORG;
 					break;
 				case WindowID.DepartmentALL:
-					clientsList = BA.Clients.GetClientsList<IClient>();
+					clientsTable = BA.Clients.GetClientsTable(ClientType.All);
 					ClientTypeForAccountsList	= ClientType.All;
 					addClientWID				= WindowID.AddClientALL;
 					break;
 			}
-			clientsListView.SetClientsDataGridItemsSource(clientsList);
-			clientsListView.SetClientsTotal(clientsList.Count);
+			clientsListView.SetClientsDataGridItemsSource(clientsTable);
+			clientsListView.SetClientsTotal(clientsTable.Count);
 		}
 
 		private void ShowAccounts()
@@ -130,10 +131,10 @@ namespace Department_Window
 			if (result != true) return;
 			// Добавляем нового клиента в базу в бэкэнде
 			newClient = addСlientWin.tmpClient;
-			IClientDTO addedClient = BA.Clients.AddClient(newClient);
+			//IClientDTO addedClient = BA.Clients.AddClient(newClient);
 
 			// Добавляем нового клиента в список на экране
-			AddNewClientToDataGrid(addedClient);
+			AddNewClientToDataGrid(newClient);
 		}
 
 		/// <summary>
@@ -143,8 +144,8 @@ namespace Department_Window
 		/// <param name="addedClient"></param>
 		private void AddNewClientToDataGrid(IClientDTO addedClient)
 		{
-			clientsList.Add(addedClient as ClientDTO);
-			clientsListView.SetClientsTotal(clientsList.Count);
+			//clientsTable.Add(addedClient as ClientDTO);
+			clientsListView.SetClientsTotal(clientsTable.Count);
 		}
 
 		private void WinMenu_SelectAccount_Click(object sender, RoutedEventArgs e)

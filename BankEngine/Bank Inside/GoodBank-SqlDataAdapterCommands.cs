@@ -154,7 +154,8 @@ ORDER BY [ClientType] ASC
 			SET @id=@@IDENTITY
 			;";
 			daClientsMain.InsertCommand = new SqlCommand(sqlCommand, gbConn);
-			var id = daClientsMain.InsertCommand.Parameters.Add("@id",		 SqlDbType.Int,	 4,	  "ID");
+			var id = 
+			daClientsMain.InsertCommand.Parameters.Add("@id",		 SqlDbType.Int,	 4,	  "ID");
 			id.Direction = ParameterDirection.Output;
 
 			daClientsMain.InsertCommand.Parameters.Add("@telephone", SqlDbType.NVarChar, 30,  "Telephone");

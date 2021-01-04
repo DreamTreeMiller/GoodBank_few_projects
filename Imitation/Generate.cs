@@ -39,13 +39,14 @@ namespace Imitation
 				}
 
 				// Генерируем контейнер для передачи данных в бекэнд
+				DateTime creationDate = GenBirthDate();
 				IClientDTO client =
 					new ClientDTO(	ClientType.VIP, FN, MN, LN,
-									GenBirthDate(), GenPassportNum(), GenTel(), GenEmail(),
+									creationDate, GenPassportNum(), GenTel(), GenEmail(),
 									"Тропики, Лазурный берег, Жемчужный дворец, комната 8");
 				// Присваивание client необходимо, т.к. AddClient генерирует уникальный ID
-				client = BA.Clients.AddClient(client);
-				GenerateAccountsForClient(client);
+				int clientId = BA.Clients.AddClient(client);
+				GenerateAccountsForClient(ClientType.VIP, clientId, creationDate);
 			}
 		}
 
@@ -65,13 +66,14 @@ namespace Imitation
 				}
 
 				// Генерируем контейнер для передачи данных в бекэнд
+				DateTime creationDate = GenBirthDate();
 				IClientDTO client = 
 					new ClientDTO(	ClientType.Simple, FN, MN, LN,
-									GenBirthDate(), GenPassportNum(), GenTel(), GenEmail(),
+									creationDate, GenPassportNum(), GenTel(), GenEmail(),
 									"Мой адрес не дом и не улица. Там жыл Вася.");
 				// Присваивание client необходимо, т.к. AddClient генерирует уникальный ID
-				client = BA.Clients.AddClient(client);
-				GenerateAccountsForClient(client);
+				int clientId = BA.Clients.AddClient(client);
+				GenerateAccountsForClient(ClientType.Simple, clientId, creationDate);
 			}
 		}
 
@@ -92,13 +94,14 @@ namespace Imitation
 				}
 
 				// Генерируем контейнер для передачи данных в бекэнд
+				DateTime creationDate = GenRegDate();
 				IClientDTO client =
 					new ClientDTO(	ClientType.Organization, GenOrgName(), DFN, DMN, DLN,
-									GenRegDate(), GenTIN(out regcode), 
+									creationDate, GenTIN(out regcode), 
 									GenTel(), GenEmail(), GenOrgAddress(regcode));
 				// Присваивание client необходимо, т.к. AddClient генерирует уникальный ID
-				client = BA.Clients.AddClient(client);
-				GenerateAccountsForClient(client);
+				int clientId = BA.Clients.AddClient(client);
+				GenerateAccountsForClient(ClientType.Organization, clientId, creationDate);
 			}
 		}
 
@@ -106,36 +109,36 @@ namespace Imitation
 
 		#region Генерация счетов
 
-		private static void GenerateAccountsForClient(IClientDTO client)
+		private static void GenerateAccountsForClient(ClientType ct, int clientId, DateTime creationDate)
 		{
 			return;  // temporal injection
 
-			GenerateSavingAccounts(client, r.Next(0, 6));
-			GenerateDeposits(client, r.Next(0, 6));
-			GenerateCredits(client, r.Next(0, 6));
+			GenerateSavingAccounts(ct, clientId, creationDate, r.Next(0, 6));
+			GenerateDeposits(ct, clientId, creationDate, r.Next(0, 6));
+			GenerateCredits(ct, clientId, creationDate, r.Next(0, 6));
 		}
 
-		private static void GenerateSavingAccounts(IClientDTO c, int num) 
+		private static void GenerateSavingAccounts(ClientType ct, int cId, DateTime crD, int num) 
 		{
 			for (int i = 0; i < num; i++)
 				BA.Accounts.GenerateAccount(
-					 new AccountDTO(c.ClientType, c.ID, AccountType.Saving,
+					 new AccountDTO(ct, cId, AccountType.Saving,
 									r.Next(0,100) * 1000, 					// сумма на текущем счеты
 									0,										// процент по вкладу
 					false, 0, "не используется",
-					GenAccOpeningDate(c), true, true, RecalcPeriod.NoRecalc, 0, 0));
+					GenAccOpeningDate(crD), true, true, RecalcPeriod.NoRecalc, 0, 0));
 		}
 
-		private static void GenerateDeposits(IClientDTO c, int num) 
+		private static void GenerateDeposits(ClientType ct, int cId, DateTime crD, int num) 
 		{
 			for (int i = 0; i < num; i++)
 			{
-				DateTime openingDate = GenAccOpeningDate(c);
+				DateTime openingDate = GenAccOpeningDate(crD);
 				int		 monthsElapsed;
 				int		 duration	 = GenDepositCreditDuration(openingDate, out monthsElapsed);
 
 				double interest = 0;
-				switch(c.ClientType)
+				switch(ct)
 				{
 					case ClientType.VIP:
 						interest = ((double)r.Next(11, 21)) / 100;
@@ -149,7 +152,7 @@ namespace Imitation
 				}
 
 				BA.Accounts.GenerateAccount(
-					 new AccountDTO(c.ClientType, c.ID, AccountType.Deposit,
+					 new AccountDTO(ct, cId, AccountType.Deposit,
 									r.Next(100, 300) * 10000,		// сумма на счету. У ВИП > 1 mln
 									interest,	// процент
 									TrueFalse(),					// капитализация
@@ -164,17 +167,17 @@ namespace Imitation
 			}
 		}
 
-		private static void GenerateCredits(IClientDTO c, int num)
+		private static void GenerateCredits(ClientType ct, int cId, DateTime crD, int num)
 		{
 			for (int i = 0; i < num; i++)
 			{
-				DateTime openingDate = GenAccOpeningDate(c);
+				DateTime openingDate = GenAccOpeningDate(crD);
 				int monthsElapsed;
 				int duration = GenDepositCreditDuration(openingDate, out monthsElapsed);
 				int amount = duration * 10_000 * r.Next(1,4);
 
 				double interest = 0;
-				switch (c.ClientType)
+				switch (ct)
 				{
 					case ClientType.VIP:
 						interest = ((double)r.Next(7, 13)) / 100;
@@ -188,7 +191,7 @@ namespace Imitation
 				}
 
 				BA.Accounts.GenerateAccount(
-					 new AccountDTO(c.ClientType, c.ID, AccountType.Credit,
+					 new AccountDTO(ct, cId, AccountType.Credit,
 									-amount,				// долг
 									interest,				// процент
 									true,					// капитализация
@@ -213,11 +216,11 @@ namespace Imitation
 		/// Она должна быть после рождения клиента и даты создания банка
 		/// </summary>
 		/// <returns></returns>
-		private static DateTime GenAccOpeningDate(IClientDTO c)
+		private static DateTime GenAccOpeningDate(DateTime creationDate)
 		{
-			if ((DateTime)c.CreationDate < GoodBankTime.BankFoundationDay)
+			if (creationDate < GoodBankTime.BankFoundationDay)
 				return GenDate(GoodBankTime.BankFoundationDay, GoodBankTime.Today);
-			return GenDate((DateTime)c.CreationDate, GoodBankTime.Today);
+			return GenDate(creationDate, GoodBankTime.Today);
 		}
 
 		private static int GenDepositCreditDuration(DateTime sd, out int monthsElapsed)

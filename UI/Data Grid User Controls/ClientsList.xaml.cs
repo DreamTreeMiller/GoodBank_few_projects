@@ -1,5 +1,5 @@
 ﻿using Window_Name_Tags;
-using System.Collections.ObjectModel;
+using System.Data;
 using System.Windows;
 using System.Windows.Controls;
 using Interfaces_Data;
@@ -15,9 +15,9 @@ namespace Data_Grid_User_Controls
 		BankActions BA;
 		#region Accessors to UserControl properties
 
-		public void SetClientsDataGridItemsSource(ObservableCollection<IClientDTO> clientsList)
+		public void SetClientsDataGridItemsSource(DataView clientsTable)
 		{
-			ClientsDataGrid.DataContext = BA.SqlDA.ds.Tables["Clients"].DefaultView;
+			ClientsDataGrid.DataContext = clientsTable;
 			//ClientsDataGrid.ItemsSource = clientsList;
 		}
 

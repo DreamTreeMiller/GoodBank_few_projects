@@ -25,92 +25,73 @@ SELECT
 			return clients.Find(c => c.ID == id);
 		}
 
-		public IClientDTO AddClient(IClientDTO client)
+		public int AddClient(IClientDTO c)
 		{
-			Client newClient = null;
-			switch (client.ClientType)
+			DataRow[] newRow = new DataRow[1];
+			newRow[0] = ds.Tables["ClientsMain"].NewRow();
+
+			newRow[0]["Telephone"]	= c.Telephone;
+			newRow[0]["Email"]		= c.Email;
+			newRow[0]["Address"]	= c.Address;
+
+			ds.Tables["ClientsMain"].Rows.Add(newRow[0]);
+			daClientsMain.Update(newRow);
+
+			int id = (int)newRow[0]["ID"];
+
+			DataRow[] newClientTypeRow = new DataRow[1];
+			switch (c.ClientType)
 			{
 				case ClientType.VIP:
-					newClient = new ClientVIP(client);
+					newClientTypeRow[0] = ds.Tables["VIPclients"].NewRow();
+					newClientTypeRow[0]["id"]				= id;  // Foreign Key для связи с таблицей Clients
+					newClientTypeRow[0]["FirstName"]		= c.FirstName;
+					newClientTypeRow[0]["MiddleName"]		= c.MiddleName;
+					newClientTypeRow[0]["LastName"]			= c.LastName;
+					newClientTypeRow[0]["PassportNumber"]	= c.PassportOrTIN;
+					newClientTypeRow[0]["BirthDate"]		= c.CreationDate;
+
+					ds.Tables["VIPclients"].Rows.Add(newClientTypeRow[0]);
+					daVIPclients.Update(newClientTypeRow);
 					break;
+
 				case ClientType.Simple:
-					newClient = new СlientSIM(client);
+					newClientTypeRow[0] = ds.Tables["SIMclients"].NewRow();
+					newClientTypeRow[0]["id"] = id; // c.ID;  // Foreign Key для связи с таблицей Clients
+					newClientTypeRow[0]["FirstName"] = c.FirstName;
+					newClientTypeRow[0]["MiddleName"] = c.MiddleName;
+					newClientTypeRow[0]["LastName"] = c.LastName;
+					newClientTypeRow[0]["PassportNumber"] = c.PassportOrTIN;
+					newClientTypeRow[0]["BirthDate"] = c.CreationDate;
+					ds.Tables["SIMclients"].Rows.Add(newClientTypeRow[0]);
+					daSIMclients.Update(newClientTypeRow);
 					break;
+
 				case ClientType.Organization:
-					newClient = new СlientORG(client);
+					newClientTypeRow[0] = ds.Tables["ORGclients"].NewRow();
+					newClientTypeRow[0]["id"]					= id; // Foreign Key для связи с таблицей Clients
+					newClientTypeRow[0]["OrgName"]				= c.MainName;
+					newClientTypeRow[0]["DirectorFirstName"]	= c.FirstName;
+					newClientTypeRow[0]["DirectorMiddleName"]	= c.MiddleName;
+					newClientTypeRow[0]["DirectorLastName"]		= c.LastName;
+					newClientTypeRow[0]["TIN"]					= c.PassportOrTIN;
+					newClientTypeRow[0]["RegistrationDate"]		= c.CreationDate;
+					ds.Tables["ORGclients"].Rows.Add(newClientTypeRow[0]);
+					daORGclients.Update(newClientTypeRow);
 					break;
 			}
-			IClientDTO nc = new ClientDTO(newClient);
-			InsertClient(nc);
-			return nc;
+			return id;
 		}
 
-	public void InsertClient(IClientDTO c)
-	{
-		DataRow[] newRow = new DataRow[1];
-		newRow[0] = ds.Tables["ClientsMain"].NewRow();
-
-		newRow[0]["Telephone"]	= c.Telephone;
-		newRow[0]["Email"]		= c.Email;
-		newRow[0]["Address"]	= c.Address;
-
-		ds.Tables["ClientsMain"].Rows.Add(newRow[0]);
-		daClientsMain.Update(newRow);
-
-		int id = (int)newRow[0]["ID"];
-
-		DataRow[] newClientTypeRow = new DataRow[1];
-		switch (c.ClientType)
+		public DataView GetClientsTable(ClientType ct)
 		{
-			case ClientType.VIP:
-				newClientTypeRow[0] = ds.Tables["VIPclients"].NewRow();
-				newClientTypeRow[0]["id"]				= id;  // Foreign Key для связи с таблицей Clients
-				newClientTypeRow[0]["FirstName"]		= c.FirstName;
-				newClientTypeRow[0]["MiddleName"]		= c.MiddleName;
-				newClientTypeRow[0]["LastName"]			= c.LastName;
-				newClientTypeRow[0]["PassportNumber"]	= c.PassportOrTIN;
-				newClientTypeRow[0]["BirthDate"]		= c.CreationDate;
-
-				ds.Tables["VIPclients"].Rows.Add(newClientTypeRow[0]);
-				daVIPclients.Update(newClientTypeRow);
-				break;
-
-			case ClientType.Simple:
-				newClientTypeRow[0] = ds.Tables["SIMclients"].NewRow();
-				newClientTypeRow[0]["id"] = id; // c.ID;  // Foreign Key для связи с таблицей Clients
-				newClientTypeRow[0]["FirstName"] = c.FirstName;
-				newClientTypeRow[0]["MiddleName"] = c.MiddleName;
-				newClientTypeRow[0]["LastName"] = c.LastName;
-				newClientTypeRow[0]["PassportNumber"] = c.PassportOrTIN;
-				newClientTypeRow[0]["BirthDate"] = c.CreationDate;
-				ds.Tables["SIMclients"].Rows.Add(newClientTypeRow[0]);
-				daSIMclients.Update(newClientTypeRow);
-				break;
-
-			case ClientType.Organization:
-				newClientTypeRow[0] = ds.Tables["ORGclients"].NewRow();
-				newClientTypeRow[0]["id"]					= id; // Foreign Key для связи с таблицей Clients
-				newClientTypeRow[0]["OrgName"]				= c.MainName;
-				newClientTypeRow[0]["DirectorFirstName"]	= c.FirstName;
-				newClientTypeRow[0]["DirectorMiddleName"]	= c.MiddleName;
-				newClientTypeRow[0]["DirectorLastName"]		= c.LastName;
-				newClientTypeRow[0]["TIN"]					= c.PassportOrTIN;
-				newClientTypeRow[0]["RegistrationDate"]		= c.CreationDate;
-				ds.Tables["ORGclients"].Rows.Add(newClientTypeRow[0]);
-				daORGclients.Update(newClientTypeRow);
-				break;
-		}
-	}
-
-	public ObservableCollection<IClientDTO> GetClientsList<TClient>()
-		{
-			ObservableCollection<IClientDTO> clientsList = new ObservableCollection<IClientDTO>();
-			
-			return clientsList; // temporal insert
-
-			foreach (var c in clients)
-				if (c is TClient) clientsList.Add(new ClientDTO(c));
-			return clientsList;
+			string rowfilter = (ct == ClientType.All) ? "" : "ClientType = " + (int)ct;
+			DataView clientsTable = 
+				new DataView(ds.Tables["Clients"],		// Table to show
+							 rowfilter,		// Row filter (select type)
+							 "MainName ASC",			// Sort ascending by 'MainName' field
+							 DataViewRowState.CurrentRows);
+			return clientsTable;
 		}
 
 		public void UpdateClient(IClientDTO updatedClient)

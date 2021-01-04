@@ -4,7 +4,7 @@
 	{
 		VIP = 0,
 		Simple = 1,
-		Organization = 3,
-		All = 4
+		Organization = 2,
+		All = 3
 	}
 }

@@ -38,7 +38,7 @@ namespace UI_Search
 			BA = ba;
 			ClientsViewNameTags tags = new ClientsViewNameTags(searchType);
 			clientsListUserControl = new ClientsList(tags, BA);
-			clientsListUserControl.SetClientsDataGridItemsSource(searchResult);
+			//clientsListUserControl.SetClientsDataGridItemsSource(searchResult);
 			clientsListUserControl.SetClientsTotal(searchResult.Count);
 			ClientsList.Content = clientsListUserControl;
 		}

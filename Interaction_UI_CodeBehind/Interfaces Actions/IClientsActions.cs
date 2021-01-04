@@ -1,13 +1,21 @@
-﻿using Interfaces_Data;
-using System.Collections.ObjectModel;
+﻿using System.Data;
+using Interfaces_Data;
+using Enumerables;
+
 
 namespace Interfaces_Actions
 {
 	public interface IClientsActions
 	{
 		IClient GetClientByID(int id);
-		ObservableCollection<IClientDTO> GetClientsList<TClient>();
-		IClientDTO AddClient(IClientDTO client);
+		DataView GetClientsTable(ClientType ct);
+
+		/// <summary>
+		/// Adds new client to data base
+		/// </summary>
+		/// <param name="client">DTO with new client's data</param>
+		/// <returns>ID of added client</returns>
+		int AddClient(IClientDTO client);
 		void UpdateClient(IClientDTO updatedClient);
 	}
 }
