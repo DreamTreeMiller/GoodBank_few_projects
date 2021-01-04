@@ -1,6 +1,7 @@
 ﻿using Enumerables;
 using Interfaces_Data;
 using System;
+using System.Data;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
@@ -213,6 +214,25 @@ namespace DTO
 			_telephone		= tel;
 			_email			= email;
 			_address		= address;
+		}
+
+		public ClientDTO(DataRowView c)
+		{
+			ID						= (int)c["ID"];
+			ClientType				= (ClientType)c["ClientType"];
+			FirstName				= (string)c["FirstName"];
+			MiddleName				= (string)c["MiddleName"];
+			LastName				= (string)c["LastName"];
+			MainName				= (string)c["MainName"];
+			CreationDate			= (DateTime)c["CreationDate"];
+			PassportOrTIN			= (string)c["PassportOrTIN"];
+			Telephone				= (string)c["Telephone"];
+			Email					= (string)c["Email"];
+			Address					= (string)c["Address"];
+			NumberOfSavingAccounts	= (int)c["NumberOfSavingAccounts"];
+			NumberOfDeposits		= (int)c["NumberOfDeposits"];
+			NumberOfCredits			= (int)c["NumberOfCredits"];
+			NumberOfClosedAccounts	= (int)c["NumberOfClosedAccounts"];
 		}
 
 		/// <summary>

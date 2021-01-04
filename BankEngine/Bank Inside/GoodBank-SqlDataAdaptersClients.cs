@@ -33,6 +33,9 @@ namespace BankInside
 SELECT	 [ID] 
 		,[ClientType] 
 		,[ClientTypeTag] 
+		,[FirstName]
+		,[MiddleName]
+		,[LastName]
 		,[MainName]
 		,[DirectorName]
 		,[CreationDate]
@@ -45,16 +48,19 @@ SELECT	 [ID]
 		,[NumberOfCredits]
 		,[NumberOfClosedAccounts]
 FROM	(SELECT
-			 [ClientsMain].[ID] AS [ID],
-			 0 AS [ClientType],		-- VIP
-			 N'ВИП' AS [ClientTypeTag], 
-			 [LastName] + ' ' + [FirstName] + ' ' + [MiddleName] AS [MainName],
-			 '' AS [DirectorName],
-			 [BirthDate] AS [CreationDate],
-			 [PassportNumber] AS [PassportOrTIN],
-			 [Telephone],
-			 [Email],
-			 [Address]
+			 [ClientsMain].[ID] AS [ID]
+			,0 AS [ClientType]		-- VIP
+			,N'ВИП' AS [ClientTypeTag] 
+			,[FirstName]
+			,[MiddleName]
+			,[LastName]
+			,[LastName] + ' ' + [FirstName] + ' ' + [MiddleName] AS [MainName]
+			,'' AS [DirectorName]
+			,[BirthDate] AS [CreationDate]
+			,[PassportNumber] AS [PassportOrTIN]
+			,[Telephone]
+			,[Email]
+			,[Address]
 			,[NumberOfSavingAccounts]
 			,[NumberOfDeposits]
 			,[NumberOfCredits]
@@ -63,16 +69,19 @@ FROM	(SELECT
 		WHERE	[ClientsMain].[ID] = [VIPclients].[id] 
 		) AS vip
 UNION SELECT
-		[ClientsMain].[ID] AS [ID],
-		1 AS [ClientType],			-- Simple
-		N'Физик' AS [ClientTypeTag], 
-		[LastName] + ' ' + [FirstName] + ' ' + [MiddleName] AS [MainName],
-		'' AS [DirectorName],
-		[BirthDate] AS [CreationDate],
-		[PassportNumber] AS [PassportOrTIN],
-		[Telephone],
-		[Email],
-		[Address]
+		[ClientsMain].[ID] AS [ID]
+		,1 AS [ClientType]			-- Simple
+		,N'Физик' AS [ClientTypeTag]
+		,[FirstName]
+		,[MiddleName]
+		,[LastName]
+		,[LastName] + ' ' + [FirstName] + ' ' + [MiddleName] AS [MainName]
+		,'' AS [DirectorName]
+		,[BirthDate] AS [CreationDate]
+		,[PassportNumber] AS [PassportOrTIN]
+		,[Telephone]
+		,[Email]
+		,[Address]
 		,[NumberOfSavingAccounts]
 		,[NumberOfDeposits]
 		,[NumberOfCredits]
@@ -80,16 +89,19 @@ UNION SELECT
 FROM	[SIMclients], [ClientsMain]
 WHERE	[ClientsMain].[ID] = [SIMclients].[id]
 UNION SELECT
-		[ClientsMain].[ID] AS [ID],
-		2 AS [ClientType],			-- Organization
-		N'Юрик' AS [ClientTypeTag], 
-		[OrgName] AS [MainName],
-		[DirectorLastName] + ' ' + [DirectorFirstName] + ' ' + [DirectorMiddleName] AS [DirectorName],
-		[RegistrationDate] AS [CreationDate],
-		[TIN] AS [PassportOrTIN],
-		[Telephone],
-		[Email],
-		[Address]
+		 [ClientsMain].[ID]	  AS [ID]
+		,2 AS [ClientType]			-- Organization
+		,N'Юрик'			  AS [ClientTypeTag]
+		,[DirectorFirstName]  AS [FirstName]
+		,[DirectorMiddleName] AS [MiddleName]
+		,[DirectorLastName]   AS [LastName]
+		,[OrgName]			  AS [MainName]
+		,[DirectorLastName] + ' ' + [DirectorFirstName] + ' ' + [DirectorMiddleName] AS [DirectorName]
+		,[RegistrationDate]   AS [CreationDate]
+		,[TIN]				  AS [PassportOrTIN]
+		,[Telephone]
+		,[Email]
+		,[Address]
 		,[NumberOfSavingAccounts]
 		,[NumberOfDeposits]
 		,[NumberOfCredits]

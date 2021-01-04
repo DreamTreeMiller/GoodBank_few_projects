@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using Interfaces_Data;
 using Binding_UI_CodeBehind;
+using DTO;
 
 namespace Data_Grid_User_Controls
 {
@@ -18,7 +19,6 @@ namespace Data_Grid_User_Controls
 		public void SetClientsDataGridItemsSource(DataView clientsTable)
 		{
 			ClientsDataGrid.DataContext = clientsTable;
-			//ClientsDataGrid.ItemsSource = clientsList;
 		}
 
 		public void SetClientsTotal(int clientsTotal)
@@ -28,7 +28,7 @@ namespace Data_Grid_User_Controls
 
 		public IClientDTO GetSelectedItem()
 		{
-			return ClientsDataGrid.SelectedItem as IClientDTO;
+			return new ClientDTO((DataRowView)ClientsDataGrid.SelectedItem);
 		}
 
 		#endregion

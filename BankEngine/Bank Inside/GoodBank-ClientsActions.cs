@@ -25,6 +25,12 @@ SELECT
 			return clients.Find(c => c.ID == id);
 		}
 
+		/// <summary>
+		/// Adds new client to data base
+		/// </summary>
+		/// <param name="client">DTO with new client's data</param>
+		/// <returns>ID of added client</returns>
+
 		public int AddClient(IClientDTO c)
 		{
 			DataRow[] newRow = new DataRow[1];

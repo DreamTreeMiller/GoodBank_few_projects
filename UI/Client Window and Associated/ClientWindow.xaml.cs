@@ -27,7 +27,7 @@ namespace Client_Window
 		{
 			InitializeComponent();
 			InitializeAccountsView(ba, client);
-			ShowAccounts();
+			//ShowAccounts();
 		}
 
 		private void InitializeAccountsView(BankActions ba, IClientDTO client)
