@@ -26,9 +26,9 @@ namespace Data_Grid_User_Controls
 			ClientsTotalNumberValue.Text = $"{clientsTotal:N0}";
 		}
 
-		public IClientDTO GetSelectedItem()
+		public DataRowView GetSelectedItem()
 		{
-			return new ClientDTO((DataRowView)ClientsDataGrid.SelectedItem);
+			return (DataRowView)ClientsDataGrid.SelectedItem;
 		}
 
 		#endregion

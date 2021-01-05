@@ -23,7 +23,7 @@ namespace Client_Window
 	}
 	public partial class AddEditClientWindow : Window
 	{
-		public IClientDTO tmpClient = null;
+		public IClientDTO newOrUpdatedClient = null;
 
 		public readonly List<ClientTypeTuple> clientTypesDDlist = 
 			new List<ClientTypeTuple>()
@@ -72,18 +72,18 @@ namespace Client_Window
 			// То в болванку ДТО надо поместить тип создаваемого клиента
 			if (client == null)
 			{
-				tmpClient = new ClientDTO();
-				tmpClient.ClientType = nameTags.ClientType;
+				newOrUpdatedClient = new ClientDTO();
+				newOrUpdatedClient.ClientType = nameTags.ClientType;
 			}
 			else
 			{
-				tmpClient = (client as ClientDTO).Clone();
+				newOrUpdatedClient = (client as ClientDTO).Clone();
 			}
-			DataContext	= this.tmpClient;
+			DataContext	= this.newOrUpdatedClient;
 		}
 		private void btnOk_AddClient_Click(object sender, RoutedEventArgs e)
 		{
-			if (tmpClient.ClientType == ClientType.Organization)
+			if (newOrUpdatedClient.ClientType == ClientType.Organization)
 			{
 				if (!IsOrgNameEntered())			return;
 				if (!IsTINEntered())				return;
@@ -103,7 +103,7 @@ namespace Client_Window
 
 		private bool IsOrgNameEntered()
 		{
-			if (String.IsNullOrEmpty(tmpClient.MainName))
+			if (String.IsNullOrEmpty(newOrUpdatedClient.MainName))
 			{
 				MessageBox.Show("Введите название организации");
 				return false;
@@ -113,7 +113,7 @@ namespace Client_Window
 
 		private bool IsTINEntered()
 		{
-			if (String.IsNullOrEmpty(tmpClient.PassportOrTIN))
+			if (String.IsNullOrEmpty(newOrUpdatedClient.PassportOrTIN))
 			{
 				MessageBox.Show("Введите ИНН");
 				// код возвращения фокуса в только что покинутое поле
@@ -129,7 +129,7 @@ namespace Client_Window
 
 		private bool IsRegistrationDateEntered()
 		{
-			if (tmpClient.CreationDate == null)
+			if (newOrUpdatedClient.CreationDate == null)
 			{
 				MessageBox.Show("Введите дату регистрации организации");
 				// код возвращения фокуса в только что покинутое поле
@@ -144,7 +144,7 @@ namespace Client_Window
 
 		private bool IsFirstNamesEntered()
 		{
-			if (String.IsNullOrEmpty(tmpClient.FirstName))
+			if (String.IsNullOrEmpty(newOrUpdatedClient.FirstName))
 			{
 				MessageBox.Show("Имя клиента не должно быть пустым!\n" +
 								"     Введите имя клиента.");
@@ -161,7 +161,7 @@ namespace Client_Window
 		
 		private bool IsLastNamesEntered()
 		{
-				if (String.IsNullOrEmpty(tmpClient.LastName))
+				if (String.IsNullOrEmpty(newOrUpdatedClient.LastName))
 			{
 				MessageBox.Show("Фамилия клиента не должна быть пустой!\n" +
 								"     Введите фамилию клиента.");
@@ -178,7 +178,7 @@ namespace Client_Window
 	
 		private bool IsPassportNumEntered()
 		{
-			if (String.IsNullOrEmpty(tmpClient.PassportOrTIN))
+			if (String.IsNullOrEmpty(newOrUpdatedClient.PassportOrTIN))
 			{
 				MessageBox.Show("Введите номер паспорта");
 				// код возвращения фокуса в поле
@@ -194,7 +194,7 @@ namespace Client_Window
 
 		private bool IsBirthDateEntered()
 		{
-			if (tmpClient.CreationDate == null)
+			if (newOrUpdatedClient.CreationDate == null)
 			{
 				MessageBox.Show("Введите дату рождения клиента");
 				// код возвращения фокуса в поле
@@ -297,7 +297,7 @@ namespace Client_Window
 
 		private void BirthDateEntryBox_SelectedDateChanged(object sender, RoutedEventArgs e)
 		{
-			if (tmpClient.ClientType == ClientType.Organization) return;
+			if (newOrUpdatedClient.ClientType == ClientType.Organization) return;
 			var date = BirthDateEntryBox.SelectedDate;
 			if (date == null) return;
 			if (!IsValidBirthDate((DateTime)date))
@@ -332,7 +332,7 @@ namespace Client_Window
 
 		private void RegistrationDateEntryBox_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
 		{
-			if (tmpClient.ClientType != ClientType.Organization) return;
+			if (newOrUpdatedClient.ClientType != ClientType.Organization) return;
 			var date = RegistrationDateEntryBox.SelectedDate;
 			if (date == null) return;
 			if (!IsValidRegistrationDate((DateTime)date))
@@ -361,24 +361,24 @@ namespace Client_Window
 
 		private void SelectTypeEntryBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			if (tmpClient == null) return;
-			(tmpClient as ClientDTO).UpdateMyself(new ClientDTO());
+			if (newOrUpdatedClient == null) return;
+			(newOrUpdatedClient as ClientDTO).UpdateMyself(new ClientDTO());
 			switch ((SelectTypeEntryBox.SelectedItem as ClientTypeTuple).clientType)
 			{
 				case ClientType.VIP:
-					tmpClient.ClientType			= ClientType.VIP;
+					newOrUpdatedClient.ClientType			= ClientType.VIP;
 					PersonsNameGrid.Visibility		= Visibility.Visible;
 					OrganizationNameGrid.Visibility = Visibility.Collapsed;
 					Height = MinHeight = MaxHeight = 450;
 					break;
 				case ClientType.Simple:
-					tmpClient.ClientType			= ClientType.Simple;
+					newOrUpdatedClient.ClientType			= ClientType.Simple;
 					PersonsNameGrid.Visibility      = Visibility.Visible;
 					OrganizationNameGrid.Visibility = Visibility.Collapsed;
 					Height = MinHeight = MaxHeight = 450;
 					break;
 				case ClientType.Organization:
-					tmpClient.ClientType			= ClientType.Organization;
+					newOrUpdatedClient.ClientType			= ClientType.Organization;
 					PersonsNameGrid.Visibility		= Visibility.Collapsed;
 					OrganizationNameGrid.Visibility = Visibility.Visible;
 					Height = MinHeight = MaxHeight = 510;

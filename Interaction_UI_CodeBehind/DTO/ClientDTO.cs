@@ -86,7 +86,11 @@ namespace DTO
 						MiddleName;
 
 			}
-			set { _orgName = value; }
+			set 
+			{ 
+				_orgName = value;
+				NotifyPropertyChanged();
+			}
 		}
 
 		/// <summary>
@@ -161,15 +165,15 @@ namespace DTO
 
 		#region Поля
 
-		private string		_firstName;
-		private string		_middleName;
-		private string		_lastName;
-		private string		_orgName;
+		private string		_firstName = "";
+		private string		_middleName = "";
+		private string		_lastName = "";
+		private string		_orgName = "";
 		private DateTime?	_creationDate = null;
-		private string		_passportOrTIN;
-		private string		_telephone;
-		private string		_email;
-		private string		_address;
+		private string		_passportOrTIN = "";
+		private string		_telephone = "";
+		private string		_email = "";
+		private string		_address = "";
 
 		#endregion
 

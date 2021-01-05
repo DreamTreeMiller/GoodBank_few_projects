@@ -1,7 +1,8 @@
-﻿using Account_Windows;
+﻿using System.Windows;
+using System.Data;
+using Account_Windows;
 using DTO;
 using Data_Grid_User_Controls;
-using System.Windows;
 using Binding_UI_CodeBehind;
 using Interfaces_Data;
 using BankTime;
@@ -15,29 +16,30 @@ namespace Client_Window
 	/// </summary>
 	public partial class ClientWindow : Window
 	{
-		private BankActions			 BA;
-		private AccountsList		 accountsListView;
-		private WindowID			 wid	= WindowID.EditClientVIP;
-		private IClientDTO			 client = new ClientDTO();
+		private BankActions		BA;
+		private AccountsList	accountsListView;
+		private WindowID		wid	= WindowID.EditClientVIP;
+		private IClientDTO		client = new ClientDTO();
+		private DataRowView		clientRowInTable;
 
 		public bool accountsNeedUpdate = false;
 		public bool clientsNeedUpdate  = false;
 
-		public ClientWindow(BankActions ba, IClientDTO client)
+		public ClientWindow(BankActions ba, DataRowView clientrowintable)
 		{
 			InitializeComponent();
-			InitializeAccountsView(ba, client);
+			InitializeAccountsView(ba, clientrowintable);
 			//ShowAccounts();
 		}
 
-		private void InitializeAccountsView(BankActions ba, IClientDTO client)
+		private void InitializeAccountsView(BankActions ba, DataRowView clientrowintable)
 		{
 			BankTodayDate.Text = $"Сегодня {GoodBankTime.Today:dd.MM.yyyy} г.";
 			BA = ba;
 			OrganizationInfo.Visibility = Visibility.Collapsed;
 			PersonalInfo.Visibility		= Visibility.Visible;
-			this.client					= client;
-
+			this.clientRowInTable		= clientrowintable;
+			this.client					= new ClientDTO(clientrowintable);
 			switch (this.client.ClientType)
 			{
 				case ClientType.VIP:
@@ -88,8 +90,8 @@ namespace Client_Window
 			// Обновляем визуально редактируемый элемент
 			// Обновляем базу клиентов.
 			// Эти два действия должны всегда быть вместе!
-			(this.client as ClientDTO).UpdateMyself(editClientWindow.tmpClient as ClientDTO);
-			BA.Clients.UpdateClient(editClientWindow.tmpClient);
+			(this.client as ClientDTO).UpdateMyself(editClientWindow.newOrUpdatedClient as ClientDTO);
+			BA.Clients.UpdateClient(clientRowInTable, editClientWindow.newOrUpdatedClient);
 		}
 
 		private void ClientWindow_AccountDetails_Click(object sender, RoutedEventArgs e)

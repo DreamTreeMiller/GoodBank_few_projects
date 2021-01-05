@@ -1,10 +1,11 @@
-﻿using Binding_UI_CodeBehind;
+﻿using System.Windows;
+using System.Data;
+using System.Collections.ObjectModel;
+using Binding_UI_CodeBehind;
 using Interfaces_Data;
 using Window_Name_Tags;
 using Client_Window;
 using Data_Grid_User_Controls;
-using System.Collections.ObjectModel;
-using System.Windows;
 
 namespace UI_Search
 {
@@ -44,7 +45,7 @@ namespace UI_Search
 		}
 		private void btn_SelectClient_Click(object sender, RoutedEventArgs e)
 		{
-			IClientDTO client = clientsListUserControl.GetSelectedItem();
+			DataRowView client = clientsListUserControl.GetSelectedItem();
 			if (client == null)
 			{
 				MessageBox.Show("Выберите клиента для показа");

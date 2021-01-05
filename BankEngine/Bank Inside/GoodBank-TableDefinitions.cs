@@ -7,47 +7,47 @@ namespace BankInside
 		private Dictionary<string, string> tables = new Dictionary<string, string>()
 		{{"ClientsMain", @"
 CREATE TABLE [dbo].[ClientsMain] (
-	[ID]						INT			IDENTITY(1,1) NOT NULL PRIMARY KEY,
-	[Telephone]					NVARCHAR (20),	-- better 30
-	[Email]						NVARCHAR (70),	-- better 128
-	[Address]					NVARCHAR (256),
+	[ID]						INT			IDENTITY(1,1)	NOT NULL PRIMARY KEY,
+	[Telephone]					NVARCHAR (30)	DEFAULT ''	NOT NULL,
+	[Email]						NVARCHAR (128)	DEFAULT ''	NOT NULL,
+	[Address]					NVARCHAR (256)	DEFAULT ''	NOT NULL,
 	[NumberOfSavingAccounts]	INT				DEFAULT 0	NOT NULL,
-	[NumberOfDeposits]			INT				DEFAULT 0	NOT NULL,		
-	[NumberOfCredits]			INT				DEFAULT 0	NOT NULL,			
+	[NumberOfDeposits]			INT				DEFAULT 0	NOT NULL,
+	[NumberOfCredits]			INT				DEFAULT 0	NOT NULL,
 	[NumberOfClosedAccounts]	INT				DEFAULT 0	NOT NULL
 );"
 		 },
 
 		 {"VIPclients", @"
 CREATE TABLE [dbo].[VIPclients] (
-	[id]				INT			NOT NULL PRIMARY KEY,
-	[FirstName]			NVARCHAR (50)	NOT NULL,
-	[MiddleName]		NVARCHAR (50),
-	[LastName]			NVARCHAR (50)	NOT NULL,
-	[PassportNumber]	NVARCHAR (11)	NOT NULL,
-	[BirthDate]			DATE			NOT NULL
+	[id]				INT							NOT NULL PRIMARY KEY,
+	[FirstName]			NVARCHAR (50)	DEFAULT ''	NOT NULL,
+	[MiddleName]		NVARCHAR (50)	DEFAULT ''	NOT NULL,
+	[LastName]			NVARCHAR (50)	DEFAULT ''	NOT NULL,
+	[PassportNumber]	NVARCHAR (11)	DEFAULT ''	NOT NULL,
+	[BirthDate]			DATE						NOT NULL
 );"
 		 },
 
 		 {"SIMclients", @"
 CREATE TABLE [dbo].[SIMclients] (
-	[id]				INT			NOT NULL PRIMARY KEY,
-	[FirstName]			NVARCHAR (50)	NOT NULL,
-	[MiddleName]		NVARCHAR (50),
-	[LastName]			NVARCHAR (50)	NOT NULL,
-	[PassportNumber]	NVARCHAR (11)	NOT NULL,
-	[BirthDate]			DATE			NOT NULL
+	[id]				INT							NOT NULL PRIMARY KEY,
+	[FirstName]			NVARCHAR (50)	DEFAULT ''	NOT NULL,
+	[MiddleName]		NVARCHAR (50)	DEFAULT ''	NOT NULL,
+	[LastName]			NVARCHAR (50)	DEFAULT ''	NOT NULL,
+	[PassportNumber]	NVARCHAR (11)	DEFAULT ''	NOT NULL,
+	[BirthDate]			DATE						NOT NULL
 );"
 		 },
 		 {"ORGclients", @"
 CREATE TABLE [dbo].[ORGclients] (
-	[id]				INT			NOT NULL PRIMARY KEY,	
-	[OrgName]			NVARCHAR (256)	NOT NULL,
-	[DirectorFirstName]	NVARCHAR (50),
-	[DirectorMiddleName]NVARCHAR (50),
-	[DirectorLastName]	NVARCHAR (50),
-	[TIN]				NVARCHAR (10)	NOT NULL,
-	[RegistrationDate]	DATE			NOT NULL
+	[id]				INT							NOT NULL PRIMARY KEY,	
+	[OrgName]			NVARCHAR (256)	DEFAULT ''	NOT NULL,
+	[DirectorFirstName]	NVARCHAR (50)	DEFAULT ''	NOT NULL,
+	[DirectorMiddleName]NVARCHAR (50)	DEFAULT ''	NOT NULL,
+	[DirectorLastName]	NVARCHAR (50)	DEFAULT ''	NOT NULL,
+	[TIN]				NVARCHAR (10)	DEFAULT ''	NOT NULL,
+	[RegistrationDate]	DATE						NOT NULL
 );"
 		 },
 
@@ -99,21 +99,21 @@ CREATE TABLE [dbo].[DepositAccounts] (
 
 		 {"CreditAccounts", @"
 CREATE TABLE [dbo].[CreditAccounts] (
-	[id]					INT			NOT NULL PRIMARY KEY,
-	[AccumulatedInterest]	MONEY DEFAULT 0
+	[id]					INT		NOT NULL PRIMARY KEY,
+	[AccumulatedInterest]	MONEY	DEFAULT 0
 );"
 		 },
 
 		 {"Transactions", @"
 CREATE TABLE [dbo].[Transactions] (
-	[TransactionID]			INT				IDENTITY(1,1) NOT NULL PRIMARY KEY
+	[TransactionID]			INT				IDENTITY(1,1) NOT NULL PRIMARY KEY,
 	[TransactionAccountID]	INT				NOT NULL,
 	[TransactionDateTime]	DATETIME		NOT NULL,
-	[SourceAccount]			NVARCHAR (15)	NOT NULL,
-	[DestinationAccount]	NVARCHAR (15)	NOT NULL,
+	[SourceAccount]			NVARCHAR (15)	DEFAULT ''	NOT NULL,
+	[DestinationAccount]	NVARCHAR (15)	DEFAULT ''	NOT NULL,
 	[OperationType]			TINYINT			NOT NULL,
 	[Amount]				MONEY			NOT NULL,
-	[Comment]				NVARCHAR (256)
+	[Comment]				NVARCHAR (256)	DEFAULT ''	NOT NULL
 );"
 		}};
 	}

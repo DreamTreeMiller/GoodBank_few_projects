@@ -1,21 +1,13 @@
 ﻿using System.Data;
 using System.Data.SqlClient;
 using Interfaces_Actions;
-using Interfaces_Data;
-using Enumerables;
-using System.Collections.Generic;
-using System.Text;
-using ClientClasses;
-using System.Collections.ObjectModel;
-using DTO;
 
 namespace BankInside
 {
-	public partial class GoodBank : IClientsActions, ISqlDA 
+	public partial class GoodBank : IClientsActions 
 	{
-		public DataSet			ds			{ get; set; }
-		public SqlDataAdapter	daClients	{ get; set; }
-		public SqlDataAdapter	da,
+		private DataSet			ds;
+		private SqlDataAdapter	da, daClients,
 			daClientsMain, daVIPclients, daSIMclients, daORGclients,
 			daAccounts, daDeposits, daCredits, // no da for Saving accounts
 			daTransactions;
@@ -29,7 +21,34 @@ namespace BankInside
 			string sqlCommand;
 			gbConn = SetGoodBankConnection();
 
-			sqlCommand = @"
+			SetupClientsSqlDataAdapter();
+			SetupClientsMainSqlDataAdapter();
+			SetupVIPclientsSqlDataAdapter();
+			SetupSIMclientsSqlDataAdapter();
+			SetupORGclientsSqlDataAdapter();
+
+			sqlCommand = @"SELECT * FROM [dbo].[Accounts];";
+			da.SelectCommand = new SqlCommand(sqlCommand, gbConn);
+			da.Fill(ds, "Accounts");
+
+			sqlCommand = @"SELECT * FROM [dbo].[DepositAccounts];";
+			da.SelectCommand = new SqlCommand(sqlCommand, gbConn);
+			da.Fill(ds, "DepositAccounts");
+
+			sqlCommand = @"SELECT * FROM [dbo].[CreditAccounts];";
+			da.SelectCommand = new SqlCommand(sqlCommand, gbConn);
+			da.Fill(ds, "CreditAccounts");
+
+			sqlCommand = @"SELECT * FROM [dbo].[Transactions];";
+			da.SelectCommand = new SqlCommand(sqlCommand, gbConn);
+			da.Fill(ds, "Transactions");
+		}
+
+		private void SetupClientsSqlDataAdapter()
+		{
+			daClients = new SqlDataAdapter();
+
+			string sqlCommand = @"
 SELECT	 [ID] 
 		,[ClientType] 
 		,[ClientTypeTag] 
@@ -54,7 +73,7 @@ FROM	(SELECT
 			,[FirstName]
 			,[MiddleName]
 			,[LastName]
-			,[LastName] + ' ' + [FirstName] + ' ' + [MiddleName] AS [MainName]
+			,[LastName] + ' ' + [FirstName]	+ ' ' + [MiddleName] AS [MainName]
 			,'' AS [DirectorName]
 			,[BirthDate] AS [CreationDate]
 			,[PassportNumber] AS [PassportOrTIN]
@@ -96,7 +115,8 @@ UNION SELECT
 		,[DirectorMiddleName] AS [MiddleName]
 		,[DirectorLastName]   AS [LastName]
 		,[OrgName]			  AS [MainName]
-		,[DirectorLastName] + ' ' + [DirectorFirstName] + ' ' + [DirectorMiddleName] AS [DirectorName]
+		,[DirectorLastName] + ' ' + [DirectorFirstName] + ' ' + [DirectorMiddleName]
+		 AS [DirectorName]
 		,[RegistrationDate]   AS [CreationDate]
 		,[TIN]				  AS [PassportOrTIN]
 		,[Telephone]
@@ -110,55 +130,21 @@ FROM	[ORGclients], [ClientsMain]
 WHERE	[ClientsMain].[ID] = [ORGclients].[id]
 ORDER BY [ClientType] ASC
 ";
-			da.SelectCommand = new SqlCommand(sqlCommand, gbConn);
-			da.Fill(ds, "Clients");
-			SetupClientsSqlDataAdapter();
-
-			sqlCommand = @"SELECT * FROM [dbo].[ClientsMain];";
-			da.SelectCommand = new SqlCommand(sqlCommand, gbConn);
-			da.Fill(ds, "ClientsMain");
-			SetupClientsMainSqlDataAdapter();
-
-			sqlCommand = @"SELECT * FROM [dbo].[VIPclients];";
-			da.SelectCommand = new SqlCommand(sqlCommand, gbConn);
-			da.Fill(ds, "VIPclients");
-			SetupVIPclientsSqlDataAdapter();
-
-			sqlCommand = @"SELECT * FROM [dbo].[SIMclients];";
-			da.SelectCommand = new SqlCommand(sqlCommand, gbConn);
-			da.Fill(ds, "SIMclients");
-			SetupSIMclientsSqlDataAdapter();
-
-			sqlCommand = @"SELECT * FROM [dbo].[ORGclients];";
-			da.SelectCommand = new SqlCommand(sqlCommand, gbConn);
-			da.Fill(ds, "ORGclients");
-			SetupORGclientsSqlDataAdapter();
-
-			sqlCommand = @"SELECT * FROM [dbo].[Accounts];";
-			da.SelectCommand = new SqlCommand(sqlCommand, gbConn);
-			da.Fill(ds, "Accounts");
-
-			sqlCommand = @"SELECT * FROM [dbo].[DepositAccounts];";
-			da.SelectCommand = new SqlCommand(sqlCommand, gbConn);
-			da.Fill(ds, "DepositAccounts");
-
-			sqlCommand = @"SELECT * FROM [dbo].[CreditAccounts];";
-			da.SelectCommand = new SqlCommand(sqlCommand, gbConn);
-			da.Fill(ds, "CreditAccounts");
-
-			sqlCommand = @"SELECT * FROM [dbo].[Transactions];";
-			da.SelectCommand = new SqlCommand(sqlCommand, gbConn);
-			da.Fill(ds, "Transactions");
+			daClients.SelectCommand = new SqlCommand(sqlCommand, gbConn);
+			daClients.Fill(ds, "Clients");
 		}
 
-		private void SetupClientsSqlDataAdapter()
-		{
-
-		}
 		private void SetupClientsMainSqlDataAdapter()
 		{
-			string sqlCommand;
 			daClientsMain = new SqlDataAdapter();
+
+			string sqlCommand = @"SELECT * FROM [dbo].[ClientsMain];";
+			daClientsMain.SelectCommand = new SqlCommand(sqlCommand, gbConn);
+			daClientsMain.Fill(ds, "ClientsMain");
+
+			DataColumn[] pk = new DataColumn[1];
+			pk[0] = ds.Tables["ClientsMain"].Columns["ID"];
+			ds.Tables["ClientsMain"].PrimaryKey = pk;
 
 			sqlCommand = @"
 			INSERT INTO [dbo].[ClientsMain] ([Telephone], [Email], [Address])
@@ -188,8 +174,15 @@ ORDER BY [ClientType] ASC
 
 		private void SetupVIPclientsSqlDataAdapter()
 		{
-			string sqlCommand;
 			daVIPclients = new SqlDataAdapter();
+
+			string sqlCommand = @"SELECT * FROM [dbo].[VIPclients];";
+			daVIPclients.SelectCommand = new SqlCommand(sqlCommand, gbConn);
+			daVIPclients.Fill(ds, "VIPclients");
+
+			DataColumn[] pk = new DataColumn[1];
+			pk[0] = ds.Tables["VIPclients"].Columns["id"];
+			ds.Tables["VIPclients"].PrimaryKey = pk;
 
 			sqlCommand = @"
 			INSERT INTO [dbo].[VIPclients] ([id], 
@@ -228,8 +221,15 @@ ORDER BY [ClientType] ASC
 
 		private void SetupSIMclientsSqlDataAdapter()
 		{
-			string sqlCommand;
 			daSIMclients = new SqlDataAdapter();
+
+			string sqlCommand = @"SELECT * FROM [dbo].[SIMclients];";
+			daSIMclients.SelectCommand = new SqlCommand(sqlCommand, gbConn);
+			daSIMclients.Fill(ds, "SIMclients");
+
+			DataColumn[] pk = new DataColumn[1];
+			pk[0] = ds.Tables["SIMclients"].Columns["id"];
+			ds.Tables["SIMclients"].PrimaryKey = pk;
 
 			sqlCommand = @"
 			INSERT INTO [dbo].[SIMclients] ([id], 
@@ -268,8 +268,15 @@ ORDER BY [ClientType] ASC
 
 		private void SetupORGclientsSqlDataAdapter()
 		{
-			string sqlCommand;
 			daORGclients = new SqlDataAdapter();
+
+			string sqlCommand = @"SELECT * FROM [dbo].[ORGclients];";
+			daORGclients.SelectCommand = new SqlCommand(sqlCommand, gbConn);
+			daORGclients.Fill(ds, "ORGclients");
+
+			DataColumn[] pk = new DataColumn[1];
+			pk[0] = ds.Tables["ORGclients"].Columns["id"];
+			ds.Tables["ORGclients"].PrimaryKey = pk;
 
 			sqlCommand = @"
 			INSERT INTO [dbo].[ORGclients] ([id], 

@@ -266,8 +266,8 @@ namespace BankInside
 			else
 			// Если уже есть таблицы, то создать недостающие
 			{
-				foreach (string tn in tablesList)
-					if (!tables.ContainsKey(tn)) CreateTable(tn, tables[tn]);
+				foreach (var nd in tables)
+					if (!tablesList.Contains(nd.Key)) CreateTable(nd.Key, tables[nd.Key]);
 			}
 		}
 

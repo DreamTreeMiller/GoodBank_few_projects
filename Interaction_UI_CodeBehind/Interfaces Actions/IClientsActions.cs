@@ -16,6 +16,6 @@ namespace Interfaces_Actions
 		/// <param name="client">DTO with new client's data</param>
 		/// <returns>ID of added client</returns>
 		int AddClient(IClientDTO client);
-		void UpdateClient(IClientDTO updatedClient);
+		void UpdateClient(DataRowView clientRowInTable, IClientDTO updatedClient);
 	}
 }

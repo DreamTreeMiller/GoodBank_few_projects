@@ -108,7 +108,7 @@ namespace Department_Window
 
 		private void WinMenu_SelectClient_Click(object sender, RoutedEventArgs e)
 		{
-			IClientDTO client = clientsListView.GetSelectedItem();
+			DataRowView client = clientsListView.GetSelectedItem();
 			if (client == null)
 			{
 				MessageBox.Show("Выберите клиента для показа");
@@ -130,11 +130,12 @@ namespace Department_Window
 			
 			if (result != true) return;
 			// Добавляем нового клиента в базу в бэкэнде
-			newClient = addСlientWin.tmpClient;
-			//IClientDTO addedClient = BA.Clients.AddClient(newClient);
+			newClient = addСlientWin.newOrUpdatedClient;
+			BA.Clients.AddClient(newClient);
 
 			// Добавляем нового клиента в список на экране
-			AddNewClientToDataGrid(newClient);
+			//AddNewClientToDataGrid(newClient);
+			InitializeClientsAndWindowTypes();
 		}
 
 		/// <summary>
