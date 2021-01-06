@@ -7,18 +7,12 @@ namespace BankInside
 	public partial class GoodBank : IClientsActions 
 	{
 		private DataSet			ds;
-		private SqlDataAdapter	da, daClients,
-			daClientsMain, daVIPclients, daSIMclients, daORGclients,
-			daAccounts, daDeposits, daCredits, // no da for Saving accounts
-			daTransactions;
-		internal static SqlConnection	gbConn;
+		private SqlDataAdapter	daClients, daClientsMain, daVIPclients, daSIMclients, daORGclients;
+		private SqlConnection	gbConn;
 
 		public void PopulateTables()
 		{
 			ds = new DataSet();
-			da = new SqlDataAdapter();
-
-			string sqlCommand;
 			gbConn = SetGoodBankConnection();
 
 			SetupClientsSqlDataAdapter();
@@ -27,21 +21,11 @@ namespace BankInside
 			SetupSIMclientsSqlDataAdapter();
 			SetupORGclientsSqlDataAdapter();
 
-			sqlCommand = @"SELECT * FROM [dbo].[Accounts];";
-			da.SelectCommand = new SqlCommand(sqlCommand, gbConn);
-			da.Fill(ds, "Accounts");
+			SetupAccountsParentSqlDataAdapter();
+			SetupDepositsSqlDataAdapter();
+			SetupCreditsSqlDataAdapter();
 
-			sqlCommand = @"SELECT * FROM [dbo].[DepositAccounts];";
-			da.SelectCommand = new SqlCommand(sqlCommand, gbConn);
-			da.Fill(ds, "DepositAccounts");
-
-			sqlCommand = @"SELECT * FROM [dbo].[CreditAccounts];";
-			da.SelectCommand = new SqlCommand(sqlCommand, gbConn);
-			da.Fill(ds, "CreditAccounts");
-
-			sqlCommand = @"SELECT * FROM [dbo].[Transactions];";
-			da.SelectCommand = new SqlCommand(sqlCommand, gbConn);
-			da.Fill(ds, "Transactions");
+			SetupTransactionsSqlDataAdapter();
 		}
 
 		private void SetupClientsSqlDataAdapter()

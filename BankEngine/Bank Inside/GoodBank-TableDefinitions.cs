@@ -51,8 +51,8 @@ CREATE TABLE [dbo].[ORGclients] (
 );"
 		 },
 
-		 {"Accounts", @"
-CREATE TABLE [dbo].[Accounts] (
+		 {"AccountsParent", @"
+CREATE TABLE [dbo].[AccountsParent] (
 	[AccID]				INT			IDENTITY (1, 1) NOT NULL PRIMARY KEY,	-- уникальный ид счета
 	[AccType]			TINYINT			NOT NULL,	-- Account type
 													-- 0 - Saving,
@@ -63,10 +63,10 @@ CREATE TABLE [dbo].[Accounts] (
 	-- I feel ClientType field is not necessay. We can just generate it for output
 	-- and if we need, then it's better to use just numbers with comments, like this 0 --VIP, 1 --SIM, 2 --ORG
 
-	[ClientID]			BIGINT			NOT NULL,	-- ID клиента
+	[ClientID]			INT				NOT NULL,	-- ID клиента
 	[AccountNumber]		NVARCHAR (15)	NOT NULL,		
 	[Balance]			MONEY DEFAULT 0	NOT NULL,			
-	[Interest]			DECIMAL (2,2)	NOT NULL,
+	[Interest]			DECIMAL (4,2)	NOT NULL,
 	[Compounding]		BIT				NOT NULL,	-- с капитализацией или без 
 	[Opened]			DATE			NOT NULL,	-- дата открытия счета 
 	[Duration]			INT				NOT NULL,	-- Количество месяцев, на который открыт вклад, выдан кредит.  
@@ -90,29 +90,29 @@ CREATE TABLE [dbo].[Accounts] (
 
 		 {"DepositAccounts", @"
 CREATE TABLE [dbo].[DepositAccounts] (
-	[id]							INT				NOT NULL PRIMARY KEY,
-	[InterestAccumulationAccID]		BIGINT DEFAULT 0,
-	[InterestAccumulationAccNum]	NVARCHAR (15),
-	[AccumulatedInterest]			MONEY DEFAULT 0
+	[id]							INT							NOT NULL PRIMARY KEY,
+	[InterestAccumulationAccID]		INT				DEFAULT 0	NOT NULL,
+	[InterestAccumulationAccNum]	NVARCHAR (15)	DEFAULT ''	NOT NULL,
+	[AccumulatedInterest]			MONEY			DEFAULT 0	NON NULL
 );"
 		 },
 
 		 {"CreditAccounts", @"
 CREATE TABLE [dbo].[CreditAccounts] (
-	[id]					INT		NOT NULL PRIMARY KEY,
-	[AccumulatedInterest]	MONEY	DEFAULT 0
+	[id]					INT					NOT NULL PRIMARY KEY,
+	[AccumulatedInterest]	MONEY	DEFAULT 0	NOT NULL
 );"
 		 },
 
 		 {"Transactions", @"
 CREATE TABLE [dbo].[Transactions] (
-	[TransactionID]			INT				IDENTITY(1,1) NOT NULL PRIMARY KEY,
-	[TransactionAccountID]	INT				NOT NULL,
-	[TransactionDateTime]	DATETIME		NOT NULL,
+	[TransactionID]			INT			IDENTITY(1,1)	NOT NULL PRIMARY KEY,
+	[TransactionAccountID]	INT							NOT NULL,
+	[TransactionDateTime]	SMALLDATETIME				NOT NULL,
 	[SourceAccount]			NVARCHAR (15)	DEFAULT ''	NOT NULL,
 	[DestinationAccount]	NVARCHAR (15)	DEFAULT ''	NOT NULL,
-	[OperationType]			TINYINT			NOT NULL,
-	[Amount]				MONEY			NOT NULL,
+	[OperationType]			TINYINT						NOT NULL,
+	[Amount]				MONEY			DEFAULT 0	NOT NULL,
 	[Comment]				NVARCHAR (256)	DEFAULT ''	NOT NULL
 );"
 		}};

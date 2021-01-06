@@ -36,7 +36,9 @@ SELECT
 			DataRow[] newRow = new DataRow[1];
 			newRow[0] = ds.Tables["ClientsMain"].NewRow();
 
-			newRow[0]["ID"]			= 0;			// это потому что нельзя null
+			newRow[0]["ID"]			= 0;	// это потому что нельзя null передавать 
+											// в поле primary key
+											// потом получаем из базы реальное значение
 			newRow[0]["Telephone"]	= c.Telephone;
 			newRow[0]["Email"]		= c.Email;
 			newRow[0]["Address"]	= c.Address;
@@ -76,6 +78,7 @@ SELECT
 
 				case ClientType.Organization:
 					newClientTypeRow[0] = ds.Tables["ORGclients"].NewRow();
+
 					newClientTypeRow[0]["id"]					= id; // Foreign Key для связи с таблицей Clients
 					newClientTypeRow[0]["OrgName"]				= c.MainName;
 					newClientTypeRow[0]["DirectorFirstName"]	= c.FirstName;
@@ -83,10 +86,12 @@ SELECT
 					newClientTypeRow[0]["DirectorLastName"]		= c.LastName;
 					newClientTypeRow[0]["TIN"]					= c.PassportOrTIN;
 					newClientTypeRow[0]["RegistrationDate"]		= c.CreationDate;
+
 					ds.Tables["ORGclients"].Rows.Add(newClientTypeRow[0]);
 					daORGclients.Update(newClientTypeRow);
 					break;
 			}
+			// Обновляем таблицу для показа
 			ds.Tables["Clients"].Clear();
 			daClients.Fill(ds, "Clients");
 			return id;
@@ -114,7 +119,6 @@ SELECT
 			// Родительскую таблицу Clients и одну из трёх VIP, SIM or ORGclients
 			// в зависимости от типа клиента
 			DataRow[] newRow = new DataRow[1];
-			//newRow[0] = ds.Tables["ClientsMain"].Rows.Find(clientRowInTable["ID"]);
 			newRow[0] = ds.Tables["ClientsMain"].Rows.Find(updatedClient.ID);
 
 			newRow[0]["Telephone"]	= updatedClient.Telephone;
@@ -123,40 +127,43 @@ SELECT
 
 			daClientsMain.Update(newRow);
 
-			//int id = (int)clientRowInTable["ID"];
-
 			DataRow[] newClientTypeRow = new DataRow[1];
 			switch (updatedClient.ClientType)
 			{
 				case ClientType.VIP:
 					newClientTypeRow[0] = ds.Tables["VIPclients"].Rows.Find(updatedClient.ID);
-					newClientTypeRow[0]["FirstName"] = updatedClient.FirstName;
-					newClientTypeRow[0]["MiddleName"] = updatedClient.MiddleName;
-					newClientTypeRow[0]["LastName"] = updatedClient.LastName;
+
+					newClientTypeRow[0]["FirstName"]	  = updatedClient.FirstName;
+					newClientTypeRow[0]["MiddleName"]	  = updatedClient.MiddleName;
+					newClientTypeRow[0]["LastName"]		  = updatedClient.LastName;
 					newClientTypeRow[0]["PassportNumber"] = updatedClient.PassportOrTIN;
-					newClientTypeRow[0]["BirthDate"] = updatedClient.CreationDate;
+					newClientTypeRow[0]["BirthDate"]	  = updatedClient.CreationDate;
 
 					daVIPclients.Update(newClientTypeRow);
 					break;
 
 				case ClientType.Simple:
 					newClientTypeRow[0] = ds.Tables["SIMclients"].Rows.Find(updatedClient.ID);
-					newClientTypeRow[0]["FirstName"] = updatedClient.FirstName;
-					newClientTypeRow[0]["MiddleName"] = updatedClient.MiddleName;
-					newClientTypeRow[0]["LastName"] = updatedClient.LastName;
+
+					newClientTypeRow[0]["FirstName"]	  = updatedClient.FirstName;
+					newClientTypeRow[0]["MiddleName"]	  = updatedClient.MiddleName;
+					newClientTypeRow[0]["LastName"]		  = updatedClient.LastName;
 					newClientTypeRow[0]["PassportNumber"] = updatedClient.PassportOrTIN;
-					newClientTypeRow[0]["BirthDate"] = updatedClient.CreationDate;
+					newClientTypeRow[0]["BirthDate"]	  = updatedClient.CreationDate;
+
 					daSIMclients.Update(newClientTypeRow);
 					break;
 
 				case ClientType.Organization:
 					newClientTypeRow[0] = ds.Tables["ORGclients"].Rows.Find(updatedClient.ID);
-					newClientTypeRow[0]["OrgName"] = updatedClient.MainName;
-					newClientTypeRow[0]["DirectorFirstName"] = updatedClient.FirstName;
+
+					newClientTypeRow[0]["OrgName"]			  = updatedClient.MainName;
+					newClientTypeRow[0]["DirectorFirstName"]  = updatedClient.FirstName;
 					newClientTypeRow[0]["DirectorMiddleName"] = updatedClient.MiddleName;
-					newClientTypeRow[0]["DirectorLastName"] = updatedClient.LastName;
-					newClientTypeRow[0]["TIN"] = updatedClient.PassportOrTIN;
-					newClientTypeRow[0]["RegistrationDate"] = updatedClient.CreationDate;
+					newClientTypeRow[0]["DirectorLastName"]	  = updatedClient.LastName;
+					newClientTypeRow[0]["TIN"]				  = updatedClient.PassportOrTIN;
+					newClientTypeRow[0]["RegistrationDate"]	  = updatedClient.CreationDate;
+
 					daORGclients.Update(newClientTypeRow);
 					break;
 			}

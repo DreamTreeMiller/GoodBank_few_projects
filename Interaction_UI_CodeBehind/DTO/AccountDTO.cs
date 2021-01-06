@@ -139,7 +139,7 @@ namespace DTO
 		{
 			ClientID			= c.ID;
 			AccType				= acc.AccType;
-			AccID					= acc.AccID;				// Account ID
+			AccID				= acc.AccID;				// Account ID
 			AccountNumber		= acc.AccountNumber;
 			Balance				= acc.Balance;
 			Interest			= acc.Interest;
