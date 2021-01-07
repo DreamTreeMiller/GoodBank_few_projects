@@ -30,7 +30,7 @@ namespace Interfaces_Actions
 
 		IAccountDTO AddAccount(IAccountDTO acc); 
 
-		IAccountDTO GenerateAccount(IAccountDTO acc);
+		void GenerateAccount(IAccountDTO acc);
 
 		IAccount TopUpCash(int accID, double cashAmount);
 

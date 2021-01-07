@@ -10,8 +10,69 @@ namespace BankInside
 								daAccountsParent, daDeposits, daCredits, // no da for Saving accounts
 								daTransactions;
 
+		private void SetupSP_AddAccount()
+		{
+			using (gbConn = SetGoodBankConnection())
+			{
+				gbConn.Open();
+				string sqlExpression = @"
+IF EXISTS (SELECT [name],[type] FROM sys.objects WHERE [name]='SP_AddAccount' AND [type]='P')
+	DROP PROC [dbo].[SP_AddAccount];
+";
+				sqlCommand = new SqlCommand(sqlExpression, gbConn);
+				sqlCommand.ExecuteNonQuery();
+
+				sqlExpression = @"
+CREATE PROC [dbo].[SP_AddAccount]
+	 @clientType	TINYINT
+	,@orgName		NVARCHAR (256)	
+	,@firstName		NVARCHAR (50)	
+	,@middleName	NVARCHAR (50)	
+	,@lastName		NVARCHAR (50)	
+	,@passportOrTIN	NVARCHAR (10)	
+	,@creationDate	DATE			
+	,@telephone		NVARCHAR (30)
+	,@email			NVARCHAR (128)
+	,@address		NVARCHAR (256)
+AS
+BEGIN
+	DECLARE @clientID INT;
+	INSERT INTO [dbo].[ClientsMain]
+		([Telephone], [Email], [Address])
+	VALUES (@telephone, @email, @address);
+	SET @clientID=@@IDENTITY;
+	IF @clientType=0	-- VIP
+		INSERT INTO [dbo].[VIPclients] 
+			([id], [FirstName], [MiddleName], [LastName], [PassportNumber], [BirthDate])
+		VALUES (@clientID, @firstName, @middleName, @lastName, @passportOrTIN, @creationDate);
+	ELSE 
+	IF @clientType=1	-- Simple
+		INSERT INTO [dbo].[SIMclients] 
+			([id], [FirstName], [MiddleName], [LastName], [PassportNumber], [BirthDate])
+		VALUES (@clientID, @firstName, @middleName, @lastName, @passportOrTIN, @creationDate);
+	ELSE 
+	IF @clientType=2	-- Org
+		INSERT INTO [dbo].[ORGclients] 
+			([id]
+			,[OrgName]
+			,[DirectorFirstName]
+			,[DirectorMiddleName]
+			,[DirectorLastName]
+			,[TIN]
+			,[RegistrationDate])
+		VALUES (@clientID, @orgName, @firstName, @middleName, @lastName, @passportOrTIN, @creationDate);
+	RETURN @clientID;
+END;			
+";
+				sqlCommand = new SqlCommand(sqlExpression, gbConn);
+				sqlCommand.ExecuteNonQuery();
+			}
+		}
+
+
 		private void SetupAccountsParentSqlDataAdapter()
 		{
+			gbConn = SetGoodBankConnection();
 			daAccountsParent = new SqlDataAdapter();
 
 			string sqlCommand = @"SELECT * FROM [dbo].[AccountsParent];";

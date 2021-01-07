@@ -47,12 +47,12 @@ namespace BankInside
 		}
 
 		/// <summary>
-		/// Добавляет счет, данные которого получены от ручного ввода
-		/// Эти данные не содержат ID и номера счета
+		/// Генерирует демо счет для искусственно сгенерированного клиента.
+		/// Этот метод нужен, чтобы ввести дату раньше сегодняшней
 		/// </summary>
 		/// <param name="acc"></param>
 		/// <returns>Возвращает созданный счет с уникальным ID счета</returns>
-		public IAccountDTO GenerateAccount(IAccountDTO acc)
+		public void GenerateAccount(IAccountDTO acc)
 		{
 			Account newAcc = null;
 			var client = GetClientByID(acc.ClientID);

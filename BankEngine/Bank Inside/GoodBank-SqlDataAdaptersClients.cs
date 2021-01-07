@@ -9,6 +9,7 @@ namespace BankInside
 		private DataSet			ds;
 		private SqlDataAdapter	daClients, daClientsMain, daVIPclients, daSIMclients, daORGclients;
 		private SqlConnection	gbConn;
+		private SqlCommand		sqlCommand;
 
 		public void PopulateTables()
 		{
@@ -16,10 +17,9 @@ namespace BankInside
 			gbConn = SetGoodBankConnection();
 
 			SetupClientsSqlDataAdapter();
-			SetupClientsMainSqlDataAdapter();
-			SetupVIPclientsSqlDataAdapter();
-			SetupSIMclientsSqlDataAdapter();
-			SetupORGclientsSqlDataAdapter();
+			SetupSP_AddClient();
+			SetupSP_UpdateClient();
+			SetupSP_UpdateNumberOfAccounts();
 
 			SetupAccountsParentSqlDataAdapter();
 			SetupDepositsSqlDataAdapter();
@@ -118,188 +118,170 @@ ORDER BY [ClientType] ASC
 			daClients.Fill(ds, "Clients");
 		}
 
-		private void SetupClientsMainSqlDataAdapter()
+		private void SetupSP_AddClient()
 		{
-			daClientsMain = new SqlDataAdapter();
+			using (gbConn = SetGoodBankConnection())
+			{
+				gbConn.Open();
+				string sqlExpression = @"
+IF EXISTS (SELECT [name],[type] FROM sys.objects WHERE [name]='SP_AddClient' AND [type]='P')
+	DROP PROC [dbo].[SP_AddClient];
+";
+				sqlCommand = new SqlCommand(sqlExpression, gbConn);
+				sqlCommand.ExecuteNonQuery();
 
-			string sqlCommand = @"SELECT * FROM [dbo].[ClientsMain];";
-			daClientsMain.SelectCommand = new SqlCommand(sqlCommand, gbConn);
-			daClientsMain.Fill(ds, "ClientsMain");
-
-			DataColumn[] pk = new DataColumn[1];
-			pk[0] = ds.Tables["ClientsMain"].Columns["ID"];
-			ds.Tables["ClientsMain"].PrimaryKey = pk;
-
-			sqlCommand = @"
-			INSERT INTO [dbo].[ClientsMain] ([Telephone], [Email], [Address])
-					VALUES (@telephone, @email, @address);
-			SET @id=@@IDENTITY
-			;";
-			daClientsMain.InsertCommand = new SqlCommand(sqlCommand, gbConn);
-			var id = 
-			daClientsMain.InsertCommand.Parameters.Add("@id",		 SqlDbType.Int,	 4,	  "ID");
-			id.Direction = ParameterDirection.Output;
-
-			daClientsMain.InsertCommand.Parameters.Add("@telephone", SqlDbType.NVarChar, 30,  "Telephone");
-			daClientsMain.InsertCommand.Parameters.Add("@email",	 SqlDbType.NVarChar, 128, "Email");
-			daClientsMain.InsertCommand.Parameters.Add("@address",	 SqlDbType.NVarChar, 256, "Address");
-
-			sqlCommand = @"
-			UPDATE [dbo].[ClientsMain] 
-			SET [Telephone]=@telephone, [Email]=@email, [Address]=@address
-			WHERE [ID]=@id
-			;";
-			daClientsMain.UpdateCommand = new SqlCommand(sqlCommand, gbConn);
-			daClientsMain.UpdateCommand.Parameters.Add("@id",		 SqlDbType.Int,		 4,   "ID");
-			daClientsMain.UpdateCommand.Parameters.Add("@telephone", SqlDbType.NVarChar, 30,  "Telephone");
-			daClientsMain.UpdateCommand.Parameters.Add("@email",	 SqlDbType.NVarChar, 128, "Email");
-			daClientsMain.UpdateCommand.Parameters.Add("@address",	 SqlDbType.NVarChar, 256, "Address");
+				sqlExpression = @"
+CREATE PROC [dbo].[SP_AddClient]
+	 @clientType	TINYINT
+	,@orgName		NVARCHAR (256)	
+	,@firstName		NVARCHAR (50)	
+	,@middleName	NVARCHAR (50)	
+	,@lastName		NVARCHAR (50)	
+	,@passportOrTIN	NVARCHAR (10)	
+	,@creationDate	DATE			
+	,@telephone		NVARCHAR (30)
+	,@email			NVARCHAR (128)
+	,@address		NVARCHAR (256)
+AS
+BEGIN
+	DECLARE @clientID INT;
+	INSERT INTO [dbo].[ClientsMain]
+		([Telephone], [Email], [Address])
+	VALUES (@telephone, @email, @address);
+	SET @clientID=@@IDENTITY;
+	IF @clientType=0	-- VIP
+		INSERT INTO [dbo].[VIPclients] 
+			([id], [FirstName], [MiddleName], [LastName], [PassportNumber], [BirthDate])
+		VALUES (@clientID, @firstName, @middleName, @lastName, @passportOrTIN, @creationDate);
+	ELSE 
+	IF @clientType=1	-- Simple
+		INSERT INTO [dbo].[SIMclients] 
+			([id], [FirstName], [MiddleName], [LastName], [PassportNumber], [BirthDate])
+		VALUES (@clientID, @firstName, @middleName, @lastName, @passportOrTIN, @creationDate);
+	ELSE 
+	IF @clientType=2	-- Org
+		INSERT INTO [dbo].[ORGclients] 
+			([id]
+			,[OrgName]
+			,[DirectorFirstName]
+			,[DirectorMiddleName]
+			,[DirectorLastName]
+			,[TIN]
+			,[RegistrationDate])
+		VALUES (@clientID, @orgName, @firstName, @middleName, @lastName, @passportOrTIN, @creationDate);
+	RETURN @clientID;
+END;			
+";
+				sqlCommand = new SqlCommand(sqlExpression, gbConn);
+				sqlCommand.ExecuteNonQuery();
+			}
 		}
 
-		private void SetupVIPclientsSqlDataAdapter()
+		private void SetupSP_UpdateClient()
 		{
-			daVIPclients = new SqlDataAdapter();
+			using (gbConn = SetGoodBankConnection())
+			{
+				gbConn.Open();
+				string sqlExpression = @"
+IF EXISTS (SELECT [name],[type] FROM sys.objects WHERE [name]='SP_UpdateClient' AND [type]='P')
+	DROP PROC [dbo].[SP_UpdateClient];
+";
+				sqlCommand = new SqlCommand(sqlExpression, gbConn);
+				sqlCommand.ExecuteNonQuery();
 
-			string sqlCommand = @"SELECT * FROM [dbo].[VIPclients];";
-			daVIPclients.SelectCommand = new SqlCommand(sqlCommand, gbConn);
-			daVIPclients.Fill(ds, "VIPclients");
-
-			DataColumn[] pk = new DataColumn[1];
-			pk[0] = ds.Tables["VIPclients"].Columns["id"];
-			ds.Tables["VIPclients"].PrimaryKey = pk;
-
-			sqlCommand = @"
-			INSERT INTO [dbo].[VIPclients] ([id], 
-											[FirstName], 
-											[MiddleName], 
-											[LastName],
-											[PassportNumber],
-											[BirthDate])
-					VALUES (@id, @fname, @mname, @lname, @pnum, @bd)
-			;";
-			daVIPclients.InsertCommand = new SqlCommand(sqlCommand, gbConn);
-			daVIPclients.InsertCommand.Parameters.Add("@id",	SqlDbType.Int,		4, "id");
-			daVIPclients.InsertCommand.Parameters.Add("@fname",	SqlDbType.NVarChar, 50, "FirstName");
-			daVIPclients.InsertCommand.Parameters.Add("@mname",	SqlDbType.NVarChar, 50, "MiddleName");
-			daVIPclients.InsertCommand.Parameters.Add("@lname",	SqlDbType.NVarChar, 50, "LastName");
-			daVIPclients.InsertCommand.Parameters.Add("@pnum",	SqlDbType.NVarChar, 11, "PassportNumber");
-			daVIPclients.InsertCommand.Parameters.Add("@bd",	SqlDbType.Date,		3,  "BirthDate");
-
-			sqlCommand = @"
-			UPDATE	[dbo].[VIPclients] 
-			SET		[FirstName]		=@fname, 
-					[MiddleName]	=@mname, 
-					[LastName]		=@lname,
-					[PassportNumber]=@pnum,
-					[BirthDate]		=@bd
-			WHERE	[id]=@id
-			;";
-			daVIPclients.UpdateCommand = new SqlCommand(sqlCommand, gbConn);
-			daVIPclients.UpdateCommand.Parameters.Add("@id",	SqlDbType.Int,		4,	"id");
-			daVIPclients.UpdateCommand.Parameters.Add("@fname", SqlDbType.NVarChar, 50, "FirstName");
-			daVIPclients.UpdateCommand.Parameters.Add("@mname", SqlDbType.NVarChar, 50, "MiddleName");
-			daVIPclients.UpdateCommand.Parameters.Add("@lname", SqlDbType.NVarChar, 50, "LastName");
-			daVIPclients.UpdateCommand.Parameters.Add("@pnum",	SqlDbType.NVarChar, 11, "PassportNumber");
-			daVIPclients.UpdateCommand.Parameters.Add("@bd",	SqlDbType.Date,		3,	"BirthDate");
+				sqlExpression = @"
+CREATE PROC [dbo].[SP_UpdateClient]
+	 @clientID		INT
+	,@clientType	TINYINT
+	,@orgName		NVARCHAR (256)	
+	,@firstName		NVARCHAR (50)	
+	,@middleName	NVARCHAR (50)	
+	,@lastName		NVARCHAR (50)	
+	,@passportOrTIN	NVARCHAR (10)	
+	,@creationDate	DATE			
+	,@telephone		NVARCHAR (30)
+	,@email			NVARCHAR (128)
+	,@address		NVARCHAR (256)
+AS
+BEGIN
+	UPDATE [dbo].[ClientsMain] 
+	SET [Telephone]=@telephone, [Email]=@email, [Address]=@address
+	WHERE [ID]=@clientID;
+	IF @clientType=0	-- VIP
+		UPDATE	[dbo].[VIPclients] 
+		SET		[FirstName]		=@firstName, 
+				[MiddleName]	=@middleName, 
+				[LastName]		=@lastName,
+				[PassportNumber]=@passportOrTIN,	
+				[BirthDate]		=@creationDate	
+		WHERE	[id]=@clientID
+	ELSE 
+	IF @clientType=1	-- Simple
+		UPDATE	[dbo].[SIMclients] 
+		SET		[FirstName]		=@firstName, 
+				[MiddleName]	=@middleName, 
+				[LastName]		=@lastName,
+				[PassportNumber]=@passportOrTIN,	
+				[BirthDate]		=@creationDate	
+		WHERE	[id]=@clientID
+	ELSE 
+	IF @clientType=2	-- Org
+		UPDATE	[dbo].[ORGclients] 
+		SET		[OrgName]			=@orgname,
+				[DirectorFirstName]	=@firstName,  
+				[DirectorMiddleName]=@middleName,  
+				[DirectorLastName]	=@lastName,
+				[TIN]				=@passportOrTIN,
+				[RegistrationDate]	=@creationDate	
+		WHERE	[id]=@clientID
+END;";
+				sqlCommand = new SqlCommand(sqlExpression, gbConn);
+				sqlCommand.ExecuteNonQuery();
+			}
 		}
 
-		private void SetupSIMclientsSqlDataAdapter()
+		private void SetupSP_UpdateNumberOfAccounts()
 		{
-			daSIMclients = new SqlDataAdapter();
+			using (gbConn = SetGoodBankConnection())
+			{
+				gbConn.Open();
+				string sqlExpression = @"
+IF EXISTS (SELECT [name], [type] FROM sys.objects WHERE [name]='SP_UpdateNumberOfAccounts' AND [type]='P')
+	DROP PROC [dbo].[SP_UpdateNumberOfAccounts];
+";
+				sqlCommand = new SqlCommand(sqlExpression, gbConn);
+				sqlCommand.ExecuteNonQuery();
 
-			string sqlCommand = @"SELECT * FROM [dbo].[SIMclients];";
-			daSIMclients.SelectCommand = new SqlCommand(sqlCommand, gbConn);
-			daSIMclients.Fill(ds, "SIMclients");
+				sqlExpression = @"
+CREATE PROCEDURE [dbo].[SP_UpdateNumberOfAccounts]
+	 @clientID			INT
+	,@savingsUpdate		INT
+	,@depositsUpdate	INT
+	,@creditsUpdate		INT
+	,@closedUpdate		INT
+AS
+DECLARE	@numOfSavingAcc	INT;
+DECLARE	@numOfDeposits	INT;
+DECLARE	@numOfCredits	INT;
+DECLARE	@numOfClosedAcc	INT;
 
-			DataColumn[] pk = new DataColumn[1];
-			pk[0] = ds.Tables["SIMclients"].Columns["id"];
-			ds.Tables["SIMclients"].PrimaryKey = pk;
+SELECT   @numOfSavingAcc = [NumberOfSavingAccounts]
+		,@numOfDeposits	 = [NumberOfDeposits]
+		,@numOfCredits	 = [NumberOfCredits]
+		,@numOfClosedAcc = [NumberOfClosedAccounts]
+FROM	[dbo].[ClientsMain]
+WHERE	[ID]=@clientID;
 
-			sqlCommand = @"
-			INSERT INTO [dbo].[SIMclients] ([id], 
-											[FirstName], 
-											[MiddleName], 
-											[LastName],
-											[PassportNumber],
-											[BirthDate])
-					VALUES (@id, @fname, @mname, @lname, @pnum, @bd)
-			;";
-			daSIMclients.InsertCommand = new SqlCommand(sqlCommand, gbConn);
-			daSIMclients.InsertCommand.Parameters.Add("@id",	SqlDbType.Int,		4,	"id");
-			daSIMclients.InsertCommand.Parameters.Add("@fname", SqlDbType.NVarChar, 50, "FirstName");
-			daSIMclients.InsertCommand.Parameters.Add("@mname", SqlDbType.NVarChar, 50, "MiddleName");
-			daSIMclients.InsertCommand.Parameters.Add("@lname", SqlDbType.NVarChar, 50, "LastName");
-			daSIMclients.InsertCommand.Parameters.Add("@pnum",	SqlDbType.NVarChar, 11, "PassportNumber");
-			daSIMclients.InsertCommand.Parameters.Add("@bd",	SqlDbType.Date,		3,	"BirthDate");
-
-			sqlCommand = @"
-			UPDATE	[dbo].[SIMclients] 
-			SET		[FirstName]		=@fname, 
-					[MiddleName]	=@mname, 
-					[LastName]		=@lname,
-					[PassportNumber]=@pnum,
-					[BirthDate]		=@bd
-			WHERE	[id]=@id
-			;";
-			daSIMclients.UpdateCommand = new SqlCommand(sqlCommand, gbConn);
-			daSIMclients.UpdateCommand.Parameters.Add("@id",	SqlDbType.Int,		4,	"id");
-			daSIMclients.UpdateCommand.Parameters.Add("@fname", SqlDbType.NVarChar, 50, "FirstName");
-			daSIMclients.UpdateCommand.Parameters.Add("@mname", SqlDbType.NVarChar, 50, "MiddleName");
-			daSIMclients.UpdateCommand.Parameters.Add("@lname", SqlDbType.NVarChar, 50, "LastName");
-			daSIMclients.UpdateCommand.Parameters.Add("@pnum",	SqlDbType.NVarChar, 11, "PassportNumber");
-			daSIMclients.UpdateCommand.Parameters.Add("@bd",	SqlDbType.Date,		3,	"BirthDate");
+UPDATE  [dbo].[ClientsMain]
+SET		 [NumberOfSavingAccounts] = @numOfSavingAcc	+ @savingsUpdate
+		,[NumberOfDeposits]		  =	@numOfDeposits	+ @depositsUpdate
+		,[NumberOfCredits]		  =	@numOfCredits	+ @creditsUpdate
+		,[NumberOfClosedAccounts] =	@numOfClosedAcc	+ @closedUpdate
+WHERE	[ID] = @clientID;
+";
+				sqlCommand = new SqlCommand(sqlExpression, gbConn);
+				sqlCommand.ExecuteNonQuery();
+			}
 		}
-
-		private void SetupORGclientsSqlDataAdapter()
-		{
-			daORGclients = new SqlDataAdapter();
-
-			string sqlCommand = @"SELECT * FROM [dbo].[ORGclients];";
-			daORGclients.SelectCommand = new SqlCommand(sqlCommand, gbConn);
-			daORGclients.Fill(ds, "ORGclients");
-
-			DataColumn[] pk = new DataColumn[1];
-			pk[0] = ds.Tables["ORGclients"].Columns["id"];
-			ds.Tables["ORGclients"].PrimaryKey = pk;
-
-			sqlCommand = @"
-			INSERT INTO [dbo].[ORGclients] ([id], 
-											[OrgName],
-											[DirectorFirstName], 
-											[DirectorMiddleName], 
-											[DirectorLastName],
-											[TIN],
-											[RegistrationDate])
-					VALUES (@id, @orgname, @dfname, @dmname, @dlname, @tin, @rd)
-			;";
-			daORGclients.InsertCommand = new SqlCommand(sqlCommand, gbConn);
-			daORGclients.InsertCommand.Parameters.Add("@id",	  SqlDbType.Int,	  4,   "id");
-			daORGclients.InsertCommand.Parameters.Add("@orgname", SqlDbType.NVarChar, 256, "OrgName");
-			daORGclients.InsertCommand.Parameters.Add("@dfname",  SqlDbType.NVarChar, 50,  "DirectorFirstName");
-			daORGclients.InsertCommand.Parameters.Add("@dmname",  SqlDbType.NVarChar, 50,  "DirectorMiddleName");
-			daORGclients.InsertCommand.Parameters.Add("@dlname",  SqlDbType.NVarChar, 50,  "DirectorLastName");
-			daORGclients.InsertCommand.Parameters.Add("@tin",	  SqlDbType.NVarChar, 10,  "TIN");
-			daORGclients.InsertCommand.Parameters.Add("@rd",	  SqlDbType.Date,	  3,   "RegistrationDate");
-
-			sqlCommand = @"
-			UPDATE	[dbo].[ORGclients] 
-			SET		[OrgName]			=@orgname,
-					[DirectorFirstName]	=@dfname, 
-					[DirectorMiddleName]=@dmname, 
-					[DirectorLastName]	=@dlname,
-					[TIN]				=@tin,
-					[RegistrationDate]	=@rd
-			WHERE	[id]=@id
-			;";
-			daORGclients.UpdateCommand = new SqlCommand(sqlCommand, gbConn);
-			daORGclients.UpdateCommand.Parameters.Add("@id",	  SqlDbType.Int,	  4,   "ID");
-			daORGclients.UpdateCommand.Parameters.Add("@orgname", SqlDbType.NVarChar, 256, "OrgName");
-			daORGclients.UpdateCommand.Parameters.Add("@dfname",  SqlDbType.NVarChar, 50,  "DirectorFirstName");
-			daORGclients.UpdateCommand.Parameters.Add("@dmname",  SqlDbType.NVarChar, 50,  "DirectorMiddleName");
-			daORGclients.UpdateCommand.Parameters.Add("@dlname",  SqlDbType.NVarChar, 50,  "DirectorLastName");
-			daORGclients.UpdateCommand.Parameters.Add("@tin",	  SqlDbType.NVarChar, 10,  "TIN");
-			daORGclients.UpdateCommand.Parameters.Add("@rd",	  SqlDbType.Date,	  3,   "RegistrationDate");
-		}
-
 	}
 } 

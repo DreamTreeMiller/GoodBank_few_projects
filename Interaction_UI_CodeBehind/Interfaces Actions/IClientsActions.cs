@@ -7,7 +7,7 @@ namespace Interfaces_Actions
 {
 	public interface IClientsActions
 	{
-		IClient GetClientByID(int id);
+		IClientDTO GetClientByID(int id);
 		DataView GetClientsTable(ClientType ct);
 
 		/// <summary>
@@ -16,6 +16,6 @@ namespace Interfaces_Actions
 		/// <param name="client">DTO with new client's data</param>
 		/// <returns>ID of added client</returns>
 		int AddClient(IClientDTO client);
-		void UpdateClient(DataRowView clientRowInTable, IClientDTO updatedClient);
+		void UpdateClientPersonalData(DataRowView clientRowInTable, IClientDTO updatedClient);
 	}
 }

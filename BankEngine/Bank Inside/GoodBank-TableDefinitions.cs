@@ -15,23 +15,25 @@ CREATE TABLE [dbo].[ClientsMain] (
 	[NumberOfDeposits]			INT				DEFAULT 0	NOT NULL,
 	[NumberOfCredits]			INT				DEFAULT 0	NOT NULL,
 	[NumberOfClosedAccounts]	INT				DEFAULT 0	NOT NULL
-);"
-		 },
+	);
+		"},
 
 		 {"VIPclients", @"
 CREATE TABLE [dbo].[VIPclients] (
 	[id]				INT							NOT NULL PRIMARY KEY,
+	FOREIGN KEY ([id]) REFERENCES [dbo].[ClientsMain]([ID]) ON DELETE CASCADE,
 	[FirstName]			NVARCHAR (50)	DEFAULT ''	NOT NULL,
 	[MiddleName]		NVARCHAR (50)	DEFAULT ''	NOT NULL,
 	[LastName]			NVARCHAR (50)	DEFAULT ''	NOT NULL,
 	[PassportNumber]	NVARCHAR (11)	DEFAULT ''	NOT NULL,
 	[BirthDate]			DATE						NOT NULL
-);"
-		 },
+	);
+		"},
 
 		 {"SIMclients", @"
 CREATE TABLE [dbo].[SIMclients] (
 	[id]				INT							NOT NULL PRIMARY KEY,
+	FOREIGN KEY ([id]) REFERENCES [dbo].[ClientsMain]([ID]) ON DELETE CASCADE,
 	[FirstName]			NVARCHAR (50)	DEFAULT ''	NOT NULL,
 	[MiddleName]		NVARCHAR (50)	DEFAULT ''	NOT NULL,
 	[LastName]			NVARCHAR (50)	DEFAULT ''	NOT NULL,
@@ -42,6 +44,7 @@ CREATE TABLE [dbo].[SIMclients] (
 		 {"ORGclients", @"
 CREATE TABLE [dbo].[ORGclients] (
 	[id]				INT							NOT NULL PRIMARY KEY,	
+	FOREIGN KEY ([id]) REFERENCES [dbo].[ClientsMain]([ID]) ON DELETE CASCADE,
 	[OrgName]			NVARCHAR (256)	DEFAULT ''	NOT NULL,
 	[DirectorFirstName]	NVARCHAR (50)	DEFAULT ''	NOT NULL,
 	[DirectorMiddleName]NVARCHAR (50)	DEFAULT ''	NOT NULL,
@@ -91,15 +94,17 @@ CREATE TABLE [dbo].[AccountsParent] (
 		 {"DepositAccounts", @"
 CREATE TABLE [dbo].[DepositAccounts] (
 	[id]							INT							NOT NULL PRIMARY KEY,
+	FOREIGN KEY ([id]) REFERENCES [dbo].[AccountsParent]([AccID]) ON DELETE CASCADE,
 	[InterestAccumulationAccID]		INT				DEFAULT 0	NOT NULL,
 	[InterestAccumulationAccNum]	NVARCHAR (15)	DEFAULT ''	NOT NULL,
-	[AccumulatedInterest]			MONEY			DEFAULT 0	NON NULL
+	[AccumulatedInterest]			MONEY			DEFAULT 0	NOT NULL
 );"
 		 },
 
 		 {"CreditAccounts", @"
 CREATE TABLE [dbo].[CreditAccounts] (
 	[id]					INT					NOT NULL PRIMARY KEY,
+	FOREIGN KEY ([id]) REFERENCES [dbo].[AccountsParent]([AccID]) ON DELETE CASCADE,
 	[AccumulatedInterest]	MONEY	DEFAULT 0	NOT NULL
 );"
 		 },

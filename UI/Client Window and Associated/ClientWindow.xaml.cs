@@ -91,7 +91,7 @@ namespace Client_Window
 			// Обновляем базу клиентов.
 			// Эти два действия должны всегда быть вместе!
 			(this.client as ClientDTO).UpdateMyself(editClientWindow.newOrUpdatedClient as ClientDTO);
-			BA.Clients.UpdateClient(clientRowInTable, editClientWindow.newOrUpdatedClient);
+			BA.Clients.UpdateClientPersonalData(clientRowInTable, editClientWindow.newOrUpdatedClient);
 		}
 
 		private void ClientWindow_AccountDetails_Click(object sender, RoutedEventArgs e)
