@@ -18,7 +18,7 @@ namespace BankInside
 
 			SetupClientsSqlDataAdapter();
 			SetupSP_AddClient();
-			SetupSP_UpdateClient();
+			SetupSP_UpdateClientPersonalData();
 			SetupSP_UpdateNumberOfAccounts();
 
 			SetupAccountsParentSqlDataAdapter();
@@ -177,20 +177,20 @@ END;
 			}
 		}
 
-		private void SetupSP_UpdateClient()
+		private void SetupSP_UpdateClientPersonalData()
 		{
 			using (gbConn = SetGoodBankConnection())
 			{
 				gbConn.Open();
 				string sqlExpression = @"
-IF EXISTS (SELECT [name],[type] FROM sys.objects WHERE [name]='SP_UpdateClient' AND [type]='P')
-	DROP PROC [dbo].[SP_UpdateClient];
+IF EXISTS (SELECT [name],[type] FROM sys.objects WHERE [name]='SP_UpdateClientPersonalData' AND [type]='P')
+	DROP PROC [dbo].[SP_UpdateClientPersonalData];
 ";
 				sqlCommand = new SqlCommand(sqlExpression, gbConn);
 				sqlCommand.ExecuteNonQuery();
 
 				sqlExpression = @"
-CREATE PROC [dbo].[SP_UpdateClient]
+CREATE PROC [dbo].[SP_UpdateClientPersonalData]
 	 @clientID		INT
 	,@clientType	TINYINT
 	,@orgName		NVARCHAR (256)	

@@ -17,7 +17,7 @@ namespace Enumerables
 		/// ClientID	  = clientID;				--> из IAccountDTO acc
 		/// ClientType	  = clientType;				--> из IAccountDTO acc
 		/// ID			  = NextID();
-		/// AccountNumber = $"{ID:000000000000}";	--> добавляется CUR
+		/// AccountNumber = $"{ID:000000000000}";	--> добавляется SAV
 		/// Compounding	  = compounding;			--> из IAccountDTO acc
 		/// CompoundAccID = compAccID;				--> из IAccountDTO acc
 		/// Balance		  = 0;
@@ -29,12 +29,10 @@ namespace Enumerables
 		/// RecalcPeriod  =							--> No recalc period
 		/// EndDate		  =							--> null 
 		public AccountSaving(IAccountDTO acc, Action<Transaction> writeloghandler)
-			: base(acc.ClientID, acc.ClientType, acc.Compounding, acc.Interest,
-				   true, true, RecalcPeriod.NoRecalc, 0, writeloghandler)
+			: base( "SAV", acc.ClientID, acc.ClientType, 
+					acc.Balance, acc.Compounding, acc.Interest,
+					true, true, RecalcPeriod.NoRecalc, 0, writeloghandler)
 		{
-			AccountNumber	= "CUR" + AccountNumber;
-			Balance			= acc.Balance;
-
 			Transaction openAccountTransaction = new Transaction(
 				AccID,
 				GoodBankTime.GetBanksTodayWithCurrentTime(),
@@ -51,19 +49,18 @@ namespace Enumerables
 
 		/// <summary>
 		/// Констркуктор для искусственной генерации счета. 
-		/// Включает в себя поле даты открытия счета
+		/// Включает в себя поле даты открытия счета, 0 - кол-во месяцев с даты открытия
 		/// </summary>
 		/// <param name="acc"></param>
 		/// <param name="opened"></param>
 		public AccountSaving(IAccountDTO acc, DateTime opened, Action<Transaction> writeloghandler)
-			: base(acc.ClientID, acc.ClientType, acc.Compounding, acc.Interest,
-				   opened,
-				   true, true, RecalcPeriod.NoRecalc, 0,
-				   writeloghandler)
+			: base( "SAV", acc.ClientID, acc.ClientType, 
+					acc.Balance, acc.Compounding, acc.Interest,
+					opened,
+					true, true, RecalcPeriod.NoRecalc, 0,
+					0, // months elapsed
+					writeloghandler)
 		{
-			AccountNumber = "CUR" + AccountNumber;
-			Balance		  = acc.Balance;
-
 			Transaction openAccountTransaction = new Transaction(
 				AccID,
 				Opened,

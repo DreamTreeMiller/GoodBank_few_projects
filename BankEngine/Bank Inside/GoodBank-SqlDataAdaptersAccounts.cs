@@ -24,44 +24,88 @@ IF EXISTS (SELECT [name],[type] FROM sys.objects WHERE [name]='SP_AddAccount' AN
 
 				sqlExpression = @"
 CREATE PROC [dbo].[SP_AddAccount]
-	 @clientType	TINYINT
-	,@orgName		NVARCHAR (256)	
-	,@firstName		NVARCHAR (50)	
-	,@middleName	NVARCHAR (50)	
-	,@lastName		NVARCHAR (50)	
-	,@passportOrTIN	NVARCHAR (10)	
-	,@creationDate	DATE			
-	,@telephone		NVARCHAR (30)
-	,@email			NVARCHAR (128)
-	,@address		NVARCHAR (256)
+	 @accType 						TINYINT
+	,@clientID						INT
+	,@balance						MONEY
+	,@interest						DECIMAL
+	,@compounding					BIT
+	,@opened						DATE
+	,@duration						INT
+	,@monthsElapsed					INT
+	,@endDate						DATE
+	,@closed						DATE
+	,@topupable						BIT
+	,@withdrawalAllowed				BIT
+	,@recalcPeriod					TINYINT
+	,@numberOfTopUpsInDay			INT
+	,@isBlocked						BIT
+	,@interestAccumulationAccID		INT
+	,@interestAccumulationAccNum	NVARCHAR (15)
 AS
 BEGIN
-	DECLARE @clientID INT;
-	INSERT INTO [dbo].[ClientsMain]
-		([Telephone], [Email], [Address])
-	VALUES (@telephone, @email, @address);
-	SET @clientID=@@IDENTITY;
-	IF @clientType=0	-- VIP
-		INSERT INTO [dbo].[VIPclients] 
-			([id], [FirstName], [MiddleName], [LastName], [PassportNumber], [BirthDate])
-		VALUES (@clientID, @firstName, @middleName, @lastName, @passportOrTIN, @creationDate);
-	ELSE 
-	IF @clientType=1	-- Simple
-		INSERT INTO [dbo].[SIMclients] 
-			([id], [FirstName], [MiddleName], [LastName], [PassportNumber], [BirthDate])
-		VALUES (@clientID, @firstName, @middleName, @lastName, @passportOrTIN, @creationDate);
-	ELSE 
-	IF @clientType=2	-- Org
-		INSERT INTO [dbo].[ORGclients] 
+	DECLARE @accountID		INT;
+	DECLARE @accountNumber	NVARCHAR (15);
+
+	INSERT INTO [dbo].[AccountsParent]
+		([ClientID]
+		,[Balance]
+		,[Interest]
+		,[Compounding]
+		,[Opened]
+		,[Duration]
+		,[MonthsElapsed]
+		,[EndDate]
+		,[Closed]
+		,[Topupable]
+		,[WithdrawalAllowed]
+		,[RecalcPeriod]
+		,[NumberOfTopUpsInDay]
+		,[IsBlocked]
+		)
+	VALUES 
+		(@clientID
+		,@balance
+		,@interest
+		,@compounding
+		,@opened
+		,@duration
+		,@monthsElapsed
+		,@endDate
+		,@closed
+		,@topupable
+		,@withdrawalAllowed
+		,@recalcPeriod
+		,@numberOfTopUpsInDay
+		,@isBlocked
+		);
+	SET @accountID=@@IDENTITY;
+
+	IF @accType=0			--Saving
+		SET @accountNumber = 'SAV' + RIGHT(REPLICATE('0',12) + CAST(@accountID AS NVARCHAR),12)
+	ELSE IF @accType=1		--Deposit
+		SET @accountNumber = 'DEP' + RIGHT(REPLICATE('0',12) + CAST(@accountID AS NVARCHAR),12)
+	ELSE IF @accType=2		--Credit
+		SET @accountNumber = 'CRE' + RIGHT(REPLICATE('0',12) + CAST(@accountID AS NVARCHAR),12);
+	UPDATE [dbo].[AccountsParent]
+	SET [AccountNumber] = @accountNumber
+	WHERE [AccID]=@accountID;
+
+	IF @accType=1	-- Deposit
+		INSERT INTO [dbo].[DepositAccounts] 
 			([id]
-			,[OrgName]
-			,[DirectorFirstName]
-			,[DirectorMiddleName]
-			,[DirectorLastName]
-			,[TIN]
-			,[RegistrationDate])
-		VALUES (@clientID, @orgName, @firstName, @middleName, @lastName, @passportOrTIN, @creationDate);
-	RETURN @clientID;
+			,[InterestAccumulationAccID]
+			,[InterestAccumulationAccNum]
+			)
+		VALUES 
+			(@accountID
+			,@interestAccumulationAccID	
+			,@interestAccumulationAccNum
+			);
+	ELSE 
+	IF @accType=2	-- Credit
+		INSERT INTO [dbo].[CreditAccounts] ([id])
+		VALUES (@accountID);
+	RETURN;
 END;			
 ";
 				sqlCommand = new SqlCommand(sqlExpression, gbConn);

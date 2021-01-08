@@ -34,7 +34,7 @@ SELECT
 		{
 			string sqlCommandAddClient = $@"
 DECLARE @newClientId INT;
-EXEC @newClientId=[dbo].[AddClient] 
+EXEC @newClientId=[dbo].[SP_AddClient] 
 	 {(byte)c.ClientType}		
 	,N'{c.MainName}'		-- org name or empty
 	,N'{c.FirstName}'
@@ -55,69 +55,6 @@ SELECT @newClientId;
 				sqlCommand = new SqlCommand(sqlCommandAddClient, gbConn);
 				newClientID = (int)sqlCommand.ExecuteScalar();
 			}
-
-			#region insert client via data set -- disabled
-
-			//DataRow[] newRow = new DataRow[1];
-			//newRow[0] = ds.Tables["ClientsMain"].NewRow();
-
-			//newRow[0]["ID"]			= 0;	// это потому что нельзя null передавать 
-			//								// в поле primary key
-			//								// потом получаем из базы реальное значение
-			//newRow[0]["Telephone"]	= c.Telephone;
-			//newRow[0]["Email"]		= c.Email;
-			//newRow[0]["Address"]	= c.Address;
-
-			//ds.Tables["ClientsMain"].Rows.Add(newRow[0]);
-			//daClientsMain.Update(newRow);
-
-			//int id = (int)newRow[0]["ID"];
-
-			//DataRow[] newClientTypeRow = new DataRow[1];
-			//switch (c.ClientType)
-			//{
-			//	case ClientType.VIP:
-			//		newClientTypeRow[0] = ds.Tables["VIPclients"].NewRow();
-			//		newClientTypeRow[0]["id"]				= id;  // Foreign Key для связи с таблицей Clients
-			//		newClientTypeRow[0]["FirstName"]		= c.FirstName;
-			//		newClientTypeRow[0]["MiddleName"]		= c.MiddleName;
-			//		newClientTypeRow[0]["LastName"]			= c.LastName;
-			//		newClientTypeRow[0]["PassportNumber"]	= c.PassportOrTIN;
-			//		newClientTypeRow[0]["BirthDate"]		= c.CreationDate;
-
-			//		ds.Tables["VIPclients"].Rows.Add(newClientTypeRow[0]);
-			//		daVIPclients.Update(newClientTypeRow);
-			//		break;
-
-			//	case ClientType.Simple:
-			//		newClientTypeRow[0] = ds.Tables["SIMclients"].NewRow();
-			//		newClientTypeRow[0]["id"] = id; // c.ID;  // Foreign Key для связи с таблицей Clients
-			//		newClientTypeRow[0]["FirstName"] = c.FirstName;
-			//		newClientTypeRow[0]["MiddleName"] = c.MiddleName;
-			//		newClientTypeRow[0]["LastName"] = c.LastName;
-			//		newClientTypeRow[0]["PassportNumber"] = c.PassportOrTIN;
-			//		newClientTypeRow[0]["BirthDate"] = c.CreationDate;
-			//		ds.Tables["SIMclients"].Rows.Add(newClientTypeRow[0]);
-			//		daSIMclients.Update(newClientTypeRow);
-			//		break;
-
-			//	case ClientType.Organization:
-			//		newClientTypeRow[0] = ds.Tables["ORGclients"].NewRow();
-
-			//		newClientTypeRow[0]["id"]					= id; // Foreign Key для связи с таблицей Clients
-			//		newClientTypeRow[0]["OrgName"]				= c.MainName;
-			//		newClientTypeRow[0]["DirectorFirstName"]	= c.FirstName;
-			//		newClientTypeRow[0]["DirectorMiddleName"]	= c.MiddleName;
-			//		newClientTypeRow[0]["DirectorLastName"]		= c.LastName;
-			//		newClientTypeRow[0]["TIN"]					= c.PassportOrTIN;
-			//		newClientTypeRow[0]["RegistrationDate"]		= c.CreationDate;
-
-			//		ds.Tables["ORGclients"].Rows.Add(newClientTypeRow[0]);
-			//		daORGclients.Update(newClientTypeRow);
-			//		break;
-			//}
-
-			#endregion
 
 			return newClientID;
 		}
@@ -145,7 +82,7 @@ SELECT @newClientId;
 		public void UpdateClientPersonalData(DataRowView clientRowInTable, IClientDTO updatedClient)
 		{
 			string sqlCommandAddClient = $@"
-EXEC [dbo].[UpdateClient] 
+EXEC [dbo].[SP_UpdateClientPersonalData] 
 	 {updatedClient.ID}
 	,{(byte)updatedClient.ClientType}
 	,N'{updatedClient.MainName}'		-- org name or empty

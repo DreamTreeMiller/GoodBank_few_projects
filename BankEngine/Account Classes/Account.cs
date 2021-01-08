@@ -36,7 +36,18 @@ namespace Enumerables
 		#endregion
 
 		#region Общие поля для всех счетов
-		
+
+		/// <summary>
+		/// Уникальный ID счёта - используем для базы
+		/// </summary>
+		public int AccID { get; }
+
+		/// <summary>
+		/// Тип счета текущий, вклад или кредит
+		/// Дублирование, т.к. тип счета определяется его классом
+		/// </summary>
+		public abstract AccountType		AccType		{ get; }
+
 		/// <summary>
 		/// Тип клиента, которому принадлежит счет.
 		/// Это избыточное поле, но благодаря ему делается всего один проход по базе 
@@ -48,17 +59,6 @@ namespace Enumerables
 		/// ID владельца счета. 
 		/// </summary>
 		public int				ClientID			{ get; set; }
-
-		/// <summary>
-		/// Тип счета текущий, вклад или кредит
-		/// Дублирование, т.к. тип счета определяется его классом
-		/// </summary>
-		public abstract AccountType		AccType		{ get; }
-
-		/// <summary>
-		/// Уникальный ID счёта - используем для базы
-		/// </summary>
-		public int				AccID				{ get; }
 
 		/// <summary>
 		/// Уникальный номер счёта. 
@@ -150,16 +150,17 @@ namespace Enumerables
 		/// <param name="compounding"></param>
 		/// <param name="compAccID"></param>
 		/// <param name="interest"></param>
-		public Account( int clientID, ClientType clientType, bool compounding, double interest,
+		public Account( string accPrefix, int clientID, ClientType clientType, 
+						double balance, bool compounding, double interest,
 						bool topup, bool withdrawal, RecalcPeriod recalc, int duration,
 						Action<Transaction> writeloghandler)
 		{
+			AccID				= NextID();
 			ClientID			= clientID;
 			ClientType			= clientType;
-			AccID				= NextID();
-			AccountNumber		= $"{AccID:000000000000}";
+			AccountNumber		= accPrefix + $"{AccID:000000000000}";
 			Compounding			= compounding;
-			Balance				= 0;
+			Balance				= balance;
 			Interest			= interest;
 			Opened				= GoodBankTime.Today;
 			Topupable			= topup;
@@ -179,24 +180,27 @@ namespace Enumerables
 		/// <param name="compounding"></param>
 		/// <param name="compAccID"></param>
 		/// <param name="interest"></param>
-		public Account(int clientID, ClientType clientType, bool compounding, double interest,
+		public Account( string accPrefix, int clientID, ClientType clientType, 
+						double balance, bool compounding, double interest,
 						DateTime opened,
 						bool topup, bool withdrawal, RecalcPeriod recalc, int duration,
+						int monthsElapsed,
 						Action<Transaction> writeloghandler)
 		{
+			AccID				= NextID();
 			ClientID			= clientID;
 			ClientType			= clientType;
-			AccID				= NextID();
-			AccountNumber		= $"{AccID:000000000000}";
+			AccountNumber		= accPrefix + $"{AccID:000000000000}";
 			Compounding			= compounding;
-			Balance				= 0;
+			Balance				= balance;
 			Interest			= interest;
-			Opened				= opened;
+			Opened				= opened;				// Переданная дата, не сегодняшняя
 			Topupable			= topup;
 			WithdrawalAllowed	= withdrawal;
 			RecalcPeriod		= recalc;
 			Duration			= duration;
-			EndDate = Duration == 0 ? null : (DateTime?)Opened.AddMonths(Duration);
+			MonthsElapsed		= monthsElapsed;
+			EndDate				= Duration == 0 ? null : (DateTime?)Opened.AddMonths(Duration);
 			WriteLog		   += writeloghandler;
 		}
 

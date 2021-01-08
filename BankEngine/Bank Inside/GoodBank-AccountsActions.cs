@@ -5,6 +5,7 @@ using DTO;
 using BankTime;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data.SqlClient;
 
 namespace BankInside
 {
@@ -54,25 +55,55 @@ namespace BankInside
 		/// <returns>Возвращает созданный счет с уникальным ID счета</returns>
 		public void GenerateAccount(IAccountDTO acc)
 		{
-			Account newAcc = null;
-			var client = GetClientByID(acc.ClientID);
-			switch (acc.AccType)
+			string sqlCommandAddAccount = $@"
+EXEC SP_AddAccount
+	 {(byte)acc.AccType}					-- @accType
+	,{acc.ClientID}							-- [ClientID]			INT				NOT NULL,	-- ID клиента
+	,{acc.Balance}							-- [Balance]			MONEY DEFAULT 0	NOT NULL,			
+	,{acc.Interest}							-- [Interest]			DECIMAL (4,2)	NOT NULL,
+	,{acc.Compounding}						-- [Compounding]		BIT				NOT NULL,	-- с капитали
+	,{acc.Opened:yyyy-MM-dd}				-- [Opened]				DATE			NOT NULL,	-- дата откры
+	,{acc.Duration}							-- [Duration]			INT				NOT NULL,	-- Количество
+	,{acc.MonthsElapsed}					-- [MonthsElapsed]		INT				NOT NULL,	-- Количество
+	,{acc.EndDate:yyyy-MM-yy}				-- [EndDate]			DATE,						-- Дата оконч
+	,{acc.Closed:yyyy-MM-yy}				-- [Closed]				DATE,						-- Дата закры
+	,{acc.Topupable}						-- [Topupable]			BIT				NOT NULL,	-- Пополняемы
+	,{acc.WithdrawalAllowed}				-- [WithdrawalAllowed]	BIT				NOT NULL,	-- С правом ч
+	,{(byte)acc.RecalcPeriod}				-- [RecalcPeriod]		TINYINT			NOT NULL,	-- Период пер
+	,{acc.IsBlocked}						-- [IsBlocked]			BIT DEFAULT 0	NOT NUll
+	,{acc.InterestAccumulationAccID}		-- interest accum acc ID
+	,'{acc.InterestAccumulationAccNum}';	-- interest accum acc Num
+";
+			using (gbConn = SetGoodBankConnection())
 			{
-				case AccountType.Saving:
-					newAcc = new AccountSaving(acc, acc.Opened, WriteLog);
-					client.NumberOfSavingAccounts++;
-					break;
-				case AccountType.Deposit:
-					newAcc = new AccountDeposit(acc, acc.Opened, WriteLog);
-					client.NumberOfDeposits++;
-					break;
-				case AccountType.Credit:
-					newAcc = new AccountCredit(acc, acc.Opened, WriteLog);
-					client.NumberOfCredits++;
-					break;
+				gbConn.Open();
+				sqlCommand = new SqlCommand(sqlCommandAddAccount, gbConn);
+				sqlCommand.ExecuteNonQuery();
+
+				int updateSavings  = 0;
+				int updateDeposits = 0;
+				int updateCredits  = 0;
+				switch (acc.AccType)
+				{
+					case AccountType.Saving:
+						updateSavings++;
+						break;
+					case AccountType.Deposit:
+						updateDeposits++;
+						break;
+					case AccountType.Credit:
+						updateCredits++;
+						break;
+				}
+				string slqCommandUpdateNumOfAccounts = $@"
+EXEC [dbo].[SP_UpdateNumberOfAccounts]
+	 {acc.ClientID}
+	,{acc.Nu savingsUpdate
+	,@depositsUpdate
+	,@creditsUpdate
+	,@closedUpdate
+";
 			}
-			accounts.Add(newAcc);
-			return new AccountDTO(client, newAcc);
 		}
 
 		/// <summary>

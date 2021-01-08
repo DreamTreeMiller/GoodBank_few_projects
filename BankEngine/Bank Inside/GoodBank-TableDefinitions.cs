@@ -57,27 +57,16 @@ CREATE TABLE [dbo].[ORGclients] (
 		 {"AccountsParent", @"
 CREATE TABLE [dbo].[AccountsParent] (
 	[AccID]				INT			IDENTITY (1, 1) NOT NULL PRIMARY KEY,	-- уникальный ид счета
-	[AccType]			TINYINT			NOT NULL,	-- Account type
-													-- 0 - Saving,
-													-- 1 - Deposit,
-													-- 2 - Credit,
-													-- 3 - Total 
-	-- [ClientType]		TINYINT 
-	-- I feel ClientType field is not necessay. We can just generate it for output
-	-- and if we need, then it's better to use just numbers with comments, like this 0 --VIP, 1 --SIM, 2 --ORG
-
 	[ClientID]			INT				NOT NULL,	-- ID клиента
-	[AccountNumber]		NVARCHAR (15)	NOT NULL,		
+	[AccountNumber]		NVARCHAR (15)	DEFAULT '' NOT NULL,		
 	[Balance]			MONEY DEFAULT 0	NOT NULL,			
 	[Interest]			DECIMAL (4,2)	NOT NULL,
 	[Compounding]		BIT				NOT NULL,	-- с капитализацией или без 
 	[Opened]			DATE			NOT NULL,	-- дата открытия счета 
 	[Duration]			INT				NOT NULL,	-- Количество месяцев, на который открыт вклад, выдан кредит.  
 	[MonthsElapsed]		INT				NOT NULL,	-- Количество месяцев, прошедших с открытия вклада 
-	[EndDate]			DATE,						-- Дата окончания вклада/кредита. 
-													-- null - бессрочно 
-	[Closed]			DATE,						-- Дата закрытия счета. Только для закрытых. 
-													-- Если счет открыт, то равен null			 
+	[EndDate]			DATE,						-- Дата окончания вклада/кредита. null - бессрочно 
+	[Closed]			DATE,						-- Дата закрытия счета. null - счет открыт 
 	[Topupable]			BIT				NOT NULL,	-- Пополняемый счет или нет. У закрытого счета - (0) false 
 	[WithdrawalAllowed]	BIT				NOT NULL,	-- С правом частичного снятия или нет. У закрытого счета - false 
 	[RecalcPeriod]		TINYINT			NOT NULL,	-- Период пересчета процентов - ежемесячно, ежегодно, один раз в конце 
@@ -88,8 +77,8 @@ CREATE TABLE [dbo].[AccountsParent] (
 	-- Поля противодействия отмыванию денег 
 	[NumberOfTopUpsInDay]	INT DEFAULT 0	NOT NULL,
 	[IsBlocked]				BIT DEFAULT 0	NOT NUll
-);"
-		 },
+	);
+		"},
 
 		 {"DepositAccounts", @"
 CREATE TABLE [dbo].[DepositAccounts] (

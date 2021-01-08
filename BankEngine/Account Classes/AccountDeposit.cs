@@ -48,12 +48,11 @@ namespace Enumerables
 		/// RecalcPeriod  =							--> из IAccountDTO acc
 		/// EndDate		  =							--> из IAccountDTO acc 
 		public AccountDeposit(IAccountDTO acc, Action<Transaction> writeloghandler)
-			: base(acc.ClientID, acc.ClientType, acc.Compounding, acc.Interest,
-				  acc.Topupable, acc.WithdrawalAllowed, acc.RecalcPeriod, acc.Duration,
-				  writeloghandler)
+			: base( "DEP", acc.ClientID, acc.ClientType, 
+					acc.Balance, acc.Compounding, acc.Interest,
+					acc.Topupable, acc.WithdrawalAllowed, acc.RecalcPeriod, acc.Duration,
+					writeloghandler)
 		{
-			AccountNumber	= "DEP" + AccountNumber;
-			Balance			= acc.Balance;
 			if (acc.Compounding)
 			{
 				InterestAccumulationAccID  = AccID;
@@ -86,13 +85,13 @@ namespace Enumerables
 		/// <param name="acc"></param>
 		/// <param name="opened"></param>
 		public AccountDeposit(IAccountDTO acc, DateTime opened, Action<Transaction> writeloghandler)
-			: base(acc.ClientID, acc.ClientType, acc.Compounding, acc.Interest,
-				  opened,
-				  acc.Topupable, acc.WithdrawalAllowed, acc.RecalcPeriod, acc.Duration,
-				  writeloghandler)
+			: base( "DEP", acc.ClientID, acc.ClientType,
+					acc.Balance, acc.Compounding, acc.Interest,
+					opened,
+					acc.Topupable, acc.WithdrawalAllowed, acc.RecalcPeriod, acc.Duration,
+					acc.MonthsElapsed,
+					writeloghandler)
 		{
-			AccountNumber = "DEP" + AccountNumber;
-			Balance = acc.Balance;
 			if (acc.Compounding)
 			{
 				InterestAccumulationAccID  = AccID;
@@ -103,8 +102,6 @@ namespace Enumerables
 				InterestAccumulationAccID  = acc.InterestAccumulationAccID;
 				InterestAccumulationAccNum = acc.InterestAccumulationAccNum;
 			}
-
-			MonthsElapsed = acc.MonthsElapsed;
 
 			Transaction openAccountTransaction = new Transaction(
 				AccID,
