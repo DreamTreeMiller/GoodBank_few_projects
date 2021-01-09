@@ -152,7 +152,7 @@ namespace Client_Window
 			// его ID == 0, AccountNumber == "внутренний счет"
 
 			int		AccumAccIndx		= odwin.AccumulationAccount.SelectedIndex;
-			int	AccumulationAccID	= (odwin.AccumulationAccount.Items[AccumAccIndx] as AccountDTO).AccID;
+			int		AccumulationAccID	= (odwin.AccumulationAccount.Items[AccumAccIndx] as AccountDTO).AccID;
 			string	InterestAccumAccNum =
 				(odwin.AccumulationAccount.Items[AccumAccIndx] as AccountDTO).AccountNumber;
 
@@ -191,8 +191,8 @@ namespace Client_Window
 
 			// Клиент может получить кредит наличными
 			// создаем и добавляем этот элемент списка в список счетов для накопления процентов
-			AccountDTO cash = new AccountDTO();
-			cash.AccountNumber = "получить наличными";
+			AccountDTO cash		= new AccountDTO();
+			cash.AccountNumber	= "получить наличными";
 			creditRecipientAccounts.Add(cash);
 
 			OpenCreditWindow ocrwin = new OpenCreditWindow(creditRecipientAccounts, client.ClientType);
@@ -202,7 +202,7 @@ namespace Client_Window
 			// Получаем номер счета в базе счетов, на котором будет перечислена выданная сумма
 			// Если было выбрано "получить наличными", то его ID == 0
 			int		CreRecipAccIndx		  =  ocrwin.CreditRecipientAccount.SelectedIndex;
-			int	CreditRecipientAccID  = (ocrwin.CreditRecipientAccount.Items[CreRecipAccIndx] as AccountDTO).AccID;
+			int		CreditRecipientAccID  = (ocrwin.CreditRecipientAccount.Items[CreRecipAccIndx] as AccountDTO).AccID;
 			string	CreditRecipientAccNum =
 				(ocrwin.CreditRecipientAccount.Items[CreRecipAccIndx] as AccountDTO).AccountNumber;
 
@@ -222,7 +222,7 @@ namespace Client_Window
 								0);
 
 			// Добавляем счет в базу в бэкенд
-			newAcc = BA.Accounts.AddAccount(newAcc);
+			BA.Accounts.AddAccount(newAcc);
 
 			if (CreditRecipientAccID == 0)
 			{

@@ -8,6 +8,8 @@ namespace Interfaces_Actions
 	public interface IClientsActions
 	{
 		IClientDTO GetClientByID(int id);
+
+		void RefreshClientsViewTable();
 		DataView GetClientsTable(ClientType ct);
 
 		/// <summary>

@@ -106,7 +106,7 @@ namespace Account_Windows
 		{
 			BankTodayDate.Text = $"Сегодня {GoodBankTime.Today:dd.MM.yyyy} г.";
 			BA = ba;
-			client	= new ClientDTO(BA.Clients.GetClientByID(acc.ClientID));
+			client	= BA.Clients.GetClientByID(acc.ClientID);
 
 			AccID						= acc.AccID;
 			accountType					= acc.AccType;

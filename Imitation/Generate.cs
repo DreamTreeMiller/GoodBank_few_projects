@@ -111,8 +111,6 @@ namespace Imitation
 
 		private static void GenerateAccountsForClient(ClientType ct, int clientId, DateTime creationDate)
 		{
-			return;  // temporal injection
-
 			GenerateSavingAccounts(ct, clientId, creationDate, r.Next(0, 6));
 			GenerateDeposits(ct, clientId, creationDate, r.Next(0, 6));
 			GenerateCredits(ct, clientId, creationDate, r.Next(0, 6));
@@ -121,7 +119,7 @@ namespace Imitation
 		private static void GenerateSavingAccounts(ClientType ct, int cId, DateTime crD, int num) 
 		{
 			for (int i = 0; i < num; i++)
-				BA.Accounts.GenerateAccount(
+				BA.Accounts.AddAccount(
 					 new AccountDTO(ct, cId, AccountType.Saving,
 									r.Next(0,100) * 1000, 					// сумма на текущем счеты
 									0,										// процент по вкладу
@@ -151,7 +149,7 @@ namespace Imitation
 						break;
 				}
 
-				BA.Accounts.GenerateAccount(
+				BA.Accounts.AddAccount(
 					 new AccountDTO(ct, cId, AccountType.Deposit,
 									r.Next(100, 300) * 10000,		// сумма на счету. У ВИП > 1 mln
 									interest,	// процент
@@ -190,7 +188,7 @@ namespace Imitation
 						break;
 				}
 
-				BA.Accounts.GenerateAccount(
+				BA.Accounts.AddAccount(
 					 new AccountDTO(ct, cId, AccountType.Credit,
 									-amount,				// долг
 									interest,				// процент

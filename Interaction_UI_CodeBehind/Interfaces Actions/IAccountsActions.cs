@@ -6,8 +6,6 @@ namespace Interfaces_Actions
 {
 	public interface IAccountsActions
 	{
-		IAccount GetAccountByID(int id);
-
 		/// <summary>
 		/// Находит список всех счетов, принадлежащих клиентам данного типа
 		/// </summary>
@@ -27,10 +25,7 @@ namespace Interfaces_Actions
 
 		ObservableCollection<IAccount> GetTopupableAccountsToWireFrom(int sourceAccID);
 
-
-		IAccountDTO AddAccount(IAccountDTO acc); 
-
-		void GenerateAccount(IAccountDTO acc);
+		void AddAccount(IAccountDTO acc); 
 
 		IAccount TopUpCash(int accID, double cashAmount);
 

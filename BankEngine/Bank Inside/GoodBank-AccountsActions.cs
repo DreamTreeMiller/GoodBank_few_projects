@@ -19,41 +19,11 @@ namespace BankInside
 		}
 
 		/// <summary>
-		/// Добавляет счет, данные которого получены от ручного ввода
-		/// Эти данные не содержат ID и номера счета
+		/// Добавляет счет в базу
 		/// </summary>
-		/// <param name="acc"></param>
+		/// <param name="acc">Данные счета</param>
 		/// <returns>Возвращает созданный счет с уникальным ID счета</returns>
-		public IAccountDTO AddAccount(IAccountDTO acc)
-		{
-			Account newAcc = null;
-			var client = GetClientByID(acc.ClientID);
-			switch(acc.AccType)
-			{
-				case AccountType.Saving:
-					newAcc = new AccountSaving(acc, WriteLog);
-					client.NumberOfSavingAccounts++;
-					break;
-				case AccountType.Deposit:
-					newAcc = new AccountDeposit(acc, WriteLog);
-					client.NumberOfDeposits++;
-					break;
-				case AccountType.Credit:
-					newAcc = new AccountCredit(acc, WriteLog);
-					client.NumberOfCredits++;
-					break;
-			}
-			accounts.Add(newAcc);
-			return new AccountDTO(client, newAcc);
-		}
-
-		/// <summary>
-		/// Генерирует демо счет для искусственно сгенерированного клиента.
-		/// Этот метод нужен, чтобы ввести дату раньше сегодняшней
-		/// </summary>
-		/// <param name="acc"></param>
-		/// <returns>Возвращает созданный счет с уникальным ID счета</returns>
-		public void GenerateAccount(IAccountDTO acc)
+		public void AddAccount(IAccountDTO acc)
 		{
 			string sqlCommandAddAccount = $@"
 EXEC SP_AddAccount
@@ -80,29 +50,41 @@ EXEC SP_AddAccount
 				sqlCommand = new SqlCommand(sqlCommandAddAccount, gbConn);
 				sqlCommand.ExecuteNonQuery();
 
-				int updateSavings  = 0;
-				int updateDeposits = 0;
-				int updateCredits  = 0;
 				switch (acc.AccType)
 				{
 					case AccountType.Saving:
-						updateSavings++;
+						UpdateNumberOfAccounts(acc.ClientID, 1, 0, 0, 0);
 						break;
 					case AccountType.Deposit:
-						updateDeposits++;
+						UpdateNumberOfAccounts(acc.ClientID, 0, 1, 0, 0);
 						break;
 					case AccountType.Credit:
-						updateCredits++;
+						UpdateNumberOfAccounts(acc.ClientID, 0, 0, 1, 0);
 						break;
 				}
+			}
+		}
+
+		private void UpdateNumberOfAccounts
+			(int clientID, 
+			 int savingsUpdate, 
+			 int depositsUpdate, 
+			 int creditsUpdate,
+			 int closedUpdate)
+		{
+			using (gbConn = SetGoodBankConnection())
+			{
+				gbConn.Open();
 				string slqCommandUpdateNumOfAccounts = $@"
 EXEC [dbo].[SP_UpdateNumberOfAccounts]
-	 {acc.ClientID}
-	,{acc.Nu savingsUpdate
-	,@depositsUpdate
-	,@creditsUpdate
-	,@closedUpdate
+	 {clientID}
+	,{savingsUpdate}
+	,{depositsUpdate}
+	,{creditsUpdate}
+	,{closedUpdate}
 ";
+				sqlCommand = new SqlCommand(slqCommandUpdateNumOfAccounts, gbConn);
+				sqlCommand.ExecuteNonQuery();
 			}
 		}
 
@@ -335,21 +317,19 @@ EXEC [dbo].[SP_UpdateNumberOfAccounts]
 
 			accumulatedAmount = acc.CloseAccount();
 
-			IClient client = GetClientByID(acc.ClientID);
-			client.NumberOfClosedAccounts++;
-
-			switch(acc.AccType)
+			switch (acc.AccType)
 			{
 				case AccountType.Saving:
-					client.NumberOfSavingAccounts--;
+					UpdateNumberOfAccounts(acc.ClientID, -1, 0, 0, 1);
 					break;
 				case AccountType.Deposit:
-					client.NumberOfDeposits--;
+					UpdateNumberOfAccounts(acc.ClientID, 0, -1, 0, 1);
 					break;
 				case AccountType.Credit:
-					client.NumberOfCredits--;
+					UpdateNumberOfAccounts(acc.ClientID, 0, 0, -1, 1);
 					break;
 			}
+
 			return acc;
 		}
 	

@@ -18,10 +18,8 @@ namespace BankInside
 		/// <returns></returns>
 		public IClientDTO GetClientByID(int id)
 		{
-			string sqlCommand = @"
-SELECT 
-";
-			return new ClientDTO();
+			DataRow clientRow = ds.Tables["Clients"].Rows.Find(id);
+			return new ClientDTO(clientRow);
 		}
 
 		/// <summary>
@@ -59,19 +57,137 @@ SELECT @newClientId;
 			return newClientID;
 		}
 
+		/// <summary>
+		/// Удаляет и заново создаёт таблицу [dbo].[Clietns], 
+		/// в которой собраны данные из всех трёх таблиц клиентов
+		/// </summary>
+		public void RefreshClientsViewTable()
+		{
+			using (gbConn = SetGoodBankConnection())
+			{
+				gbConn.Open();
+				string sqlExpression = @"
+IF EXISTS (SELECT [name],[type] FROM sys.objects WHERE [name]='ClientsView' AND [type]='U')	
+	DROP TABLE [dbo].[ClientsView];
+SELECT
+	 [ID]					
+	,[ClientType]			
+	,[ClientTypeTag]		
+	,[FirstName]			
+	,[MiddleName]			
+	,[LastName]				
+	,[MainName]				
+	,[DirectorName]			
+	,[CreationDate]			
+	,[PassportOrTIN]		
+	,[Telephone]			
+	,[Email]				
+	,[Address]				
+	,[NumberOfSavingAccounts]
+	,[NumberOfDeposits]		
+	,[NumberOfCredits]		
+	,[NumberOfClosedAccounts]
+INTO [dbo].[ClientsView]
+FROM 
+(SELECT	 [ID] 
+		,[ClientType] 
+		,[ClientTypeTag] 
+		,[FirstName]
+		,[MiddleName]
+		,[LastName]
+		,[MainName]
+		,[DirectorName]
+		,[CreationDate]
+		,[PassportOrTIN]
+		,[Telephone]
+		,[Email]
+		,[Address]
+		,[NumberOfSavingAccounts]
+		,[NumberOfDeposits]
+		,[NumberOfCredits]
+		,[NumberOfClosedAccounts]
+FROM	(SELECT
+			 [ClientsMain].[ID] AS [ID]
+			,0 AS [ClientType]		-- VIP
+			,N'ВИП' AS [ClientTypeTag] 
+			,[FirstName]
+			,[MiddleName]
+			,[LastName]
+			,[LastName] + ' ' + [FirstName]	+ ' ' + [MiddleName] AS [MainName]
+			,'' AS [DirectorName]
+			,[BirthDate] AS [CreationDate]
+			,[PassportNumber] AS [PassportOrTIN]
+			,[Telephone]
+			,[Email]
+			,[Address]
+			,[NumberOfSavingAccounts]
+			,[NumberOfDeposits]
+			,[NumberOfCredits]
+			,[NumberOfClosedAccounts]
+		FROM	[VIPclients], [ClientsMain]
+		WHERE	[ClientsMain].[ID] = [VIPclients].[id] 
+		) AS vip
+UNION SELECT
+		[ClientsMain].[ID] AS [ID]
+		,1 AS [ClientType]			-- Simple
+		,N'Физик' AS [ClientTypeTag]
+		,[FirstName]
+		,[MiddleName]
+		,[LastName]
+		,[LastName] + ' ' + [FirstName] + ' ' + [MiddleName] AS [MainName]
+		,'' AS [DirectorName]
+		,[BirthDate] AS [CreationDate]
+		,[PassportNumber] AS [PassportOrTIN]
+		,[Telephone]
+		,[Email]
+		,[Address]
+		,[NumberOfSavingAccounts]
+		,[NumberOfDeposits]
+		,[NumberOfCredits]
+		,[NumberOfClosedAccounts]
+FROM	[SIMclients], [ClientsMain]
+WHERE	[ClientsMain].[ID] = [SIMclients].[id]
+UNION SELECT
+		 [ClientsMain].[ID]	  AS [ID]
+		,2 AS [ClientType]			-- Organization
+		,N'Юрик'			  AS [ClientTypeTag]
+		,[DirectorFirstName]  AS [FirstName]
+		,[DirectorMiddleName] AS [MiddleName]
+		,[DirectorLastName]   AS [LastName]
+		,[OrgName]			  AS [MainName]
+		,[DirectorLastName] + ' ' + [DirectorFirstName] + ' ' + [DirectorMiddleName]
+		 AS [DirectorName]
+		,[RegistrationDate]   AS [CreationDate]
+		,[TIN]				  AS [PassportOrTIN]
+		,[Telephone]
+		,[Email]
+		,[Address]
+		,[NumberOfSavingAccounts]
+		,[NumberOfDeposits]
+		,[NumberOfCredits]
+		,[NumberOfClosedAccounts]
+FROM	[ORGclients], [ClientsMain]
+WHERE	[ClientsMain].[ID] = [ORGclients].[id]
+) allclients;
+";
+				sqlCommand = new SqlCommand(sqlExpression, gbConn);
+				sqlCommand.ExecuteNonQuery();
+			}
+		}
+
 		public DataView GetClientsTable(ClientType ct)
 		{
+			RefreshClientsViewTable();
 			// Обновляем таблицу для показа
-			ds.Tables["Clients"].Clear();
-			daClients.Fill(ds, "Clients");
+			daClientsView.Fill(ds, "ClientsView");
 
 			string rowfilter = (ct == ClientType.All) ? "" : "ClientType = " + (int)ct;
-			DataView clientsTable = 
-				new DataView(ds.Tables["Clients"],		// Table to show
+			DataView clientsViewTable = 
+				new DataView(ds.Tables["ClientsView"],	// Table to show
 							 rowfilter,					// Row filter (select type)
-							 "MainName ASC",			// Sort ascending by 'MainName' field
+							 "ID ASC",					// Sort ascending by 'ID' field
 							 DataViewRowState.CurrentRows);
-			return clientsTable;
+			return clientsViewTable;
 		}
 
 		/// <summary>
@@ -101,63 +217,6 @@ EXEC [dbo].[SP_UpdateClientPersonalData]
 				sqlCommand = new SqlCommand(sqlCommandAddClient, gbConn);
 				sqlCommand.ExecuteNonQuery();
 			}
-
-			#region Update Client's Personal Data via Data Set -- disabled
-
-			// Обновляем базу данных - две таблицы:
-			// Родительскую таблицу Clients и одну из трёх VIP, SIM or ORGclients
-			// в зависимости от типа клиента
-			//DataRow[] newRow = new DataRow[1];
-			//newRow[0] = ds.Tables["ClientsMain"].Rows.Find(updatedClient.ID);
-
-			//newRow[0]["Telephone"]	= updatedClient.Telephone;
-			//newRow[0]["Email"]		= updatedClient.Email;
-			//newRow[0]["Address"]	= updatedClient.Address;
-
-			//daClientsMain.Update(newRow);
-
-			//DataRow[] newClientTypeRow = new DataRow[1];
-			//switch (updatedClient.ClientType)
-			//{
-			//	case ClientType.VIP:
-			//		newClientTypeRow[0] = ds.Tables["VIPclients"].Rows.Find(updatedClient.ID);
-
-			//		newClientTypeRow[0]["FirstName"]	  = updatedClient.FirstName;
-			//		newClientTypeRow[0]["MiddleName"]	  = updatedClient.MiddleName;
-			//		newClientTypeRow[0]["LastName"]		  = updatedClient.LastName;
-			//		newClientTypeRow[0]["PassportNumber"] = updatedClient.PassportOrTIN;
-			//		newClientTypeRow[0]["BirthDate"]	  = updatedClient.CreationDate;
-
-			//		daVIPclients.Update(newClientTypeRow);
-			//		break;
-
-			//	case ClientType.Simple:
-			//		newClientTypeRow[0] = ds.Tables["SIMclients"].Rows.Find(updatedClient.ID);
-
-			//		newClientTypeRow[0]["FirstName"]	  = updatedClient.FirstName;
-			//		newClientTypeRow[0]["MiddleName"]	  = updatedClient.MiddleName;
-			//		newClientTypeRow[0]["LastName"]		  = updatedClient.LastName;
-			//		newClientTypeRow[0]["PassportNumber"] = updatedClient.PassportOrTIN;
-			//		newClientTypeRow[0]["BirthDate"]	  = updatedClient.CreationDate;
-
-			//		daSIMclients.Update(newClientTypeRow);
-			//		break;
-
-			//	case ClientType.Organization:
-			//		newClientTypeRow[0] = ds.Tables["ORGclients"].Rows.Find(updatedClient.ID);
-
-			//		newClientTypeRow[0]["OrgName"]			  = updatedClient.MainName;
-			//		newClientTypeRow[0]["DirectorFirstName"]  = updatedClient.FirstName;
-			//		newClientTypeRow[0]["DirectorMiddleName"] = updatedClient.MiddleName;
-			//		newClientTypeRow[0]["DirectorLastName"]	  = updatedClient.LastName;
-			//		newClientTypeRow[0]["TIN"]				  = updatedClient.PassportOrTIN;
-			//		newClientTypeRow[0]["RegistrationDate"]	  = updatedClient.CreationDate;
-
-			//		daORGclients.Update(newClientTypeRow);
-			//		break;
-			//}
-
-			#endregion
 
 			// Обновляем таблицу показа
 			// Это работает, но не подгружает данные из базы данных

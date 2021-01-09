@@ -239,6 +239,26 @@ namespace DTO
 			NumberOfClosedAccounts	= (int)c["NumberOfClosedAccounts"];
 		}
 
+		public ClientDTO(DataRow c)
+		{
+			ID						= (int)c["ID"];
+			ClientType				= (ClientType)c["ClientType"];
+			FirstName				= (string)c["FirstName"];
+			MiddleName				= (string)c["MiddleName"];
+			LastName				= (string)c["LastName"];
+			MainName				= (string)c["MainName"];
+			CreationDate			= (DateTime)c["CreationDate"];
+			PassportOrTIN			= (string)c["PassportOrTIN"];
+			Telephone				= (string)c["Telephone"];
+			Email					= (string)c["Email"];
+			Address					= (string)c["Address"];
+			NumberOfSavingAccounts	= (int)c["NumberOfSavingAccounts"];
+			NumberOfDeposits		= (int)c["NumberOfDeposits"];
+			NumberOfCredits			= (int)c["NumberOfCredits"];
+			NumberOfClosedAccounts	= (int)c["NumberOfClosedAccounts"];
+		}
+
+
 		/// <summary>
 		/// Конструктор для выборки из базы и показа в списке
 		/// Подразумевается, что все данные введены корректно
