@@ -1,9 +1,8 @@
 ﻿using BankTime;
-using DTO;
 using Enumerables;
 using Interfaces_Data;
 using System;
-using System.Collections.ObjectModel;
+using System.Data;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -183,7 +182,7 @@ namespace Client_Window
 
 		#endregion
 
-		public OpenCreditWindow(ObservableCollection<IAccountDTO> creditRecipientAccounts, ClientType clientType)
+		public OpenCreditWindow(DataView creditRecipientAccounts, ClientType clientType)
 		{
 			InitializeComponent();
 			InitializeWindowLabelsAndData(creditRecipientAccounts, clientType);
@@ -191,7 +190,7 @@ namespace Client_Window
 			SetFocusOnCreditAmountEntryBox();
 		}
 
-		private void InitializeWindowLabelsAndData(ObservableCollection<IAccountDTO> creditRecipientAccounts, ClientType clientType)
+		private void InitializeWindowLabelsAndData(DataView creditRecipientAccounts, ClientType clientType)
 		{
 			BankTodayDate.Text = $"Сегодня {GoodBankTime.Today:dd.MM.yyyy} г.";
 			CreditRecipientAccount.ItemsSource = creditRecipientAccounts;

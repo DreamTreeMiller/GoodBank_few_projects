@@ -1,13 +1,11 @@
 ﻿using BankTime;
 using Binding_UI_CodeBehind;
-using DTO;
 using Enumerables;
 using Interfaces_Data;
 using Account_Windows;
 using Client_Window;
 using Data_Grid_User_Controls;
 using Window_Name_Tags;
-using System.Collections.ObjectModel;
 using System.Windows;
 using System.Data;
 
@@ -29,7 +27,7 @@ namespace Department_Window
 
 		private ClientType			ClientTypeForAccountsList;
 		private AccountsList		accountsListView;
-		ObservableCollection<IAccountDTO> accountsList = new ObservableCollection<IAccountDTO>();
+		private DataView			accountsList;
 
 		public DepartmentWindow(WindowID wid, BankActions ba)
 		{
@@ -98,10 +96,10 @@ namespace Department_Window
 		private void ShowAccounts()
 		{
 			var accList = BA.Accounts.GetAccountsList(ClientTypeForAccountsList);
-			accountsList = accList.accList;
-			accountsListView.SetAccountsDataGridItemsSource(accountsList);
-			accountsListView.SetAccountsTotals(accList.accList.Count,
-				accList.totalCurr, accList.totalDeposit, accList.totalCredit);
+			accountsList = accList.accountsViewTable;
+			accountsListView.SetAccountsDataGridItemsSource(accountsList, ClientTypeForAccountsList);
+			accountsListView.SetAccountsTotals(accList.accountsViewTable.Count,
+				accList.totalSaving, accList.totalDeposit, accList.totalCredit);
 		}
 
 		#endregion

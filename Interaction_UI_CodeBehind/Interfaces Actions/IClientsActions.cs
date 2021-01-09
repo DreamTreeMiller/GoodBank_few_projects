@@ -9,7 +9,6 @@ namespace Interfaces_Actions
 	{
 		IClientDTO GetClientByID(int id);
 
-		void RefreshClientsViewTable();
 		DataView GetClientsTable(ClientType ct);
 
 		/// <summary>

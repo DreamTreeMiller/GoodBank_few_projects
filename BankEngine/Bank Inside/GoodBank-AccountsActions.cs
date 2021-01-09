@@ -5,6 +5,7 @@ using DTO;
 using BankTime;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data;
 using System.Data.SqlClient;
 
 namespace BankInside
@@ -89,64 +90,131 @@ EXEC [dbo].[SP_UpdateNumberOfAccounts]
 		}
 
 		/// <summary>
+		/// Удаляет и заново создаёт таблицу [dbo].[ClietnsView], 
+		/// в которой собраны данные из всех трёх таблиц клиентов
+		/// </summary>
+		public void RefreshAccountsViewTable()
+		{
+			using (gbConn = SetGoodBankConnection())
+			{
+				gbConn.Open();
+				string sqlExpression = @"
+IF EXISTS (SELECT [name],[type] FROM sys.objects WHERE [name]='AccountsView' AND [type]='U')	
+	DROP TABLE [dbo].[AccountsView];
+SELECT			-- Row structure for accounts view
+	 [AccID]					
+	,[ClientType]				
+	,[ClientName]				
+	,[AccountNumber]			
+	,[AccType]					
+	,[CurrentAmount]			
+	,[DepositAmount]			
+	,[DebtAmount]				
+	,[Interest]					
+	,[Opened]					
+	,[Closed]					
+INTO [dbo].[AccountsView]
+FROM	
+	(SELECT 
+		 [AccID]		
+		,[ClientType]	
+		,[ClientName]	
+		,[AccountNumber]
+		,[AccType]		
+		,[CurrentAmount]
+		,[DepositAmount]
+		,[DebtAmount]	
+		,[Interest]		
+		,[Opened]		
+		,[Closed]		
+	FROM 
+	-- first we make a list of all clients
+		(SELECT  [id]
+				,0		AS [ClientType] -- VIP
+				,[LastName] + ' ' + [FirstName] + ' ' + [MiddleName] AS [ClientName]
+		 FROM	[dbo].[VIPclients]
+		 UNION SELECT    [id] 
+						,1		AS [ClientType] -- Simple
+						,[LastName] + ' ' + [FirstName] + ' ' + [MiddleName] AS [ClientName]
+		 FROM	[dbo].[SIMclients]
+		 UNION SELECT	 [id]
+						,2		AS [ClientType]	-- Organization
+						,[OrgName] AS [ClientName]
+		 FROM	[dbo].[ORGclients])	AS Clients,
+		-- then list of all accounts
+		 (SELECT	 [AccID]
+					,[ClientID]
+					,[AccountNumber]
+					,0 AS [AccType]		-- Saving account
+					,[Balance]	AS [CurrentAmount]
+					,0			AS [DepositAmount]
+					,0			AS [DebtAmount]
+					,[Interest]
+					,[Opened]
+					,[Closed]
+		  FROM	[dbo].[SavingAccounts], [dbo].[AccountsParent]
+		  WHERE [SavingAccounts].[id] = [AccountsParent].[AccID] 
+		  UNION SELECT   [AccID]
+						,[ClientID]
+						,[AccountNumber]
+						,1 AS [AccType]		-- Deposit account
+						,0			AS [CurrentAmount]
+						,[Balance]	AS [DepositAmount]
+						,0			AS [DebtAmount]
+						,[Interest]
+						,[Opened]
+						,[Closed]
+		  FROM	[dbo].[DepositAccounts], [dbo].[AccountsParent]
+		  WHERE [DepositAccounts].[id] = [AccountsParent].[AccID] 
+		  UNION SELECT   [AccID]
+						,[ClientID]
+						,[AccountNumber]
+						,2 AS [AccType]		-- Credit account
+						,0			AS [CurrentAmount]
+						,0			AS [DepositAmount]
+						,[Balance]	AS [DebtAmount]
+						,[Interest]
+						,[Opened]
+						,[Closed]
+		  FROM	[dbo].[CreditAccounts], [dbo].[AccountsParent]
+		  WHERE [CreditAccounts].[id] = [AccountsParent].[AccID] ) AS Accounts
+	-- then unify them
+	 WHERE Clients.[id] = Accounts.[ClientID]
+	) allaccountswithclientnames
+";
+				sqlCommand = new SqlCommand(sqlExpression, gbConn);
+				sqlCommand.ExecuteNonQuery();
+			}
+		}
+
+		/// <summary>
 		/// Формирует список счетов данного типа клиентов.
 		/// </summary>
 		/// <param name="clientType">Тип клиента</param>
 		/// <returns>
 		/// возвращает коллекцию счетов и общую сумму каждой группы счетов - текущие, вклады, кредиты
 		/// </returns>
-		public (ObservableCollection<IAccountDTO> accList, double totalCurr, double totalDeposit, double totalCredit)
-			GetAccountsList(ClientType clientType)
+		public (DataView accountsViewTable, double totalSaving, double totalDeposit, double totalCredit)
+			GetAccountsList(ClientType ct)
 		{
-			ObservableCollection<IAccountDTO> accList = new ObservableCollection<IAccountDTO>();
-			double totalCurr = 0, totalDeposit = 0, totalCredit = 0;
+			double totalSaving = 0, totalDeposit = 0, totalCredit = 0;
 
-			return (accList, 0,0,0); // Temporal solution
+			// Обновляем таблицу для показа
+			//ds.Tables["AccountsView"].Clear();
+			//daAccountsView.Fill(ds, "AccountsView");
 
-			IAccount acc;
-			if (clientType == ClientType.All)
-			{
-				for (int i = 0; i < accounts.Count; i++)
-				{
-					acc = accounts[i];
-					switch(acc.AccType)
-					{
-						case AccountType.Saving:
-							totalCurr += acc.Balance;
-							break;
-						case AccountType.Deposit:
-							totalDeposit += acc.Balance;
-							if (!acc.Compounding && (acc as IAccountDeposit).InterestAccumulationAccID == 0)
-								totalDeposit += (acc as IAccountDeposit).AccumulatedInterest;
-							break;
-						case AccountType.Credit:
-							totalCredit += acc.Balance;
-							break;
-					}
-					accList.Add(new AccountDTO(GetClientByID(accounts[i].ClientID), acc));
-				}
-				return (accList, totalCurr, totalDeposit, totalCredit);
-			}
+			string rowfilter = (ct == ClientType.All) ? "" : "ClientType = " + (int)ct;
+			DataTable accViewTable = ds.Tables["AccountsView"];
+			DataView accountsViewTable =
+				new DataView(accViewTable,  // Table to show
+							 rowfilter,                 // Row filter (select type)
+							 "AccID ASC",                  // Sort ascending by 'ID' field
+							 DataViewRowState.CurrentRows);
 
-			for (int i = 0; i < accounts.Count; i++)
-				if (accounts[i].ClientType == clientType)
-				{
-					acc = accounts[i];
-					switch (acc.AccType)
-					{
-						case AccountType.Saving:
-							totalCurr += acc.Balance;
-							break;
-						case AccountType.Deposit:
-							totalDeposit += acc.Balance;
-							break;
-						case AccountType.Credit:
-							totalCredit += acc.Balance;
-							break;
-					}
-					accList.Add(new AccountDTO(GetClientByID(accounts[i].ClientID), acc));
-				}
-			return (accList, totalCurr, totalDeposit, totalCredit);
+			totalSaving = 0;//(double)accViewTable.Compute("SUM(CurrentAmount)", rowfilter);
+			totalDeposit = 0;// (double)accViewTable.Compute("SUM(DepositAmount)", rowfilter);
+			totalCredit = 0;// (double)accViewTable.Compute("SUM(CreditAmount)",  rowfilter);
+			return (accountsViewTable, totalSaving, totalDeposit, totalCredit);
 		}
 
 		/// <summary>
@@ -156,10 +224,10 @@ EXEC [dbo].[SP_UpdateNumberOfAccounts]
 		/// <returns>
 		/// возвращает коллекцию счетов и общую сумму каждой группы счетов - текущие, вклады, кредиты
 		/// </returns>
-		public (ObservableCollection<IAccountDTO> accList, double totalCurr, double totalDeposit, double totalCredit)
+		public (DataView accountsViewTable, double totalSaving, double totalDeposit, double totalCredit)
 			GetClientAccounts(int clientID)
 		{
-			ObservableCollection<IAccountDTO> accList = new ObservableCollection<IAccountDTO>();
+			DataView accList = new DataView();
 			var client = GetClientByID(clientID);
 			double totalCurr = 0, totalDeposit = 0, totalCredit = 0;
 			IAccount acc;
@@ -180,49 +248,49 @@ EXEC [dbo].[SP_UpdateNumberOfAccounts]
 							totalCredit += acc.Balance;
 							break;
 					}
-					accList.Add(new AccountDTO(client, acc));
+					//accList.Add(new AccountDTO(client, acc));
 				}
 			return (accList, totalCurr, totalDeposit, totalCredit);
 		}
 
-		public ObservableCollection<IAccountDTO> GetClientAccounts(int clientID, AccountType accType)
+		public DataView GetClientAccounts(int clientID, AccountType accType)
 		{
-			ObservableCollection<IAccountDTO> accList = new ObservableCollection<IAccountDTO>();
+			DataView accList = new DataView();
 			var client = GetClientByID(clientID);
 
 			for (int i = 0; i < accounts.Count; i++)
 			{
 				var acc = accounts[i];
-				if (acc.ClientID == clientID && acc.AccType == accType)
-					accList.Add(new AccountDTO(client, acc));
+				//if (acc.ClientID == clientID && acc.AccType == accType)
+					//accList.Add(new AccountDTO(client, acc));
 			}
 			return accList;
 
 		}
 
-		public ObservableCollection<IAccountDTO> GetClientAccountsToAccumulateInterest(int clientID)
+		public DataView GetClientAccountsToAccumulateInterest(int clientID)
 		{
-			ObservableCollection<IAccountDTO> accList = new ObservableCollection<IAccountDTO>();
+			DataView accList = new DataView();
 			var client = GetClientByID(clientID);
 
 			for (int i = 0; i < accounts.Count; i++)
 			{
 				var acc = accounts[i];
-				if (acc.ClientID == clientID &&
-					acc.AccType == AccountType.Saving &&
-					acc.Topupable)
-					accList.Add(new AccountDTO(client, acc));
+				//if (acc.ClientID == clientID &&
+				//	acc.AccType == AccountType.Saving &&
+				//	acc.Topupable)
+				//	accList.Add(new AccountDTO(client, acc));
 			}
 			return accList;
 		}
 
-		public ObservableCollection<IAccount> GetTopupableAccountsToWireFrom(int sourceAccID)
+		public DataView GetTopupableAccountsToWireFrom(int sourceAccID)
 		{
-			ObservableCollection<IAccount> accList = new ObservableCollection<IAccount>();
+			DataView accList = new DataView();
 			for (int i = 0; i < accounts.Count; i++)
 				if (accounts[i].Topupable && accounts[i].AccID != sourceAccID)
 				{
-					accList.Add(accounts[i]);
+					//accList.Add(accounts[i]);
 				}
 			return accList;
 		}

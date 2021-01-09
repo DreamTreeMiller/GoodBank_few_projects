@@ -69,10 +69,10 @@ namespace Client_Window
 		private void ShowAccounts()
 		{
 			var accList = BA.Accounts.GetClientAccounts(client.ID);
-			var accountsList = accList.accList;
-			accountsListView.SetAccountsDataGridItemsSource(accountsList);
-			accountsListView.SetAccountsTotals(accList.accList.Count,
-				accList.totalCurr, accList.totalDeposit, accList.totalCredit);
+			var accountsList = accList.accountsViewTable;
+			accountsListView.SetAccountsDataGridItemsSource(accountsList, client.ClientType);
+			accountsListView.SetAccountsTotals(accList.accountsViewTable.Count,
+				accList.totalSaving, accList.totalDeposit, accList.totalCredit);
 		}
 
 		/// <summary>
@@ -139,9 +139,8 @@ namespace Client_Window
 			// Клиент может накапливать проценты на отдельном безымянном счете, 
 			// привязанном ко вкладу. Я назвал его "внутренний счет"
 			// создаем заглушку для этого счета и добавляем ее в список счетов для накопления процентов
-			AccountDTO internalAccount		= new AccountDTO();
-			internalAccount.AccountNumber	= "внутренний счет";
-			accumulationAccounts.Add(internalAccount);
+			DataRowView internalAccount		= accumulationAccounts.AddNew();
+			internalAccount["AccountNumber"]	= "внутренний счет";
 
 			OpenDepositWindow odwin = new OpenDepositWindow(accumulationAccounts, client.ClientType);
 			var result = odwin.ShowDialog();
@@ -191,9 +190,8 @@ namespace Client_Window
 
 			// Клиент может получить кредит наличными
 			// создаем и добавляем этот элемент списка в список счетов для накопления процентов
-			AccountDTO cash		= new AccountDTO();
-			cash.AccountNumber	= "получить наличными";
-			creditRecipientAccounts.Add(cash);
+			DataRowView cash		= creditRecipientAccounts.AddNew();
+			cash["AccountNumber"]	= "получить наличными";
 
 			OpenCreditWindow ocrwin = new OpenCreditWindow(creditRecipientAccounts, client.ClientType);
 			var result = ocrwin.ShowDialog();

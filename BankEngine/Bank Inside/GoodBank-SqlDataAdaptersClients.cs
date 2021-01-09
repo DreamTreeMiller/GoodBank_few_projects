@@ -20,9 +20,12 @@ namespace BankInside
 			SetupSP_UpdateClientPersonalData();
 			SetupSP_UpdateNumberOfAccounts();
 
-			SetupAccountsParentSqlDataAdapter();
-			SetupDepositsSqlDataAdapter();
-			SetupCreditsSqlDataAdapter();
+			SetupAccountViewSqlDataAdapter();
+			SetupSP_AddAccount();
+
+			//SetupAccountsParentSqlDataAdapter();
+			//SetupDepositsSqlDataAdapter();
+			//SetupCreditsSqlDataAdapter();
 
 			SetupTransactionsSqlDataAdapter();
 		}
@@ -33,36 +36,75 @@ namespace BankInside
 		private void SetupClientsViewSqlDataAdapter()
 		{
 			daClientsView			= new SqlDataAdapter();
-			string sqlCommand		= @"
-IF EXISTS (SELECT [name],[type] FROM sys.objects WHERE [name]='ClientsView' AND [type]='U')	
-	DROP TABLE [dbo].[ClientsView];
-CREATE TABLE [dbo].[ClientsView] (			-- Row structure is the ClientDTO structure
-	 [ID]						INT	IDENTITY (1, 1)			NOT NULL	PRIMARY KEY
-	,[ClientType]				TINYINT						NOT NULL
-	,[ClientTypeTag]			NVARCHAR (5)	DEFAULT ''	NOT NULL
-	,[FirstName]				NVARCHAR (50)	DEFAULT ''	NOT NULL
-	,[MiddleName]				NVARCHAR (50)	DEFAULT ''	NOT NULL
-	,[LastName]					NVARCHAR (50)	DEFAULT ''	NOT NULL
-	,[MainName]					NVARCHAR (256)	DEFAULT ''	NOT NULL
-	,[DirectorName]				NVARCHAR (152)	DEFAULT ''	NOT NULL
-	,[CreationDate]				NVARCHAR (11)				NOT NULL
-	,[PassportOrTIN]			DATE						NOT NULL
-	,[Telephone]				NVARCHAR (30)	DEFAULT ''	NOT NULL
-	,[Email]					NVARCHAR (128)	DEFAULT ''	NOT NULL
-	,[Address]					NVARCHAR (256)	DEFAULT ''	NOT NULL
-	,[NumberOfSavingAccounts]	INT				DEFAULT 0	NOT NULL
-	,[NumberOfDeposits]			INT				DEFAULT 0	NOT NULL
-	,[NumberOfCredits]			INT				DEFAULT 0	NOT NULL
-	,[NumberOfClosedAccounts]	INT				DEFAULT 0	NOT NULL
-);
-SELECT * FROM [dbo].[ClientsView];
+			string sqlCommand = @"
+SELECT
+	 [ClientsMain].[ID] AS [ID]
+	,0 AS [ClientType]		-- VIP
+	,N'ВИП' AS [ClientTypeTag] 
+	,[FirstName]
+	,[MiddleName]
+	,[LastName]
+	,[LastName] + ' ' + [FirstName]	+ ' ' + [MiddleName] AS [MainName]
+	,'' AS [DirectorName]
+	,[BirthDate] AS [CreationDate]
+	,[PassportNumber] AS [PassportOrTIN]
+	,[Telephone]
+	,[Email]
+	,[Address]
+	,[NumberOfSavingAccounts]
+	,[NumberOfDeposits]
+	,[NumberOfCredits]
+	,[NumberOfClosedAccounts]
+FROM	[VIPclients], [ClientsMain]
+WHERE	[ClientsMain].[ID] = [VIPclients].[id] 
+UNION SELECT
+		[ClientsMain].[ID] AS [ID]
+		,1 AS [ClientType]			-- Simple
+		,N'Физик' AS [ClientTypeTag]
+		,[FirstName]
+		,[MiddleName]
+		,[LastName]
+		,[LastName] + ' ' + [FirstName] + ' ' + [MiddleName] AS [MainName]
+		,'' AS [DirectorName]
+		,[BirthDate] AS [CreationDate]
+		,[PassportNumber] AS [PassportOrTIN]
+		,[Telephone]
+		,[Email]
+		,[Address]
+		,[NumberOfSavingAccounts]
+		,[NumberOfDeposits]
+		,[NumberOfCredits]
+		,[NumberOfClosedAccounts]
+FROM	[SIMclients], [ClientsMain]
+WHERE	[ClientsMain].[ID] = [SIMclients].[id]
+UNION SELECT
+		 [ClientsMain].[ID]	  AS [ID]
+		,2 AS [ClientType]			-- Organization
+		,N'Юрик'			  AS [ClientTypeTag]
+		,[DirectorFirstName]  AS [FirstName]
+		,[DirectorMiddleName] AS [MiddleName]
+		,[DirectorLastName]   AS [LastName]
+		,[OrgName]			  AS [MainName]
+		,[DirectorLastName] + ' ' + [DirectorFirstName] + ' ' + [DirectorMiddleName]
+			AS [DirectorName]
+		,[RegistrationDate]   AS [CreationDate]
+		,[TIN]				  AS [PassportOrTIN]
+		,[Telephone]
+		,[Email]
+		,[Address]
+		,[NumberOfSavingAccounts]
+		,[NumberOfDeposits]
+		,[NumberOfCredits]
+		,[NumberOfClosedAccounts]
+FROM	[ORGclients], [ClientsMain]
+WHERE	[ClientsMain].[ID] = [ORGclients].[id];
 ";
 			daClientsView.SelectCommand = new SqlCommand(sqlCommand, gbConn);
 			daClientsView.Fill(ds, "ClientsView");
 
-			DataColumn[] pk = new DataColumn[1];
-			pk[0] = ds.Tables["ClientView"].Columns["ID"];
-			ds.Tables["ClientsView"].PrimaryKey = pk;
+			//DataColumn[] pk = new DataColumn[1];
+			//pk[0] = ds.Tables["ClientView"].Columns["ID"];
+			//ds.Tables["ClientsView"].PrimaryKey = pk;
 		}
 
 		private void SetupSP_AddClient()
@@ -84,7 +126,7 @@ CREATE PROC [dbo].[SP_AddClient]
 	,@firstName		NVARCHAR (50)	
 	,@middleName	NVARCHAR (50)	
 	,@lastName		NVARCHAR (50)	
-	,@passportOrTIN	NVARCHAR (10)	
+	,@passportOrTIN	NVARCHAR (11)	
 	,@creationDate	DATE			
 	,@telephone		NVARCHAR (30)
 	,@email			NVARCHAR (128)

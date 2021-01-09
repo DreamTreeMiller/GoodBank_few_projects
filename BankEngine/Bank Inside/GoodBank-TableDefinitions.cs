@@ -80,6 +80,13 @@ CREATE TABLE [dbo].[AccountsParent] (
 	);
 		"},
 
+		 {"SavingAccounts", @"
+CREATE TABLE [dbo].[SavingAccounts] (
+	[id]							INT							NOT NULL PRIMARY KEY,
+	FOREIGN KEY ([id]) REFERENCES [dbo].[AccountsParent]([AccID]) ON DELETE CASCADE,
+	);
+		"},
+
 		 {"DepositAccounts", @"
 CREATE TABLE [dbo].[DepositAccounts] (
 	[id]							INT							NOT NULL PRIMARY KEY,

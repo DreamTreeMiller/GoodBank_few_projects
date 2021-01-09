@@ -54,6 +54,7 @@
 		<DataGrid x:Name="AccountsDataGrid"
 				  Grid.Row="1"
 				  IsReadOnly="True" 
+				  ItemsSource="{Binding}"
 				  AutoGenerateColumns="False"
 				  CanUserResizeColumns="True"
 				  GridLinesVisibility="None"
@@ -94,7 +95,7 @@
 				<DataGridTextColumn Header="№"	Binding="{Binding AccID}"/>
 				<DataGridTextColumn x:Name="ClientTypeColumn" 
 								Header="Клиент"	
-								Binding="{Binding ClientType}"
+								Binding="{Binding ClientTypeTag}"
 								Visibility="Collapsed"
 								/>
 				<DataGridTextColumn x:Name="ClientNameColumn" 
@@ -110,15 +111,15 @@
 								/>
 				<DataGridTextColumn x:Name="CurrAccountColumn" 
 								Header="Текущий" 
-								Binding="{Binding CurrentAmount}"
+								Binding="{Binding StringFormat={}{0:N2}, Path=CurrentAmount}"
 								/>
 				<DataGridTextColumn x:Name="DepositColumn" 
 								Header="Вклад"	 
-								Binding="{Binding DepositAmount}"
+								Binding="{Binding StringFormat={}{0:N2}, Path=DepositAmount}"
 								/>
 				<DataGridTextColumn x:Name="CreditColumn" 
 								Header="Долг"	 
-								Binding="{Binding DebtAmount}"
+								Binding="{Binding StringFormat={}{0:N2}, Path=DebtAmount}"
 								/>
 				<DataGridTextColumn Header=" %  " Binding="{Binding StringFormat={}{0:P}, Path=Interest}"/>
 				<DataGridTextColumn Header="Открыт" 

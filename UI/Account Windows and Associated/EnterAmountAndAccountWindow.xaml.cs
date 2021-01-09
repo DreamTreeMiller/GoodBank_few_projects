@@ -1,5 +1,6 @@
 ﻿using Interfaces_Data;
 using System;
+using System.Data;
 using System.Collections.ObjectModel;
 using System.Threading;
 using System.Windows;
@@ -63,7 +64,7 @@ namespace Account_Windows
 		public IAccount destinationAccount;
 
 		ObservableCollection<IAccount> destinationAccountsList { get; set; }
-		public EnterAmountAndAccountWindow(ObservableCollection<IAccount> destAccList)
+		public EnterAmountAndAccountWindow(DataView destAccList)
 		{
 			InitializeComponent();
 			DestinationAccount.ItemsSource = destAccList;

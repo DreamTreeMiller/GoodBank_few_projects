@@ -4,11 +4,93 @@ using Interfaces_Actions;
 
 namespace BankInside
 {
-	public partial class GoodBank : IAccountsActions
+	public partial class GoodBank
 	{
-		private SqlDataAdapter	daAccounts,
+		private SqlDataAdapter	daAccountsView,
 								daAccountsParent, daDeposits, daCredits, // no da for Saving accounts
 								daTransactions;
+		private void SetupAccountViewSqlDataAdapter()
+		{
+			gbConn = SetGoodBankConnection();
+			daAccountsView = new SqlDataAdapter();
+			string sqlCommand = @"
+SELECT 
+	 [AccID]		
+	,[ClientType]	
+	,[ClientTypeTag]
+	,[ClientName]	
+	,[AccountNumber]
+	,[AccType]		
+	,[CurrentAmount]
+	,[DepositAmount]
+	,[DebtAmount]	
+	,[Interest]		
+	,[Opened]		
+	,[Closed]		
+FROM 
+-- first we make a list of all clients
+	(SELECT  [id]
+			,0		AS [ClientType] -- VIP
+			,N'ВИП' AS [ClientTypeTag] 
+			,[LastName] + ' ' + [FirstName] + ' ' + [MiddleName] AS [ClientName]
+		FROM	[dbo].[VIPclients]
+		UNION SELECT    [id] 
+					,1		  AS [ClientType] -- Simple
+					,N'Физик' AS [ClientTypeTag] 
+					,[LastName] + ' ' + [FirstName] + ' ' + [MiddleName] AS [ClientName]
+		FROM	[dbo].[SIMclients]
+		UNION SELECT	 [id]
+					,2		 AS [ClientType]	-- Organization
+					,N'Юрик' AS [ClientTypeTag] 
+					,[OrgName] AS [ClientName]
+		FROM	[dbo].[ORGclients])	AS Clients,
+	-- then list of all accounts
+		(SELECT	 [AccID]
+				,[ClientID]
+				,[AccountNumber]
+				,0 AS [AccType]		-- Saving account
+				,[Balance]	AS [CurrentAmount]
+				,0			AS [DepositAmount]
+				,0			AS [DebtAmount]
+				,[Interest]
+				,[Opened]
+				,[Closed]
+		FROM	[dbo].[SavingAccounts], [dbo].[AccountsParent]
+		WHERE [SavingAccounts].[id] = [AccountsParent].[AccID] 
+		UNION SELECT   [AccID]
+					,[ClientID]
+					,[AccountNumber]
+					,1 AS [AccType]		-- Deposit account
+					,0			AS [CurrentAmount]
+					,[Balance]	AS [DepositAmount]
+					,0			AS [DebtAmount]
+					,[Interest]
+					,[Opened]
+					,[Closed]
+		FROM	[dbo].[DepositAccounts], [dbo].[AccountsParent]
+		WHERE [DepositAccounts].[id] = [AccountsParent].[AccID] 
+		UNION SELECT   [AccID]
+					,[ClientID]
+					,[AccountNumber]
+					,2 AS [AccType]		-- Credit account
+					,0			AS [CurrentAmount]
+					,0			AS [DepositAmount]
+					,[Balance]	AS [DebtAmount]
+					,[Interest]
+					,[Opened]
+					,[Closed]
+		FROM	[dbo].[CreditAccounts], [dbo].[AccountsParent]
+		WHERE [CreditAccounts].[id] = [AccountsParent].[AccID] ) AS Accounts
+-- then unify them
+	WHERE Clients.[id] = Accounts.[ClientID]
+";
+			daAccountsView.SelectCommand = new SqlCommand(sqlCommand, gbConn);
+			daAccountsView.Fill(ds, "AccountsView");
+
+			//DataColumn[] pk = new DataColumn[1];
+			//pk[0] = ds.Tables["AccountsView"].Columns["AccID"];
+			//ds.Tables["AccountsView"].PrimaryKey = pk;
+		}
 
 		private void SetupSP_AddAccount()
 		{
@@ -90,6 +172,10 @@ BEGIN
 	SET [AccountNumber] = @accountNumber
 	WHERE [AccID]=@accountID;
 
+	IF @accType=0	-- Saving
+		INSERT INTO [dbo].[SavingAccounts] ([id])
+		VALUES (@accountID);
+	ELSE
 	IF @accType=1	-- Deposit
 		INSERT INTO [dbo].[DepositAccounts] 
 			([id]
@@ -112,7 +198,6 @@ END;
 				sqlCommand.ExecuteNonQuery();
 			}
 		}
-
 
 		private void SetupAccountsParentSqlDataAdapter()
 		{
@@ -322,6 +407,7 @@ END;
 
 		private void SetupTransactionsSqlDataAdapter()
 		{
+			gbConn = SetGoodBankConnection();
 			daTransactions = new SqlDataAdapter();
 
 			string sqlCommand = @"SELECT * FROM [dbo].[Transactions];";

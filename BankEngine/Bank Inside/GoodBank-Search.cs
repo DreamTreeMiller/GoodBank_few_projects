@@ -11,12 +11,12 @@ namespace BankInside
 		public ObservableCollection<IClientDTO> FindClients(Compare predicate)
 		{
 			ObservableCollection<IClientDTO> clientsList = new ObservableCollection<IClientDTO>();
-			foreach (var c in clients)
-			{
-				bool flag = true;
-				flag = predicate(c, ref flag);
-				if (flag) clientsList.Add(new ClientDTO(c));
-			}
+			//foreach (var c in clients)
+			//{
+			//	bool flag = true;
+			//	flag = predicate(c, ref flag);
+			//	if (flag) clientsList.Add(new ClientDTO(c));
+			//}
 			return clientsList;
 		}
 	}

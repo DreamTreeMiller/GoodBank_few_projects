@@ -1,6 +1,6 @@
 ﻿using Enumerables;
 using Interfaces_Data;
-using System.Collections.ObjectModel;
+using System.Data;
 
 namespace Interfaces_Actions
 {
@@ -13,17 +13,17 @@ namespace Interfaces_Actions
 		/// <returns>
 		/// Коллекцию счетов, принадлежащих клиентам данного типа
 		/// </returns>
-		(ObservableCollection<IAccountDTO> accList, double totalCurr, double totalDeposit, double totalCredit)
+		(DataView accountsViewTable, double totalSaving, double totalDeposit, double totalCredit)
 			GetAccountsList(ClientType clientType);
 
-		(ObservableCollection<IAccountDTO> accList, double totalCurr, double totalDeposit, double totalCredit)
+		(DataView accountsViewTable, double totalSaving, double totalDeposit, double totalCredit)
 			GetClientAccounts(int ID);
 
-		ObservableCollection<IAccountDTO> GetClientAccounts(int clientID, AccountType accType);
+		DataView GetClientAccounts(int clientID, AccountType accType);
 
-		ObservableCollection<IAccountDTO> GetClientAccountsToAccumulateInterest(int ID);
+		DataView GetClientAccountsToAccumulateInterest(int ID);
 
-		ObservableCollection<IAccount> GetTopupableAccountsToWireFrom(int sourceAccID);
+		DataView GetTopupableAccountsToWireFrom(int sourceAccID);
 
 		void AddAccount(IAccountDTO acc); 
 

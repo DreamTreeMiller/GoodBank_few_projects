@@ -3,6 +3,7 @@ using DTO;
 using Enumerables;
 using Interfaces_Data;
 using System;
+using System.Data;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -197,14 +198,14 @@ namespace Client_Window
 
 		#endregion
 
-		public OpenDepositWindow(ObservableCollection<IAccountDTO> accumulationAccounts, ClientType clientType)
+		public OpenDepositWindow(DataView accumulationAccounts, ClientType clientType)
 		{
 			InitializeComponent();
 			InitializeWindowLabelsAndData(accumulationAccounts, clientType);
 			SetFocusOnDepositAmountEntryBox();
 		}
 
-		private void InitializeWindowLabelsAndData(ObservableCollection<IAccountDTO> accumulationAccounts, ClientType clientType)
+		private void InitializeWindowLabelsAndData(DataView accumulationAccounts, ClientType clientType)
 		{
 			BankTodayDate.Text = $"Сегодня {GoodBankTime.Today:dd.MM.yyyy} г.";
 			AccumulationAccount.ItemsSource = accumulationAccounts;

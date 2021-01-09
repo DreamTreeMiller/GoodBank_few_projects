@@ -1,5 +1,6 @@
 ﻿using Interfaces_Data;
-using System.Collections.ObjectModel;
+using Enumerables;
+using System.Data;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -12,9 +13,11 @@ namespace Data_Grid_User_Controls
 	{
 		#region Accessors to UserControl properties
 
-		public void SetAccountsDataGridItemsSource(ObservableCollection<IAccountDTO> accountsList)
+		public void SetAccountsDataGridItemsSource(DataView accountsList, ClientType ct)
 		{
 			AccountsDataGrid.ItemsSource = accountsList;
+			if (ct == ClientType.All)
+				ClientTypeColumn.Visibility = Visibility.Visible;
 		}
 
 		public void SetAccountsTotals(int totalAccounts, 
