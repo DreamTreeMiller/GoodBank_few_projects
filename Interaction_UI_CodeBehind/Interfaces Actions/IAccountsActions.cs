@@ -13,10 +13,10 @@ namespace Interfaces_Actions
 		/// <returns>
 		/// Коллекцию счетов, принадлежащих клиентам данного типа
 		/// </returns>
-		(DataView accountsViewTable, double totalSaving, double totalDeposit, double totalCredit)
+		(DataView accountsViewTable, decimal totalSaving, decimal totalDeposit, decimal totalCredit)
 			GetAccountsList(ClientType clientType);
 
-		(DataView accountsViewTable, double totalSaving, double totalDeposit, double totalCredit)
+		(DataView accountsViewTable, decimal totalSaving, decimal totalDeposit, decimal totalCredit)
 			GetClientAccounts(int ID);
 
 		DataView GetClientAccounts(int clientID, AccountType accType);

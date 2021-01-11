@@ -9,87 +9,52 @@ namespace BankInside
 		private SqlDataAdapter	daAccountsView,
 								daAccountsParent, daDeposits, daCredits, // no da for Saving accounts
 								daTransactions;
-		private void SetupAccountViewSqlDataAdapter()
+
+		private void SetupSP_GetAccountsViewTotals()
+		{
+			using (gbConn = SetGoodBankConnection())
+			{
+				gbConn.Open();
+				string sqlExpression = @"
+IF EXISTS (SELECT [name],[type] FROM sys.objects WHERE [name]='SP_GetAccountsViewTotals' AND [type]='P')
+	DROP PROC [dbo].[SP_GetAccountsViewTotals];
+				";
+				sqlCommand = new SqlCommand(sqlExpression, gbConn);
+				sqlCommand.ExecuteNonQuery();
+
+				sqlExpression = @"
+CREATE PROC [dbo].[SP_GetAccountsViewTotals]
+	 @clientType	TINYINT
+	,@totalSaving	MONEY OUTPUT
+	,@totalDeposit	MONEY OUTPUT
+	,@totalCredit	MONEY OUTPUT
+AS
+IF @clientType = 3
+	SELECT 
+		 @totalSaving  = SUM(CurrentAmount)
+		,@totalDeposit = SUM(DepositAmount)
+		,@totalCredit  = SUM(DebtAmount) 
+	FROM [dbo].[AccountsView]
+ELSE
+	SELECT 
+		 @totalSaving  = SUM(CurrentAmount)
+		,@totalDeposit = SUM(DepositAmount)
+		,@totalCredit  = SUM(DebtAmount) 
+	FROM [dbo].[AccountsView]
+	WHERE [ClientType]=@clientType;
+				";
+				sqlCommand = new SqlCommand(sqlExpression, gbConn);
+				sqlCommand.ExecuteNonQuery();
+			}
+		}
+
+		private void SetupAccountsViewSqlDataAdapter()
 		{
 			gbConn = SetGoodBankConnection();
 			daAccountsView = new SqlDataAdapter();
-			string sqlCommand = @"
-SELECT 
-	 [AccID]		
-	,[ClientType]	
-	,[ClientTypeTag]
-	,[ClientName]	
-	,[AccountNumber]
-	,[AccType]		
-	,[CurrentAmount]
-	,[DepositAmount]
-	,[DebtAmount]	
-	,[Interest]		
-	,[Opened]		
-	,[Closed]		
-FROM 
--- first we make a list of all clients
-	(SELECT  [id]
-			,0		AS [ClientType] -- VIP
-			,N'ВИП' AS [ClientTypeTag] 
-			,[LastName] + ' ' + [FirstName] + ' ' + [MiddleName] AS [ClientName]
-		FROM	[dbo].[VIPclients]
-		UNION SELECT    [id] 
-					,1		  AS [ClientType] -- Simple
-					,N'Физик' AS [ClientTypeTag] 
-					,[LastName] + ' ' + [FirstName] + ' ' + [MiddleName] AS [ClientName]
-		FROM	[dbo].[SIMclients]
-		UNION SELECT	 [id]
-					,2		 AS [ClientType]	-- Organization
-					,N'Юрик' AS [ClientTypeTag] 
-					,[OrgName] AS [ClientName]
-		FROM	[dbo].[ORGclients])	AS Clients,
-	-- then list of all accounts
-		(SELECT	 [AccID]
-				,[ClientID]
-				,[AccountNumber]
-				,0 AS [AccType]		-- Saving account
-				,[Balance]	AS [CurrentAmount]
-				,0			AS [DepositAmount]
-				,0			AS [DebtAmount]
-				,[Interest]
-				,[Opened]
-				,[Closed]
-		FROM	[dbo].[SavingAccounts], [dbo].[AccountsParent]
-		WHERE [SavingAccounts].[id] = [AccountsParent].[AccID] 
-		UNION SELECT   [AccID]
-					,[ClientID]
-					,[AccountNumber]
-					,1 AS [AccType]		-- Deposit account
-					,0			AS [CurrentAmount]
-					,[Balance]	AS [DepositAmount]
-					,0			AS [DebtAmount]
-					,[Interest]
-					,[Opened]
-					,[Closed]
-		FROM	[dbo].[DepositAccounts], [dbo].[AccountsParent]
-		WHERE [DepositAccounts].[id] = [AccountsParent].[AccID] 
-		UNION SELECT   [AccID]
-					,[ClientID]
-					,[AccountNumber]
-					,2 AS [AccType]		-- Credit account
-					,0			AS [CurrentAmount]
-					,0			AS [DepositAmount]
-					,[Balance]	AS [DebtAmount]
-					,[Interest]
-					,[Opened]
-					,[Closed]
-		FROM	[dbo].[CreditAccounts], [dbo].[AccountsParent]
-		WHERE [CreditAccounts].[id] = [AccountsParent].[AccID] ) AS Accounts
--- then unify them
-	WHERE Clients.[id] = Accounts.[ClientID]
-";
+			string sqlCommand = @"SELECT * FROM [dbo].[AccountsView]";
 			daAccountsView.SelectCommand = new SqlCommand(sqlCommand, gbConn);
 			daAccountsView.Fill(ds, "AccountsView");
-
-			//DataColumn[] pk = new DataColumn[1];
-			//pk[0] = ds.Tables["AccountsView"].Columns["AccID"];
-			//ds.Tables["AccountsView"].PrimaryKey = pk;
 		}
 
 		private void SetupSP_AddAccount()
@@ -109,7 +74,7 @@ CREATE PROC [dbo].[SP_AddAccount]
 	 @accType 						TINYINT
 	,@clientID						INT
 	,@balance						MONEY
-	,@interest						DECIMAL
+	,@interest						DECIMAL (4,2)
 	,@compounding					BIT
 	,@opened						DATE
 	,@duration						INT
@@ -119,8 +84,6 @@ CREATE PROC [dbo].[SP_AddAccount]
 	,@topupable						BIT
 	,@withdrawalAllowed				BIT
 	,@recalcPeriod					TINYINT
-	,@numberOfTopUpsInDay			INT
-	,@isBlocked						BIT
 	,@interestAccumulationAccID		INT
 	,@interestAccumulationAccNum	NVARCHAR (15)
 AS
@@ -141,8 +104,6 @@ BEGIN
 		,[Topupable]
 		,[WithdrawalAllowed]
 		,[RecalcPeriod]
-		,[NumberOfTopUpsInDay]
-		,[IsBlocked]
 		)
 	VALUES 
 		(@clientID
@@ -157,8 +118,6 @@ BEGIN
 		,@topupable
 		,@withdrawalAllowed
 		,@recalcPeriod
-		,@numberOfTopUpsInDay
-		,@isBlocked
 		);
 	SET @accountID=@@IDENTITY;
 

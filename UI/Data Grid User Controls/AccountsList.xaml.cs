@@ -21,7 +21,7 @@ namespace Data_Grid_User_Controls
 		}
 
 		public void SetAccountsTotals(int totalAccounts, 
-									  double totalCurr, double totalDeposit, double totalCredit)
+									  decimal totalCurr, decimal totalDeposit, decimal totalCredit)
 		{
 			AccountsTotalNumberValue.Text	= $"{totalAccounts:N0}";
 			CurrentTotalAmount.Text			= $"{totalCurr:N2}";

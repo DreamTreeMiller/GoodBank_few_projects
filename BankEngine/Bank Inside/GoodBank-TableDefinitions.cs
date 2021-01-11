@@ -39,8 +39,8 @@ CREATE TABLE [dbo].[SIMclients] (
 	[LastName]			NVARCHAR (50)	DEFAULT ''	NOT NULL,
 	[PassportNumber]	NVARCHAR (11)	DEFAULT ''	NOT NULL,
 	[BirthDate]			DATE						NOT NULL
-);"
-		 },
+);
+		"},
 		 {"ORGclients", @"
 CREATE TABLE [dbo].[ORGclients] (
 	[id]				INT							NOT NULL PRIMARY KEY,	
@@ -51,9 +51,29 @@ CREATE TABLE [dbo].[ORGclients] (
 	[DirectorLastName]	NVARCHAR (50)	DEFAULT ''	NOT NULL,
 	[TIN]				NVARCHAR (10)	DEFAULT ''	NOT NULL,
 	[RegistrationDate]	DATE						NOT NULL
-);"
-		 },
-
+);
+		"},
+		 {"ClientsView", @"
+CREATE TABLE [dbo].[ClientsView] (
+	 [ID]						INT	IDENTITY (1, 1)			NOT NULL	PRIMARY KEY
+	,[ClientType]				TINYINT						NOT NULL
+	,[ClientTypeTag]			NVARCHAR (5)	DEFAULT ''	NOT NULL
+	,[FirstName]				NVARCHAR (50)	DEFAULT ''	NOT NULL
+	,[MiddleName]				NVARCHAR (50)	DEFAULT ''	NOT NULL
+	,[LastName]					NVARCHAR (50)	DEFAULT ''	NOT NULL
+	,[MainName]					NVARCHAR (256)	DEFAULT ''	NOT NULL
+	,[DirectorName]				NVARCHAR (152)	DEFAULT ''	NOT NULL
+	,[CreationDate]				DATE						NOT NULL
+	,[PassportOrTIN]			NVARCHAR (11)				NOT NULL
+	,[Telephone]				NVARCHAR (30)	DEFAULT ''	NOT NULL
+	,[Email]					NVARCHAR (128)	DEFAULT ''	NOT NULL
+	,[Address]					NVARCHAR (256)	DEFAULT ''	NOT NULL
+	,[NumberOfSavingAccounts]	INT				DEFAULT 0	NOT NULL
+	,[NumberOfDeposits]			INT				DEFAULT 0	NOT NULL
+	,[NumberOfCredits]			INT				DEFAULT 0	NOT NULL
+	,[NumberOfClosedAccounts]	INT				DEFAULT 0	NOT NULL
+);
+		"},
 		 {"AccountsParent", @"
 CREATE TABLE [dbo].[AccountsParent] (
 	[AccID]				INT			IDENTITY (1, 1) NOT NULL PRIMARY KEY,	-- уникальный ид счета
@@ -79,14 +99,12 @@ CREATE TABLE [dbo].[AccountsParent] (
 	[IsBlocked]				BIT DEFAULT 0	NOT NUll
 	);
 		"},
-
 		 {"SavingAccounts", @"
 CREATE TABLE [dbo].[SavingAccounts] (
 	[id]							INT							NOT NULL PRIMARY KEY,
 	FOREIGN KEY ([id]) REFERENCES [dbo].[AccountsParent]([AccID]) ON DELETE CASCADE,
 	);
 		"},
-
 		 {"DepositAccounts", @"
 CREATE TABLE [dbo].[DepositAccounts] (
 	[id]							INT							NOT NULL PRIMARY KEY,
@@ -96,7 +114,6 @@ CREATE TABLE [dbo].[DepositAccounts] (
 	[AccumulatedInterest]			MONEY			DEFAULT 0	NOT NULL
 );"
 		 },
-
 		 {"CreditAccounts", @"
 CREATE TABLE [dbo].[CreditAccounts] (
 	[id]					INT					NOT NULL PRIMARY KEY,
@@ -104,7 +121,22 @@ CREATE TABLE [dbo].[CreditAccounts] (
 	[AccumulatedInterest]	MONEY	DEFAULT 0	NOT NULL
 );"
 		 },
-
+		 {"AccountsView", @"
+CREATE TABLE [dbo].[AccountsView] (
+	 [AccID]			INT	IDENTITY (1, 1)			NOT NULL	PRIMARY KEY
+	,[ClientType]		TINYINT						NOT NULL
+	,[ClientTypeTag]	NVARCHAR (5)	DEFAULT ''	NOT NULL
+	,[ClientName]		NVARCHAR (256)	DEFAULT ''	NOT NULL
+	,[AccountNumber]	NVARCHAR (15)	DEFAULT ''	NOT NULL
+	,[AccType]			TINYINT						NOT NULL
+	,[CurrentAmount]	MONEY			DEFAULT 0	NOT NULL
+	,[DepositAmount]	MONEY			DEFAULT 0	NOT NULL
+	,[DebtAmount]		MONEY			DEFAULT 0	NOT NULL
+	,[Interest]			DECIMAL (4,2)	DEFAULT 0	NOT NULL
+	,[Opened]			DATE						NOT NULL
+	,[Closed]			DATE
+);
+		"},
 		 {"Transactions", @"
 CREATE TABLE [dbo].[Transactions] (
 	[TransactionID]			INT			IDENTITY(1,1)	NOT NULL PRIMARY KEY,

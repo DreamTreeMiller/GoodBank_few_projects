@@ -68,36 +68,39 @@ SELECT @newClientId;
 IF EXISTS (SELECT [name],[type] FROM sys.objects WHERE [name]='ClientsView' AND [type]='U')	
 	DROP TABLE [dbo].[ClientsView];
 SELECT
-	 [ID]					
-	,[ClientType]			
-	,[ClientTypeTag]		
-	,[FirstName]			
-	,[MiddleName]			
-	,[LastName]				
-	,[MainName]				
-	,[DirectorName]			
-	,[CreationDate]			
-	,[PassportOrTIN]		
-	,[Telephone]			
-	,[Email]				
-	,[Address]				
+	 [ClientsMain].[ID]	AS [ID]
+	,0					AS [ClientType]		-- VIP
+	,N'ВИП'				AS [ClientTypeTag] 
+	,[FirstName]
+	,[MiddleName]
+	,[LastName]
+	,[LastName] + ' ' + [FirstName]	+ ' ' + [MiddleName] 
+						AS [MainName]
+	,''					AS [DirectorName]
+	,[BirthDate]		AS [CreationDate]
+	,[PassportNumber]	AS [PassportOrTIN]
+	,[Telephone]
+	,[Email]
+	,[Address]
 	,[NumberOfSavingAccounts]
-	,[NumberOfDeposits]		
-	,[NumberOfCredits]		
+	,[NumberOfDeposits]
+	,[NumberOfCredits]
 	,[NumberOfClosedAccounts]
 INTO [dbo].[ClientsView]
-FROM 
-	(SELECT
-		 [ClientsMain].[ID] AS [ID]
-		,0 AS [ClientType]		-- VIP
-		,N'ВИП' AS [ClientTypeTag] 
+FROM	[VIPclients], [ClientsMain]
+WHERE	[ClientsMain].[ID] = [VIPclients].[id] 
+UNION SELECT
+		 [ClientsMain].[ID]	AS [ID]
+		,1					AS [ClientType]			-- Simple
+		,N'Физик'			AS [ClientTypeTag]
 		,[FirstName]
 		,[MiddleName]
 		,[LastName]
-		,[LastName] + ' ' + [FirstName]	+ ' ' + [MiddleName] AS [MainName]
-		,'' AS [DirectorName]
-		,[BirthDate] AS [CreationDate]
-		,[PassportNumber] AS [PassportOrTIN]
+		,[LastName] + ' ' + [FirstName] + ' ' + [MiddleName] 
+							AS [MainName]
+		,''					AS [DirectorName]
+		,[BirthDate]		AS [CreationDate]
+		,[PassportNumber]	AS [PassportOrTIN]
 		,[Telephone]
 		,[Email]
 		,[Address]
@@ -105,51 +108,29 @@ FROM
 		,[NumberOfDeposits]
 		,[NumberOfCredits]
 		,[NumberOfClosedAccounts]
-	FROM	[VIPclients], [ClientsMain]
-	WHERE	[ClientsMain].[ID] = [VIPclients].[id] 
-	UNION SELECT
-			[ClientsMain].[ID] AS [ID]
-			,1 AS [ClientType]			-- Simple
-			,N'Физик' AS [ClientTypeTag]
-			,[FirstName]
-			,[MiddleName]
-			,[LastName]
-			,[LastName] + ' ' + [FirstName] + ' ' + [MiddleName] AS [MainName]
-			,'' AS [DirectorName]
-			,[BirthDate] AS [CreationDate]
-			,[PassportNumber] AS [PassportOrTIN]
-			,[Telephone]
-			,[Email]
-			,[Address]
-			,[NumberOfSavingAccounts]
-			,[NumberOfDeposits]
-			,[NumberOfCredits]
-			,[NumberOfClosedAccounts]
-	FROM	[SIMclients], [ClientsMain]
-	WHERE	[ClientsMain].[ID] = [SIMclients].[id]
-	UNION SELECT
-			 [ClientsMain].[ID]	  AS [ID]
-			,2 AS [ClientType]			-- Organization
-			,N'Юрик'			  AS [ClientTypeTag]
-			,[DirectorFirstName]  AS [FirstName]
-			,[DirectorMiddleName] AS [MiddleName]
-			,[DirectorLastName]   AS [LastName]
-			,[OrgName]			  AS [MainName]
-			,[DirectorLastName] + ' ' + [DirectorFirstName] + ' ' + [DirectorMiddleName]
-			 AS [DirectorName]
-			,[RegistrationDate]   AS [CreationDate]
-			,[TIN]				  AS [PassportOrTIN]
-			,[Telephone]
-			,[Email]
-			,[Address]
-			,[NumberOfSavingAccounts]
-			,[NumberOfDeposits]
-			,[NumberOfCredits]
-			,[NumberOfClosedAccounts]
-	FROM	[ORGclients], [ClientsMain]
-	WHERE	[ClientsMain].[ID] = [ORGclients].[id]
-	) allclients;
-";
+FROM	[SIMclients], [ClientsMain]
+WHERE	[ClientsMain].[ID] = [SIMclients].[id]
+UNION SELECT
+		 [ClientsMain].[ID]	  AS [ID]
+		,2					  AS [ClientType]			-- Organization
+		,N'Юрик'			  AS [ClientTypeTag]
+		,[DirectorFirstName]  AS [FirstName]
+		,[DirectorMiddleName] AS [MiddleName]
+		,[DirectorLastName]   AS [LastName]
+		,[OrgName]			  AS [MainName]
+		,[DirectorLastName] + ' ' + [DirectorFirstName] + ' ' + [DirectorMiddleName]
+							  AS [DirectorName]
+		,[RegistrationDate]   AS [CreationDate]
+		,[TIN]				  AS [PassportOrTIN]
+		,[Telephone]
+		,[Email]
+		,[Address]
+		,[NumberOfSavingAccounts]
+		,[NumberOfDeposits]
+		,[NumberOfCredits]
+		,[NumberOfClosedAccounts]
+FROM	[ORGclients], [ClientsMain]
+WHERE	[ClientsMain].[ID] = [ORGclients].[id]";
 				sqlCommand = new SqlCommand(sqlExpression, gbConn);
 				sqlCommand.ExecuteNonQuery();
 			}
@@ -158,8 +139,9 @@ FROM
 		public DataView GetClientsTable(ClientType ct)
 		{
 			// Обновляем таблицу для показа
-			//ds.Tables["ClientsView"].Clear();
-			//daClientsView.Fill(ds, "ClientsView");
+			RefreshClientsViewTable();
+			ds.Tables["ClientsView"].Clear();
+			daClientsView.Fill(ds, "ClientsView");
 
 			string rowfilter = (ct == ClientType.All) ? "" : "ClientType = " + (int)ct;
 			DataView clientsViewTable = 
