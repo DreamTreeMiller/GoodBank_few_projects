@@ -19,7 +19,7 @@ namespace Interfaces_Actions
 		(DataView accountsViewTable, decimal totalSaving, decimal totalDeposit, decimal totalCredit)
 			GetClientAccounts(int ID);
 
-		DataView GetClientAccounts(int clientID, AccountType accType);
+		DataView GetClientSavingAccounts(int clientID);
 
 		DataView GetClientAccountsToAccumulateInterest(int ID);
 

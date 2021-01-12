@@ -21,6 +21,7 @@ namespace BankInside
 			SetupSP_UpdateNumberOfAccounts();
 
 			SetupAccountsViewSqlDataAdapter();
+			SetupClientAccountsViewSqlDataAdapter();
 			SetupSP_AddAccount();
 
 			//SetupAccountsParentSqlDataAdapter();

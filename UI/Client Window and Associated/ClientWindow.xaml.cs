@@ -29,7 +29,7 @@ namespace Client_Window
 		{
 			InitializeComponent();
 			InitializeAccountsView(ba, clientrowintable);
-			//ShowAccounts();
+			ShowAccounts();
 		}
 
 		private void InitializeAccountsView(BankActions ba, DataRowView clientrowintable)
@@ -186,7 +186,7 @@ namespace Client_Window
 			// Получаем список текущих счетов клиента, 
 			// на один из которых нужно перечислить выданный кредит
 			// Этот список будет выпадающим списком в окошке ввода данных вклада
-			var creditRecipientAccounts = BA.Accounts.GetClientAccounts(client.ID, AccountType.Saving);
+			var creditRecipientAccounts = BA.Accounts.GetClientSavingAccounts(client.ID);
 
 			// Клиент может получить кредит наличными
 			// создаем и добавляем этот элемент списка в список счетов для накопления процентов

@@ -78,6 +78,7 @@ CREATE TABLE [dbo].[ClientsView] (
 CREATE TABLE [dbo].[AccountsParent] (
 	[AccID]				INT			IDENTITY (1, 1) NOT NULL PRIMARY KEY,	-- уникальный ид счета
 	[ClientID]			INT				NOT NULL,	-- ID клиента
+	FOREIGN KEY ([ClientID]) REFERENCES [dbo].[ClientsMain]([ID]) ON DELETE CASCADE,
 	[AccountNumber]		NVARCHAR (15)	DEFAULT '' NOT NULL,		
 	[Balance]			MONEY DEFAULT 0	NOT NULL,			
 	[Interest]			DECIMAL (4,2)	NOT NULL,
@@ -124,6 +125,8 @@ CREATE TABLE [dbo].[CreditAccounts] (
 		 {"AccountsView", @"
 CREATE TABLE [dbo].[AccountsView] (
 	 [AccID]			INT	IDENTITY (1, 1)			NOT NULL	PRIMARY KEY
+	,[ClientID]			INT							NOT NULL
+	,FOREIGN KEY ([ClientID]) REFERENCES [dbo].[ClientsMain]([ID]) ON DELETE CASCADE
 	,[ClientType]		TINYINT						NOT NULL
 	,[ClientTypeTag]	NVARCHAR (5)	DEFAULT ''	NOT NULL
 	,[ClientName]		NVARCHAR (256)	DEFAULT ''	NOT NULL
@@ -135,12 +138,33 @@ CREATE TABLE [dbo].[AccountsView] (
 	,[Interest]			DECIMAL (4,2)	DEFAULT 0	NOT NULL
 	,[Opened]			DATE						NOT NULL
 	,[Closed]			DATE
+	,[Topuble]			BIT							NOT NULL
+);
+		"},
+		 {"ClientAccountsView", @"
+CREATE TABLE [dbo].[ClientAccountsView] (
+	 [AccID]			INT	IDENTITY (1, 1)			NOT NULL	PRIMARY KEY
+	,[ClientID]			INT							NOT NULL
+	,FOREIGN KEY ([ClientID]) REFERENCES [dbo].[ClientsMain]([ID]) ON DELETE CASCADE
+	,[ClientType]		TINYINT						NOT NULL
+	,[ClientTypeTag]	NVARCHAR (5)	DEFAULT ''	NOT NULL
+	,[ClientName]		NVARCHAR (256)	DEFAULT ''	NOT NULL
+	,[AccountNumber]	NVARCHAR (15)	DEFAULT ''	NOT NULL
+	,[AccType]			TINYINT						NOT NULL
+	,[CurrentAmount]	MONEY			DEFAULT 0	NOT NULL
+	,[DepositAmount]	MONEY			DEFAULT 0	NOT NULL
+	,[DebtAmount]		MONEY			DEFAULT 0	NOT NULL
+	,[Interest]			DECIMAL (4,2)	DEFAULT 0	NOT NULL
+	,[Opened]			DATE						NOT NULL
+	,[Closed]			DATE
+	,[Topuble]			BIT							NOT NULL
 );
 		"},
 		 {"Transactions", @"
 CREATE TABLE [dbo].[Transactions] (
 	[TransactionID]			INT			IDENTITY(1,1)	NOT NULL PRIMARY KEY,
 	[TransactionAccountID]	INT							NOT NULL,
+	FOREIGN KEY ([TransactionAccountID]) REFERENCES [dbo].[AccountsParent]([AccID]) ON DELETE CASCADE,
 	[TransactionDateTime]	SMALLDATETIME				NOT NULL,
 	[SourceAccount]			NVARCHAR (15)	DEFAULT ''	NOT NULL,
 	[DestinationAccount]	NVARCHAR (15)	DEFAULT ''	NOT NULL,

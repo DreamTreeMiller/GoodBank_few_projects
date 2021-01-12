@@ -113,7 +113,8 @@ EXEC [dbo].[SP_UpdateNumberOfAccounts]
 IF EXISTS (SELECT [name],[type] FROM sys.objects WHERE [name]='AccountsView' AND [type]='U')	
 	DROP TABLE [dbo].[AccountsView];
 SELECT 
-	 [AccID]		
+	 [AccID]	
+	,[ClientID]
 	,[ClientType]	
 	,[ClientTypeTag]
 	,[ClientName]	
@@ -125,6 +126,7 @@ SELECT
 	,[Interest]		
 	,[Opened]		
 	,[Closed]		
+	,[Topupable]
 INTO [dbo].[AccountsView]
 FROM 
 	-- first we make a list of all clients
@@ -156,6 +158,7 @@ FROM
 			,[Interest]
 			,[Opened]
 			,[Closed]
+			,[Topupable]
 	 FROM	[dbo].[SavingAccounts], [dbo].[AccountsParent]
 	 WHERE [SavingAccounts].[id] = [AccountsParent].[AccID] 
 	 UNION	SELECT   [AccID]
@@ -168,6 +171,7 @@ FROM
 				,[Interest]
 				,[Opened]
 				,[Closed]
+				,[Topupable]
 			FROM	[dbo].[DepositAccounts], [dbo].[AccountsParent]
 			WHERE [DepositAccounts].[id] = [AccountsParent].[AccID] 
 	 UNION	SELECT   [AccID]
@@ -180,12 +184,101 @@ FROM
 				,[Interest]
 				,[Opened]
 				,[Closed]
+				,[Topupable]
 			FROM	[dbo].[CreditAccounts], [dbo].[AccountsParent]
 			WHERE [CreditAccounts].[id] = [AccountsParent].[AccID] 
 	) AS Accounts
 
 	-- then unify them
 WHERE Clients.[id] = Accounts.[ClientID]
+				";
+				sqlCommand = new SqlCommand(sqlExpression, gbConn);
+				sqlCommand.ExecuteNonQuery();
+			}
+		}
+
+		/// <summary>
+		/// Удаляет и заново создаёт таблицу [dbo].[AccountsView], 
+		/// в которой собраны счета всех трёх типов клиентов
+		/// </summary>
+		private void RefreshClientAccountsViewTable(int clientID)
+		{
+			using (gbConn = SetGoodBankConnection())
+			{
+				gbConn.Open();
+				string sqlExpression = $@"
+IF EXISTS (SELECT [name],[type] FROM sys.objects WHERE [name]='ClientAccountsView' AND [type]='U')	
+	DROP TABLE [dbo].[ClientAccountsView];
+SELECT 
+	 [AccID]	
+	,[ClientID]
+	,[ClientType]	
+	,[ClientTypeTag]
+	,[ClientName]	
+	,[AccountNumber]
+	,[AccType]		
+	,[CurrentAmount]
+	,[DepositAmount]
+	,[DebtAmount]	
+	,[Interest]		
+	,[Opened]		
+	,[Closed]		
+	,[Topupable]
+INTO [dbo].[ClientAccountsView]
+FROM 
+	-- first we take [ClientName] from [dbo].[AccountsView]
+	(SELECT 
+		 [ClientType]	
+		,[ClientTypeTag]
+		,[MainName] AS [ClientName]	
+	 FROM [dbo].[ClientsView] 
+	 WHERE [ID]={clientID}
+	)	AS Client,
+
+	-- then list of all accounts
+	(SELECT	 [AccID]
+			,[ClientID]
+			,[AccountNumber]
+			,0 AS [AccType]		-- Saving account
+			,[Balance]	AS [CurrentAmount]
+			,0			AS [DepositAmount]
+			,0			AS [DebtAmount]
+			,[Interest]
+			,[Opened]
+			,[Closed]
+			,[Topupable]
+	 FROM	[dbo].[SavingAccounts], [dbo].[AccountsParent]
+	 WHERE [SavingAccounts].[id] = [AccountsParent].[AccID] 
+	 UNION	SELECT   [AccID]
+				,[ClientID]
+				,[AccountNumber]
+				,1 AS [AccType]		-- Deposit account
+				,0			AS [CurrentAmount]
+				,[Balance]	AS [DepositAmount]
+				,0			AS [DebtAmount]
+				,[Interest]
+				,[Opened]
+				,[Closed]
+				,[Topupable]
+			FROM	[dbo].[DepositAccounts], [dbo].[AccountsParent]
+			WHERE [DepositAccounts].[id] = [AccountsParent].[AccID] 
+	 UNION	SELECT   [AccID]
+				,[ClientID]
+				,[AccountNumber]
+				,2 AS [AccType]		-- Credit account
+				,0			AS [CurrentAmount]
+				,0			AS [DepositAmount]
+				,[Balance]	AS [DebtAmount]
+				,[Interest]
+				,[Opened]
+				,[Closed]
+				,[Topupable]
+			FROM	[dbo].[CreditAccounts], [dbo].[AccountsParent]
+			WHERE [CreditAccounts].[id] = [AccountsParent].[AccID] 
+	) AS Accounts
+
+	-- then unify them
+WHERE Accounts.[ClientID] = {clientID}
 				";
 				sqlCommand = new SqlCommand(sqlExpression, gbConn);
 				sqlCommand.ExecuteNonQuery();
@@ -231,14 +324,24 @@ SELECT @ts [TotalSaving], @td [TotalDeposit], @tc [TotalCredit];
 			daAccountsView.Fill(ds, "AccountsView");
 
 			string rowfilter = (ct == ClientType.All) ? "" : "ClientType = " + (int)ct;
-			DataView accountsViewTable =
+			DataView accountsView =
 				new DataView(ds.Tables["AccountsView"],		// Table to show
 							 rowfilter,						// Row filter (select type)
 							 "AccID ASC",					// Sort ascending by 'ID' field
 							 DataViewRowState.CurrentRows);
-			GetAccountsViewTotals(ct, out totalSaving, out totalDeposit, out totalCredit);
 
-			return (accountsViewTable, totalSaving, totalDeposit, totalCredit);
+			DataTable accountsViewTable = accountsView.Table;
+			object tmp; // need to check 
+			tmp = accountsViewTable.Compute("SUM([CurrentAmount])", rowfilter);
+			if (tmp != System.DBNull.Value) totalSaving = (decimal)tmp;
+
+			tmp = accountsViewTable.Compute("SUM([DepositAmount])", rowfilter);
+			if (tmp != System.DBNull.Value) totalDeposit = (decimal)tmp;
+
+			tmp = accountsViewTable.Compute("SUM([DebtAmount])", rowfilter);
+			if (tmp != System.DBNull.Value) totalCredit = (decimal)tmp;
+
+			return (accountsView, totalSaving, totalDeposit, totalCredit);
 		}
 
 		/// <summary>
@@ -251,61 +354,74 @@ SELECT @ts [TotalSaving], @td [TotalDeposit], @tc [TotalCredit];
 		public (DataView accountsViewTable, decimal totalSaving, decimal totalDeposit, decimal totalCredit)
 			GetClientAccounts(int clientID)
 		{
-			DataView accList = new DataView();
-			var client = GetClientByID(clientID);
-			decimal totalCurr = 0, totalDeposit = 0, totalCredit = 0;
-			IAccount acc;
+			// Обновляем таблицу для показа
+			RefreshClientAccountsViewTable(clientID);
+			ds.Tables["ClientAccountsView"].Clear();
+			daClientAccountsView.Fill(ds, "ClientAccountsView");
 
-			for (int i = 0; i < accounts.Count; i++)
-				if (accounts[i].ClientID == clientID)
-				{
-					acc = accounts[i];
-					switch (acc.AccType)
-					{
-						case AccountType.Saving:
-							totalCurr    = totalCurr    + (decimal)acc.Balance;
-							break;
-						case AccountType.Deposit:
-							totalDeposit = totalDeposit + (decimal)acc.Balance;
-							break;
-						case AccountType.Credit:
-							totalCredit  = totalCredit  + (decimal)acc.Balance;
-							break;
-					}
-					//accList.Add(new AccountDTO(client, acc));
-				}
-			return (accList, totalCurr, totalDeposit, totalCredit);
+			decimal totalSaving = 0, totalDeposit = 0, totalCredit = 0;
+			string rowfilter = string.Empty;
+			DataView clientAccountsView =
+				new DataView(ds.Tables["ClientAccountsView"],	// Table to show
+							 rowfilter,
+							 "AccType ASC",						// Sort ascending by 'ID' field
+							 DataViewRowState.CurrentRows);
+
+			DataTable clientAccountsViewTable = clientAccountsView.Table;
+			object tmp; // need to check 
+			tmp	= clientAccountsViewTable.Compute("SUM([CurrentAmount])", rowfilter);
+			if (tmp != System.DBNull.Value) totalSaving = (decimal)tmp;
+
+			tmp = clientAccountsViewTable.Compute("SUM([DepositAmount])", rowfilter);
+			if (tmp != System.DBNull.Value) totalDeposit = (decimal)tmp;
+
+			tmp = clientAccountsViewTable.Compute("SUM([DebtAmount])",	rowfilter);
+			if (tmp != System.DBNull.Value) totalCredit = (decimal)tmp;
+
+			return (clientAccountsView, totalSaving, totalDeposit, totalCredit);
 		}
 
-		public DataView GetClientAccounts(int clientID, AccountType accType)
+		/// <summary>
+		/// Получаем список текущих(Saving) пополняемых (Topupable) счетов клиента, 
+		/// на один из которых нужно перечислить выданный кредит
+		/// </summary>
+		/// <param name="clientID"></param>
+		/// <returns></returns>
+
+		public DataView GetClientSavingAccounts(int clientID)
 		{
-			DataView accList = new DataView();
-			var client = GetClientByID(clientID);
+			string rowfilter =	  "ClientID = " + clientID
+								+ " AND AccType = 0"			// Saving account
+								+ " AND Topupable <> 0";		// Topupable == true
+			DataView clientAccountsViewTable =
+				new DataView(ds.Tables["ClientAccountsView"],     // Table to show
+							 rowfilter,                     // Row filter (select type)
+							 "AccID ASC",                   // Sort ascending by 'ID' field
+							 DataViewRowState.CurrentRows);
 
-			for (int i = 0; i < accounts.Count; i++)
-			{
-				var acc = accounts[i];
-				//if (acc.ClientID == clientID && acc.AccType == accType)
-					//accList.Add(new AccountDTO(client, acc));
-			}
-			return accList;
-
+			return clientAccountsViewTable;
 		}
 
+		/// <summary>
+		/// Получаем список счетов клиента, 
+		/// на которых можно накапливать проценты со вклада,
+		/// если выбран режим - без капитализации
+		/// Этот список пополняемых (Topupable) счетов клиента. 
+		/// Проценты могут накапливаться и на другом депозите
+		/// </summary>
+		/// <param name="clientID"></param>
+		/// <returns></returns>
 		public DataView GetClientAccountsToAccumulateInterest(int clientID)
 		{
-			DataView accList = new DataView();
-			var client = GetClientByID(clientID);
+			string rowfilter =	  "ClientID = " + clientID
+								+ " AND Topupable <> 0";		// Topupable == true
+			DataView clientAccountsViewTable =
+				new DataView(ds.Tables["ClientAccountsView"],			// Table to show
+							 rowfilter,							// Row filter (select type)
+							 "AccType ASC",						// Sort ascending by 'AccType' field
+							 DataViewRowState.CurrentRows);
 
-			for (int i = 0; i < accounts.Count; i++)
-			{
-				var acc = accounts[i];
-				//if (acc.ClientID == clientID &&
-				//	acc.AccType == AccountType.Saving &&
-				//	acc.Topupable)
-				//	accList.Add(new AccountDTO(client, acc));
-			}
-			return accList;
+			return clientAccountsViewTable;
 		}
 
 		public DataView GetTopupableAccountsToWireFrom(int sourceAccID)

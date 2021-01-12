@@ -6,7 +6,7 @@ namespace BankInside
 {
 	public partial class GoodBank
 	{
-		private SqlDataAdapter	daAccountsView,
+		private SqlDataAdapter	daAccountsView, daClientAccountsView,
 								daAccountsParent, daDeposits, daCredits, // no da for Saving accounts
 								daTransactions;
 
@@ -55,6 +55,15 @@ ELSE
 			string sqlCommand = @"SELECT * FROM [dbo].[AccountsView]";
 			daAccountsView.SelectCommand = new SqlCommand(sqlCommand, gbConn);
 			daAccountsView.Fill(ds, "AccountsView");
+		}
+
+		private void SetupClientAccountsViewSqlDataAdapter()
+		{
+			gbConn = SetGoodBankConnection();
+			daClientAccountsView = new SqlDataAdapter();
+			string sqlCommand = @"SELECT * FROM [dbo].[ClientAccountsView]";
+			daClientAccountsView.SelectCommand = new SqlCommand(sqlCommand, gbConn);
+			daClientAccountsView.Fill(ds, "ClientAccountsView");
 		}
 
 		private void SetupSP_AddAccount()
