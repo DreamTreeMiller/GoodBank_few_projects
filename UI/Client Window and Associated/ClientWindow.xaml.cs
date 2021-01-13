@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Data;
 using Account_Windows;
 using DTO;
@@ -21,24 +22,26 @@ namespace Client_Window
 		private WindowID		wid	= WindowID.EditClientVIP;
 		private IClientDTO		client = new ClientDTO();
 		private DataRowView		clientRowInTable;
+		private Action<DataRowView, IClientDTO> updateClientRow;
 
 		public bool accountsNeedUpdate = false;
 		public bool clientsNeedUpdate  = false;
 
-		public ClientWindow(BankActions ba, DataRowView clientrowintable)
+		public ClientWindow(BankActions ba, DataRowView clientrowintable, Action<DataRowView, IClientDTO> ucr)
 		{
 			InitializeComponent();
-			InitializeAccountsView(ba, clientrowintable);
+			InitializeAccountsView(ba, clientrowintable, ucr);
 			ShowAccounts();
 		}
 
-		private void InitializeAccountsView(BankActions ba, DataRowView clientrowintable)
+		private void InitializeAccountsView(BankActions ba, DataRowView clientrowintable, Action<DataRowView, IClientDTO> ucr)
 		{
 			BankTodayDate.Text = $"Сегодня {GoodBankTime.Today:dd.MM.yyyy} г.";
 			BA = ba;
 			OrganizationInfo.Visibility = Visibility.Collapsed;
 			PersonalInfo.Visibility		= Visibility.Visible;
 			this.clientRowInTable		= clientrowintable;
+			updateClientRow				+= ucr;
 			this.client					= new ClientDTO(clientrowintable);
 			switch (this.client.ClientType)
 			{
@@ -87,11 +90,14 @@ namespace Client_Window
 			var result = editClientWindow.ShowDialog();
 			if (result != true) return;
 
-			// Обновляем визуально редактируемый элемент
-			// Обновляем базу клиентов.
-			// Эти два действия должны всегда быть вместе!
-			(this.client as ClientDTO).UpdateMyself(editClientWindow.newOrUpdatedClient as ClientDTO);
-			BA.Clients.UpdateClientPersonalData(clientRowInTable, editClientWindow.newOrUpdatedClient);
+			// Обновляем данные клиента в окне клиента
+			(client as ClientDTO).UpdateMyself(editClientWindow.newOrUpdatedClient as ClientDTO);
+
+			// Обновляем данные клиента в базе.
+			BA.Clients.UpdateClientPersonalData(client);
+
+			// Обновляем данные клиента в списке клиентов на экране в окне департамента
+			updateClientRow?.Invoke(clientRowInTable, client);
 		}
 
 		private void ClientWindow_AccountDetails_Click(object sender, RoutedEventArgs e)
@@ -121,11 +127,14 @@ namespace Client_Window
 			IAccountDTO newAcc = new AccountDTO(client.ClientType, client.ID, AccountType.Saving,
 				ocawin.startAmount, 0, false, 0, "не используется", ocawin.Opened, true, true, RecalcPeriod.NoRecalc, 0, 0);
 
-			// Добавляем счет в базу в бэкенд
-			BA.Accounts.AddAccount(newAcc);
-			accountsNeedUpdate = true;
-			ShowAccounts();
-			clientsNeedUpdate = true;
+			// Увеличиваем количество текущих счетов клиента на 1
+			client.NumberOfSavingAccounts++;
+
+			// Добавляем созданный счет в базу.
+			// Обновляем данные о количестве счетов клиента в списке клиентов на экране.
+			// Добавляем новый счёт в список в окошке клиента
+			// Добавляем новый счёт в общий список счетов в окне департамента
+			AddAccountUpdateClientDataInDBandView(newAcc, client);
 		}
 
 		private void OpenDepositButton_Click(object sender, RoutedEventArgs e)
@@ -139,8 +148,9 @@ namespace Client_Window
 			// Клиент может накапливать проценты на отдельном безымянном счете, 
 			// привязанном ко вкладу. Я назвал его "внутренний счет"
 			// создаем заглушку для этого счета и добавляем ее в список счетов для накопления процентов
-			DataRowView internalAccount		= accumulationAccounts.AddNew();
-			internalAccount["AccountNumber"]	= "внутренний счет";
+			DataRowView internalAccount		 = accumulationAccounts.AddNew();
+			internalAccount["AccID"]		 = 0;
+			internalAccount["AccountNumber"] = "внутренний счет";
 
 			OpenDepositWindow odwin = new OpenDepositWindow(accumulationAccounts, client.ClientType);
 			var result = odwin.ShowDialog();
@@ -150,10 +160,10 @@ namespace Client_Window
 			// Если был выбран "внутренний счет", то 
 			// его ID == 0, AccountNumber == "внутренний счет"
 
-			int		AccumAccIndx		= odwin.AccumulationAccount.SelectedIndex;
-			int		AccumulationAccID	= (odwin.AccumulationAccount.Items[AccumAccIndx] as AccountDTO).AccID;
-			string	InterestAccumAccNum =
-				(odwin.AccumulationAccount.Items[AccumAccIndx] as AccountDTO).AccountNumber;
+			int		selectedAccIndx		= odwin.AccumulationAccount.SelectedIndex;
+			DataRowView	selectedAccount = odwin.AccumulationAccount.Items[selectedAccIndx] as DataRowView;
+			int		  AccumulationAccID	=	 (int)selectedAccount["AccID"];
+			string	InterestAccumAccNum = (string)selectedAccount["AccountNumber"];
 
 			// Упаковываем информацию для создания счета
 			IAccountDTO newAcc = 
@@ -169,16 +179,15 @@ namespace Client_Window
 								(RecalcPeriod)odwin.Recalculation.SelectedIndex, 
 								odwin.duration,
 								0);
-			
-			// Добавляем счет в базу в бэкенд
-			BA.Accounts.AddAccount(newAcc);
 
-			// Надо будет обновить список счетов и клиентов при выходе из окна клиента
-			accountsNeedUpdate = true;
+			// Увеличиваем количество депозитов клиента на 1
+			client.NumberOfDeposits++;
 
-			// Обновляем счета в текущем окне клиента
-			ShowAccounts();
-			clientsNeedUpdate = true;
+			// Добавляем созданный счет в базу.
+			// Обновляем данные о количестве счетов клиента в списке клиентов на экране.
+			// Добавляем новый счёт в список в окошке клиента
+			// Добавляем новый счёт в общий список счетов в окне департамента
+			AddAccountUpdateClientDataInDBandView(newAcc, client);
 		}
 
 		private void OpenCreditButton_Click(object sender, RoutedEventArgs e)
@@ -191,6 +200,7 @@ namespace Client_Window
 			// Клиент может получить кредит наличными
 			// создаем и добавляем этот элемент списка в список счетов для накопления процентов
 			DataRowView cash		= creditRecipientAccounts.AddNew();
+			cash["AccID"]			= 0;
 			cash["AccountNumber"]	= "получить наличными";
 
 			OpenCreditWindow ocrwin = new OpenCreditWindow(creditRecipientAccounts, client.ClientType);
@@ -199,10 +209,11 @@ namespace Client_Window
 
 			// Получаем номер счета в базе счетов, на котором будет перечислена выданная сумма
 			// Если было выбрано "получить наличными", то его ID == 0
-			int		CreRecipAccIndx		  =  ocrwin.CreditRecipientAccount.SelectedIndex;
-			int		CreditRecipientAccID  = (ocrwin.CreditRecipientAccount.Items[CreRecipAccIndx] as AccountDTO).AccID;
-			string	CreditRecipientAccNum =
-				(ocrwin.CreditRecipientAccount.Items[CreRecipAccIndx] as AccountDTO).AccountNumber;
+			int		selectedAccountIndx	 = ocrwin.CreditRecipientAccount.SelectedIndex;
+			DataRowView selectedAccount	 = ocrwin.CreditRecipientAccount.Items[selectedAccountIndx] as DataRowView;
+			int		CreditRecipientAccID =	 (int)selectedAccount["AccID"];
+			string CreditRecipientAccNum = (string)selectedAccount["AccountNumber"];
+
 
 			// Упаковываем информацию для создания счета
 			IAccountDTO newAcc =
@@ -219,8 +230,14 @@ namespace Client_Window
 								ocrwin.duration,
 								0);
 
-			// Добавляем счет в базу в бэкенд
-			BA.Accounts.AddAccount(newAcc);
+			// Увеличиваем количество кредитов клиента на 1
+			client.NumberOfCredits++;
+
+			// Добавляем созданный счет в базу.
+			// Обновляем данные о количестве счетов клиента в списке клиентов на экране.
+			// Добавляем новый счёт в список в окошке клиента
+			// Добавляем новый счёт в общий список счетов в окне департамента
+			AddAccountUpdateClientDataInDBandView(newAcc, client);
 
 			if (CreditRecipientAccID == 0)
 			{
@@ -235,12 +252,18 @@ namespace Client_Window
 					+ $"счет №: {CreditRecipientAccNum}" 
 					);
 			}
+		}
 
-			// Надо будет обновить список счетов и клиентов при выходе из окна клиента
+		private void AddAccountUpdateClientDataInDBandView(IAccountDTO newAcc, IClientDTO updatedClient)
+		{
+			// Добавляем счет в базу в бэкенд
+			// Также обновляется количество счетов у клиента в базе
+			BA.Accounts.AddAccount(newAcc);
+
+			//Обновляем количество счетов у клиента в списке на экране in ClientsView Table
+			updateClientRow?.Invoke(clientRowInTable, updatedClient);
+
 			accountsNeedUpdate = true;
-			clientsNeedUpdate  = true;
-
-			// Обновляем счета в текущем окне клиента
 			ShowAccounts();
 		}
 	}

@@ -153,12 +153,14 @@ WHERE	[ClientsMain].[ID] = [ORGclients].[id]";
 		}
 
 		/// <summary>
-		/// Обновляет данные о клиенте в базе данных и в таблице для показа
+		/// Обновляет данные о клиенте в базе данных
 		/// </summary>
 		/// <param name="clientRowInTable">Строка со старыми данными о клиенете в таблице показа</param>
 		/// <param name="updatedClient">Обновлённые данные о клиенте</param>
-		public void UpdateClientPersonalData(DataRowView clientRowInTable, IClientDTO updatedClient)
+		public void UpdateClientPersonalData(IClientDTO updatedClient)
 		{
+
+			// Обновляем данные в самой базе, НЕ в списке на экране!!!
 			string sqlCommandAddClient = $@"
 EXEC [dbo].[SP_UpdateClientPersonalData] 
 	 {updatedClient.ID}
@@ -179,29 +181,6 @@ EXEC [dbo].[SP_UpdateClientPersonalData]
 				sqlCommand = new SqlCommand(sqlCommandAddClient, gbConn);
 				sqlCommand.ExecuteNonQuery();
 			}
-
-			// Обновляем таблицу показа
-			// Это работает, но не подгружает данные из базы данных
-			// Поэтому, если база используется одновременно несколькими пользователями,
-			// и кто-то другой изменит базу в другом месте, 
-			// эти изменения в таблицу показа не попадут.
-			// Но заморачиваться с отслеживанием такого поведения сил уже нет.
-			// Хочу поскорее сдать это задание.
-			clientRowInTable["ClientType"]				= updatedClient.ClientType;
-			clientRowInTable["FirstName"]				= updatedClient.FirstName;
-			clientRowInTable["MiddleName"]				= updatedClient.MiddleName;
-			clientRowInTable["LastName"]				= updatedClient.LastName;
-			clientRowInTable["MainName"]				= updatedClient.MainName;
-			clientRowInTable["DirectorName"]			= updatedClient.DirectorName;
-			clientRowInTable["CreationDate"]			= updatedClient.CreationDate;
-			clientRowInTable["PassportOrTIN"]			= updatedClient.PassportOrTIN;
-			clientRowInTable["Telephone"]				= updatedClient.Telephone;
-			clientRowInTable["Email"]					= updatedClient.Email;
-			clientRowInTable["Address"]					= updatedClient.Address;
-			clientRowInTable["NumberOfSavingAccounts"]	= updatedClient.NumberOfSavingAccounts;
-			clientRowInTable["NumberOfDeposits"]		= updatedClient.NumberOfDeposits;
-			clientRowInTable["NumberOfCredits"]			= updatedClient.NumberOfCredits;
-			clientRowInTable["NumberOfClosedAccounts"]	= updatedClient.NumberOfClosedAccounts;
 		}
 	}
 }

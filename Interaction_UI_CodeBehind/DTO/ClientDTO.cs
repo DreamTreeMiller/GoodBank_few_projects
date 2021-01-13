@@ -156,24 +156,24 @@ namespace DTO
 			}
 		}
 
-		public int			NumberOfSavingAccounts { get; } = 0;
-		public int			NumberOfDeposits		{ get; } = 0;
-		public int			NumberOfCredits			{ get; } = 0;
-		public int			NumberOfClosedAccounts	{ get; } = 0;
+		public int			NumberOfSavingAccounts	{ get; set; } = 0;
+		public int			NumberOfDeposits		{ get; set; } = 0;
+		public int			NumberOfCredits			{ get; set; } = 0;
+		public int			NumberOfClosedAccounts	{ get; set; } = 0;
 
 		#endregion
 
 		#region Поля
 
-		private string		_firstName = "";
-		private string		_middleName = "";
-		private string		_lastName = "";
-		private string		_orgName = "";
-		private DateTime?	_creationDate = null;
-		private string		_passportOrTIN = "";
-		private string		_telephone = "";
-		private string		_email = "";
-		private string		_address = "";
+		private string		_firstName		= "";
+		private string		_middleName		= "";
+		private string		_lastName		= "";
+		private string		_orgName		= "";
+		private DateTime?	_creationDate	= null;
+		private string		_passportOrTIN	= "";
+		private string		_telephone		= "";
+		private string		_email			= "";
+		private string		_address		= "";
 
 		#endregion
 

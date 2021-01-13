@@ -101,6 +101,11 @@ END;
 			}
 		}
 
+		/// <summary>
+		/// Обновляет основные таблицы данных о клиенте:
+		/// ClientsMain, VIP, SIM, ORGclients.
+		/// НЕ обновляет таблицу ClientsView для показа на экране
+		/// </summary>
 		private void SetupSP_UpdateClientPersonalData()
 		{
 			using (gbConn = SetGoodBankConnection())

@@ -41,6 +41,31 @@ namespace Data_Grid_User_Controls
 			InitializeColumnsTags(tags);
 		}
 
+		/// <summary>
+		/// Обновляем данные клиента в таблице на экране!
+		/// </summary>
+		/// <param name="clientRowInTable">Указатель на строку клиента в таблице на экране</param>
+		/// <param name="updatedClient">Обновлённые данные клиента</param>
+		public void UpdateClientRowInView(DataRowView clientRowInTable, IClientDTO updatedClient)
+		{
+			clientRowInTable["ClientType"] = updatedClient.ClientType;
+			clientRowInTable["FirstName"] = updatedClient.FirstName;
+			clientRowInTable["MiddleName"] = updatedClient.MiddleName;
+			clientRowInTable["LastName"] = updatedClient.LastName;
+			clientRowInTable["MainName"] = updatedClient.MainName;
+			clientRowInTable["DirectorName"] = updatedClient.DirectorName;
+			clientRowInTable["CreationDate"] = updatedClient.CreationDate;
+			clientRowInTable["PassportOrTIN"] = updatedClient.PassportOrTIN;
+			clientRowInTable["Telephone"] = updatedClient.Telephone;
+			clientRowInTable["Email"] = updatedClient.Email;
+			clientRowInTable["Address"] = updatedClient.Address;
+			clientRowInTable["NumberOfSavingAccounts"] = updatedClient.NumberOfSavingAccounts;
+			clientRowInTable["NumberOfDeposits"] = updatedClient.NumberOfDeposits;
+			clientRowInTable["NumberOfCredits"] = updatedClient.NumberOfCredits;
+			clientRowInTable["NumberOfClosedAccounts"] = updatedClient.NumberOfClosedAccounts;
+		}
+
+
 		private void InitializeColumnsTags(ClientsViewNameTags tags)
 		{
 			// Названия чекбоксов

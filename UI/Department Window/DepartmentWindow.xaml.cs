@@ -112,7 +112,7 @@ namespace Department_Window
 				MessageBox.Show("Выберите клиента для показа");
 				return;
 			}
-			ClientWindow clientWindow = new ClientWindow(BA, client);
+			ClientWindow clientWindow = new ClientWindow(BA, client, clientsListView.UpdateClientRowInView);
 			clientWindow.ShowDialog();
 
 			if (clientWindow.clientsNeedUpdate)  InitializeClientsAndWindowTypes();
@@ -132,8 +132,8 @@ namespace Department_Window
 			BA.Clients.AddClient(newClient);
 
 			// Добавляем нового клиента в список на экране
-			//AddNewClientToDataGrid(newClient);
-			InitializeClientsAndWindowTypes();
+			AddNewClientToDataGrid(newClient);
+			//InitializeClientsAndWindowTypes();
 		}
 
 		/// <summary>
