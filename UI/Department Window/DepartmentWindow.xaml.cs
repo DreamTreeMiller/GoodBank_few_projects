@@ -112,10 +112,16 @@ namespace Department_Window
 				MessageBox.Show("Выберите клиента для показа");
 				return;
 			}
-			ClientWindow clientWindow = new ClientWindow(BA, client, clientsListView.UpdateClientRowInView);
+
+			// Создаём окно работы с клиентом
+			ClientWindow clientWindow = new ClientWindow(BA, client);
+
+			// Подписываемся на событие, возникающее, когда изменились данные клиента:
+			// Подцепляем к этому событию обработчик - метод обновления данных клиента в списке на экране.
+			// Этот метод содержится в UserControl ClientsList
+			clientWindow.ClientDataChanged += clientsListView.UpdateClientRowInView;
 			clientWindow.ShowDialog();
 
-			if (clientWindow.clientsNeedUpdate)  InitializeClientsAndWindowTypes();
 			if (clientWindow.accountsNeedUpdate) ShowAccounts();
 		}
 
@@ -129,7 +135,7 @@ namespace Department_Window
 			if (result != true) return;
 			// Добавляем нового клиента в базу в бэкэнде
 			newClient = addСlientWin.newOrUpdatedClient;
-			BA.Clients.AddClient(newClient);
+			newClient.ID = BA.Clients.AddClient(newClient);
 
 			// Добавляем нового клиента в список на экране
 			AddNewClientToDataGrid(newClient);
@@ -143,13 +149,14 @@ namespace Department_Window
 		/// <param name="addedClient"></param>
 		private void AddNewClientToDataGrid(IClientDTO addedClient)
 		{
-			//clientsTable.Add(addedClient as ClientDTO);
+			DataRowView newClient = clientsTable.AddNew();
+			clientsListView.UpdateClientRowInView(newClient, addedClient);
 			clientsListView.SetClientsTotal(clientsTable.Count);
 		}
 
 		private void WinMenu_SelectAccount_Click(object sender, RoutedEventArgs e)
 		{
-			IAccountDTO account = accountsListView.GetSelectedItem();
+			DataRowView account = accountsListView.GetSelectedItem();
 			if (account == null)
 			{
 				MessageBox.Show("Выберите счет для показа");
@@ -157,7 +164,7 @@ namespace Department_Window
 			}
 			AccountWindow accountWindow = new AccountWindow(BA, account);
 			accountWindow.ShowDialog();
-			if (accountWindow.clientsNeedUpdate)  InitializeClientsAndWindowTypes();
+			//if (accountWindow.clientsNeedUpdate)  InitializeClientsAndWindowTypes();
 			if (accountWindow.accountsNeedUpdate) ShowAccounts();
 		}
 	}

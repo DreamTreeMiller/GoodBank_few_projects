@@ -7,6 +7,14 @@ namespace Interfaces_Actions
 	public interface IAccountsActions
 	{
 		/// <summary>
+		/// Извлекает из базы (AccountsParent, SavingAccounts, DepositAccounts, CreditAccounts)
+		/// данные о счёте и помещает их в Data Transfer Object
+		/// </summary>
+		/// <param name="accountRow"></param>
+		/// <returns></returns>
+		//IAccountDTO GetAccountByID(int accID);
+
+		/// <summary>
 		/// Находит список всех счетов, принадлежащих клиентам данного типа
 		/// </summary>
 		/// <param name="clientType">ВИП, обычный клиент или организация</param>

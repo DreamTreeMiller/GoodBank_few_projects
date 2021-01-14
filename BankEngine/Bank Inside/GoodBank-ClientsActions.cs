@@ -14,10 +14,10 @@ namespace BankInside
 		/// </summary>
 		/// <param name="id">ID клиента</param>
 		/// <returns></returns>
-		public IClientDTO GetClientByID(int id)
+		public DataRow GetClientByID(int id)
 		{
-			DataRow clientRow = ds.Tables["Clients"].Rows.Find(id);
-			return new ClientDTO(clientRow);
+			DataRow clientRow = ds.Tables["ClientsView"].Rows.Find(id);
+			return clientRow;
 		}
 
 		/// <summary>

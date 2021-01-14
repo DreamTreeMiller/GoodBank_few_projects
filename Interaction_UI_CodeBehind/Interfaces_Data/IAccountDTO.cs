@@ -7,11 +7,11 @@ namespace Interfaces_Data
 	{
 		ClientType	ClientType		{ get; set; }
 		string		ClientName		{ get; set; }
-		int		ClientID		{ get; set; }
+		int			ClientID		{ get; set; }
 		AccountType	AccType			{ get; set; }
-		int		AccID				{ get; }
+		int			AccID			{ get; }
 		string		AccountNumber	{ get; set; }
-		double		Balance			{ get; set; }
+		decimal		Balance			{ get; set; }
 		string		CurrentAmount	{ get; }
 		string		DepositAmount	{ get; }
 		string		DebtAmount		{ get; }
@@ -26,11 +26,11 @@ namespace Interfaces_Data
 		/// ID счета, куда перечислять проценты.
 		/// При капитализации, совпадает с ИД счета депозита
 		/// </summary>
-		int		InterestAccumulationAccID		{ get; set; }
+		int			InterestAccumulationAccID		{ get; set; }
 
 		string		InterestAccumulationAccNum		{ get; set; }
 
-		double		AccumulatedInterest				{ get; set; }
+		decimal		AccumulatedInterest				{ get; set; }
 
 		DateTime	Opened				{ get; set; }
 
@@ -68,7 +68,7 @@ namespace Interfaces_Data
 		/// </summary>
 		RecalcPeriod RecalcPeriod		{ get; set; }
 
-		bool IsBlocked					{ get; set; }
+		bool		IsBlocked			{ get; set; }
 
 	}
 }

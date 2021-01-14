@@ -1,6 +1,7 @@
 ﻿using Enumerables;
 using Interfaces_Data;
 using System;
+using System.Data.SqlClient;
 
 namespace DTO
 {
@@ -18,7 +19,7 @@ namespace DTO
 		public AccountType	AccType			{ get; set; }
 		public int			AccID			{ get; } = 0;
 		public string		AccountNumber	{ get; set; }
-		public double		Balance			{ get; set; }
+		public decimal		Balance			{ get; set; }
 
 		public string		CurrentAmount	
 		{
@@ -52,7 +53,7 @@ namespace DTO
 
 
 		public string		InterestAccumulationAccNum	{ get; set; }
-		public double		AccumulatedInterest			{ get; set; } = 0;
+		public decimal		AccumulatedInterest			{ get; set; } = 0;
 
 		#endregion
 
@@ -73,7 +74,7 @@ namespace DTO
 		/// Дата окончания вклада/кредита. 
 		/// null - бессрочно
 		/// </summary>
-		public DateTime? EndDate =>
+		public DateTime?	EndDate =>
 			Duration == 0 ? null : (DateTime?)Opened.AddMonths(Duration);
 
 		/// <summary>
@@ -109,7 +110,7 @@ namespace DTO
 		/// 14 полей!!! ужас!!!
 		/// </summary>
 		public AccountDTO(ClientType ct, int clientID, AccountType accType,
-						  double balance, double interest, 
+						  decimal balance, double interest, 
 						  bool compounding, int interestAccumAccID, string interestAccumAccNum, DateTime opened, 
 						  bool topup, bool withdraw, RecalcPeriod recalc, int duration, int monthsElapsed)
 
@@ -128,6 +129,7 @@ namespace DTO
 			RecalcPeriod		= recalc;
 			Duration			= duration;
 			MonthsElapsed		= monthsElapsed;
+
 		}
 
 	/// <summary>
@@ -139,7 +141,7 @@ namespace DTO
 		{
 			ClientID			= c.ID;
 			AccType				= acc.AccType;
-			AccID				= acc.AccID;				// Account ID
+			AccID				= acc.AccID;
 			AccountNumber		= acc.AccountNumber;
 			Balance				= acc.Balance;
 			Interest			= acc.Interest;
@@ -185,6 +187,27 @@ namespace DTO
 				ClientName = (c as IClientOrg).OrgName;
 			}
 
+		}
+
+		public AccountDTO(SqlDataReader ar)		// ar - account row, just to keep short as possible
+		{
+			ClientID			= (int)ar["ClientID"];
+			AccType				= (AccountType)ar["AccType"];
+			AccID				= (int)ar["AccID"];
+			AccountNumber		= (string)ar["AccountNumber"];
+			Balance				= (decimal)ar["Balance"];
+			Interest			= (double)ar["Interest"];
+			Compounding			= (int)ar["Compounding"]		== 0? false : true;
+			Opened				= (DateTime)ar["Opened"];
+			Duration			= (int)ar["Duration"];
+			if (ar["Closed"]  != DBNull.Value) Closed = (DateTime)ar["EndDate"]; else Closed = null;
+			Topupable			= (int)ar["Topupable"]			== 0? false : true;
+			WithdrawalAllowed	= (int)ar["WithdrawalAllowed"] == 0? false : true;
+			RecalcPeriod		= (RecalcPeriod)ar["RecalcPeriod"];
+			IsBlocked			= (int)ar["IsBlocked"]			== 0? false : true;
+
+			InterestAccumulationAccNum	= (string)ar["InterestAccumulationAccNum"];
+			AccumulatedInterest			= (decimal)ar["AccumulatedInterest"];
 		}
 	}
 }

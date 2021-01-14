@@ -14,9 +14,26 @@ namespace BankInside
 	{
 		private List<Account> accounts;
 
-		public IAccount GetAccountByID(int id)
+		public IAccountDTO GetAccountByID(int id)
 		{
-			return accounts.Find(a => a.AccID == id);
+			AccountDTO accountDTO;
+			string sqlSP_GetAccountDTObyID = $"EXEC SP_GetAccountDTObyID {id};";
+
+			using (gbConn = SetGoodBankConnection())
+			{
+				gbConn.Open();
+				sqlCommand = new SqlCommand(sqlSP_GetAccountDTObyID, gbConn);
+				SqlDataReader accountRow = sqlCommand.ExecuteReader();
+				accountRow.Read();
+				accountDTO = new AccountDTO(accountRow);
+			}
+
+			int clientID = accountDTO.ClientID;
+			DataRow clientRow = ds.Tables["ClientsView"].Rows.Find(clientID);
+
+			accountDTO.ClientType = (ClientType)clientRow["ClientType"];
+			accountDTO.ClientName = (string)clientRow["ClientName"];
+			return accountDTO;
 		}
 
 		/// <summary>
@@ -27,25 +44,25 @@ namespace BankInside
 		public void AddAccount(IAccountDTO acc)
 		{
 			string accEndDate = acc.EndDate == null ? "NULL" : $"'{acc.EndDate:yyyy-MM-yy}'";
-			string accClosed  = acc.Closed  == null ? "NULL" : $"'{acc.Closed:yyyy-MM-yy}'";
+			string accClosed = acc.Closed == null ? "NULL" : $"'{acc.Closed:yyyy-MM-yy}'";
 			string sqlCommandAddAccount = $@"
 EXEC SP_AddAccount
 	 {(byte)acc.AccType}					-- @accType
 	,{acc.ClientID}							-- [ClientID]			INT				NOT NULL,	-- ID клиента
 	,{acc.Balance}							-- [Balance]			MONEY DEFAULT 0	NOT NULL,			
 	,{acc.Interest}							-- [Interest]			DECIMAL (4,2)	NOT NULL,
-	,{(acc.Compounding?1:0)}				-- [Compounding]		BIT				NOT NULL,	-- с капитали
+	,{(acc.Compounding ? 1 : 0)}			-- [Compounding]		BIT				NOT NULL,	-- с капитали
 	,'{acc.Opened:yyyy-MM-dd}'				-- [Opened]				DATE			NOT NULL,	-- дата откры
 	,{acc.Duration}							-- [Duration]			INT				NOT NULL,	-- Количество
 	,{acc.MonthsElapsed}					-- [MonthsElapsed]		INT				NOT NULL,	-- Количество
 	,{accEndDate}							-- [EndDate]			DATE,						-- Дата оконч
 	,{accClosed}							-- [Closed]				DATE,						-- Дата закры
-	,{(acc.Topupable?1:0)}					-- [Topupable]			BIT				NOT NULL,	-- Пополняемы
-	,{(acc.WithdrawalAllowed?1:0)}			-- [WithdrawalAllowed]	BIT				NOT NULL,	-- С правом ч
+	,{(acc.Topupable ? 1 : 0)}				-- [Topupable]			BIT				NOT NULL,	-- Пополняемы
+	,{(acc.WithdrawalAllowed ? 1 : 0)}		-- [WithdrawalAllowed]	BIT				NOT NULL,	-- С правом ч
 	,{(byte)acc.RecalcPeriod}				-- [RecalcPeriod]		TINYINT			NOT NULL,	-- Период пер
 	,{acc.InterestAccumulationAccID}		-- interest accum acc ID
 	,N'{acc.InterestAccumulationAccNum}';	-- interest accum acc Num
-";
+			";
 			using (gbConn = SetGoodBankConnection())
 			{
 				gbConn.Open();
@@ -78,9 +95,9 @@ EXEC SP_AddAccount
 		/// <param name="creditsUpdate"></param>
 		/// <param name="closedUpdate"></param>
 		private void UpdateNumberOfAccounts
-			(int clientID, 
-			 int savingsUpdate, 
-			 int depositsUpdate, 
+			(int clientID,
+			 int savingsUpdate,
+			 int depositsUpdate,
 			 int creditsUpdate,
 			 int closedUpdate)
 		{
@@ -301,11 +318,12 @@ SELECT @ts [TotalSaving], @td [TotalDeposit], @tc [TotalCredit];
 				sqlCommand = new SqlCommand(sqlSP_GetAccountsViewtotals, gbConn);
 				SqlDataReader totals = sqlCommand.ExecuteReader();
 				totals.Read();
-				totalSaving  = (decimal)totals["TotalSaving"];
+				totalSaving = (decimal)totals["TotalSaving"];
 				totalDeposit = (decimal)totals["TotalDeposit"];
-				totalCredit  = (decimal)totals["TotalCredit"];
+				totalCredit = (decimal)totals["TotalCredit"];
 			}
 		}
+
 		/// <summary>
 		/// Формирует список счетов данного типа клиентов.
 		/// </summary>
@@ -325,9 +343,9 @@ SELECT @ts [TotalSaving], @td [TotalDeposit], @tc [TotalCredit];
 
 			string rowfilter = (ct == ClientType.All) ? "" : "ClientType = " + (int)ct;
 			DataView accountsView =
-				new DataView(ds.Tables["AccountsView"],		// Table to show
-							 rowfilter,						// Row filter (select type)
-							 "AccID ASC",					// Sort ascending by 'ID' field
+				new DataView(ds.Tables["AccountsView"],     // Table to show
+							 rowfilter,                     // Row filter (select type)
+							 "AccID ASC",                   // Sort ascending by 'ID' field
 							 DataViewRowState.CurrentRows);
 
 			DataTable accountsViewTable = accountsView.Table;
@@ -362,20 +380,20 @@ SELECT @ts [TotalSaving], @td [TotalDeposit], @tc [TotalCredit];
 			decimal totalSaving = 0, totalDeposit = 0, totalCredit = 0;
 			string rowfilter = string.Empty;
 			DataView clientAccountsView =
-				new DataView(ds.Tables["ClientAccountsView"],	// Table to show
+				new DataView(ds.Tables["ClientAccountsView"],   // Table to show
 							 rowfilter,
-							 "AccType ASC",						// Sort ascending by 'ID' field
+							 "AccType ASC",                     // Sort ascending by 'ID' field
 							 DataViewRowState.CurrentRows);
 
 			DataTable clientAccountsViewTable = clientAccountsView.Table;
 			object tmp; // need to check 
-			tmp	= clientAccountsViewTable.Compute("SUM([CurrentAmount])", rowfilter);
+			tmp = clientAccountsViewTable.Compute("SUM([CurrentAmount])", rowfilter);
 			if (tmp != System.DBNull.Value) totalSaving = (decimal)tmp;
 
 			tmp = clientAccountsViewTable.Compute("SUM([DepositAmount])", rowfilter);
 			if (tmp != System.DBNull.Value) totalDeposit = (decimal)tmp;
 
-			tmp = clientAccountsViewTable.Compute("SUM([DebtAmount])",	rowfilter);
+			tmp = clientAccountsViewTable.Compute("SUM([DebtAmount])", rowfilter);
 			if (tmp != System.DBNull.Value) totalCredit = (decimal)tmp;
 
 			return (clientAccountsView, totalSaving, totalDeposit, totalCredit);
@@ -387,12 +405,11 @@ SELECT @ts [TotalSaving], @td [TotalDeposit], @tc [TotalCredit];
 		/// </summary>
 		/// <param name="clientID"></param>
 		/// <returns></returns>
-
 		public DataView GetClientSavingAccounts(int clientID)
 		{
-			string rowfilter =	  "ClientID = " + clientID
-								+ " AND AccType = 0"			// Saving account
-								+ " AND Topupable <> 0";		// Topupable == true
+			string rowfilter = "ClientID = " + clientID
+								+ " AND AccType = 0"            // Saving account
+								+ " AND Topupable <> 0";        // Topupable == true
 			DataView clientAccountsViewTable =
 				new DataView(ds.Tables["ClientAccountsView"],     // Table to show
 							 rowfilter,                     // Row filter (select type)
@@ -413,12 +430,12 @@ SELECT @ts [TotalSaving], @td [TotalDeposit], @tc [TotalCredit];
 		/// <returns></returns>
 		public DataView GetClientAccountsToAccumulateInterest(int clientID)
 		{
-			string rowfilter =	  "ClientID = " + clientID
-								+ " AND Topupable <> 0";		// Topupable == true
+			string rowfilter = "ClientID = " + clientID
+								+ " AND Topupable <> 0";        // Topupable == true
 			DataView clientAccountsViewTable =
-				new DataView(ds.Tables["ClientAccountsView"],			// Table to show
-							 rowfilter,							// Row filter (select type)
-							 "AccType ASC",						// Sort ascending by 'AccType' field
+				new DataView(ds.Tables["ClientAccountsView"],           // Table to show
+							 rowfilter,                         // Row filter (select type)
+							 "AccType ASC",                     // Sort ascending by 'AccType' field
 							 DataViewRowState.CurrentRows);
 
 			return clientAccountsViewTable;
@@ -540,20 +557,20 @@ SELECT @ts [TotalSaving], @td [TotalDeposit], @tc [TotalCredit];
 
 			return acc;
 		}
-	
+
 		public void AddOneMonth()
 		{
 			GoodBankTime.Today = GoodBankTime.Today.AddMonths(1);
 
-			for (int i = 0; i< accounts.Count; i++)
+			for (int i = 0; i < accounts.Count; i++)
 			{
 				Account acc = accounts[i];
 				double currInterest = acc.RecalculateInterest();
 				if (acc is AccountDeposit)
 				{
 					int destAccID = (acc as AccountDeposit).InterestAccumulationAccID;
-					if (!(acc as AccountDeposit).Compounding && 
-						destAccID    != 0 && 
+					if (!(acc as AccountDeposit).Compounding &&
+						destAccID != 0 &&
 						currInterest != 0)
 					{
 						IAccount destAcc = GetAccountByID(destAccID);

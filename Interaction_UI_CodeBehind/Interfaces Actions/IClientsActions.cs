@@ -7,7 +7,7 @@ namespace Interfaces_Actions
 {
 	public interface IClientsActions
 	{
-		IClientDTO GetClientByID(int id);
+		DataRow GetClientByID(int id);
 
 		DataView GetClientsTable(ClientType ct);
 

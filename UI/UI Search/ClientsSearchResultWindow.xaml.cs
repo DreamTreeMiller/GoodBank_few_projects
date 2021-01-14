@@ -51,7 +51,8 @@ namespace UI_Search
 				MessageBox.Show("Выберите клиента для показа");
 				return;
 			}
-			ClientWindow clientWindow = new ClientWindow(BA, client, clientsListUserControl.UpdateClientRowInView);
+			ClientWindow clientWindow = new ClientWindow(BA, client);
+			clientWindow.ClientDataChanged += clientsListUserControl.UpdateClientRowInView;
 			clientWindow.ShowDialog();
 		}
 	}

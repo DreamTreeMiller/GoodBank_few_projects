@@ -66,7 +66,7 @@ namespace Transaction_Class
 		/// <summary>
 		/// Сумма операции. Плюс - вклад, минус - снятие
 		/// </summary>
-		public double			Amount				{ get; }
+		public decimal			 Amount				{ get; }
 
 		/// <summary>
 		/// Комментарий
@@ -83,13 +83,13 @@ namespace Transaction_Class
 		/// <param name="amount">Сумма операции. Плюс - вклад, минус - снятие</param>
 		/// <param name="interest">Процент в операции. 0 - текщий счет</param>
 		/// <param name="comment">Комментарий</param>
-		public Transaction(int senderAccID,
-							DateTime dt,
-							string sourceAcc,
-							string destinationAcc,
-							OperationType opType,
-							double amount,
-							string comment)
+		public Transaction( int				senderAccID,
+							DateTime		dt,
+							string			sourceAcc,
+							string			destinationAcc,
+							OperationType	opType,
+							decimal			amount,
+							string			comment)
 		{
 			TransactionID		 = NextID();
 			TransactionAccountID = senderAccID;

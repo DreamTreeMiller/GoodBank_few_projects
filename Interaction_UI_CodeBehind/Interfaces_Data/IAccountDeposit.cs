@@ -19,7 +19,7 @@
 		/// <summary>
 		/// Если без капитализации 
 		/// </summary>
-		double AccumulatedInterest { get; set; }
+		decimal AccumulatedInterest { get; set; }
 
 		/// <summary>
 		/// Переводит на другой счет накопленный процент.
@@ -27,6 +27,6 @@
 		/// </summary>
 		/// <param name="destAcc"></param>
 		/// <param name="accumulatedInterest"></param>
-		void SendInterestToAccount(IAccount destAcc, double accumulatedInterest);
+		void SendInterestToAccount(IAccount destAcc, decimal accumulatedInterest);
 	}
 }

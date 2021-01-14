@@ -17,13 +17,13 @@ namespace Client_Window
 	{
 		#region Поля и свойства счета
 
-		public double		creditAmount = 0;
+		public decimal		creditAmount = 0;
 		public	string		CreditAmount
 		{
 			get => $"{creditAmount:N2}";
 			set
 			{
-				if (!IsDoubleValid(value, out double tmp))
+				if (!IsDoubleValid(value, out decimal tmp))
 				{
 					SetFocusOnCreditAmountEntryBox();
 					return;
@@ -86,7 +86,7 @@ namespace Client_Window
 		/// <param name="input">Введенная строка</param>
 		/// <param name="tmp">Преобразованное значение. Если ввод некорректный, то значение неопределено</param>
 		/// <returns>true/false. Если true, то в tmp результат преобразования</returns>
-		private bool IsDoubleValid(string input, out double tmp)
+		private bool IsDoubleValid(string input, out decimal tmp)
 		{
 			if (String.IsNullOrEmpty(input))
 			{
@@ -94,7 +94,7 @@ namespace Client_Window
 				tmp = 0;
 				return false;
 			}
-			if (!Double.TryParse(input, out tmp))
+			if (!Decimal.TryParse(input, out tmp))
 			{
 				MessageBox.Show("Некорректрый ввод! Введите число.");
 				return false;

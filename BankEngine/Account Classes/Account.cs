@@ -73,7 +73,7 @@ namespace Enumerables
 		/// Вклад	- сумма вклада
 		/// Кредит	- сумма долга
 		/// </summary>
-		public double			Balance				{ get; set; }
+		public decimal			Balance				{ get; set; }
 
 		/// <summary>
 		/// Процент. 0 для текущего, прирорст для вклада, минус для долга
@@ -150,8 +150,8 @@ namespace Enumerables
 		/// <param name="compounding"></param>
 		/// <param name="compAccID"></param>
 		/// <param name="interest"></param>
-		public Account( string accPrefix, int clientID, ClientType clientType, 
-						double balance, bool compounding, double interest,
+		public Account( string accPrefix, int clientID, ClientType clientType,
+						decimal balance, bool compounding, double interest,
 						bool topup, bool withdrawal, RecalcPeriod recalc, int duration,
 						Action<Transaction> writeloghandler)
 		{
@@ -180,8 +180,8 @@ namespace Enumerables
 		/// <param name="compounding"></param>
 		/// <param name="compAccID"></param>
 		/// <param name="interest"></param>
-		public Account( string accPrefix, int clientID, ClientType clientType, 
-						double balance, bool compounding, double interest,
+		public Account( string accPrefix, int clientID, ClientType clientType,
+						decimal balance, bool compounding, double interest,
 						DateTime opened,
 						bool topup, bool withdrawal, RecalcPeriod recalc, int duration,
 						int monthsElapsed,
@@ -226,7 +226,7 @@ namespace Enumerables
 		/// Пополнение счета наличкой
 		/// </summary>
 		/// <param name="cashAmount"></param>
-		public void TopUpCash(double cashAmount)
+		public void TopUpCash(decimal cashAmount)
 		{
 			if (cashAmount >= 1000)
 			{
@@ -267,7 +267,7 @@ namespace Enumerables
 		/// Снятие налички со счета
 		/// </summary>
 		/// <param name="cashAmount"></param>
-		public double WithdrawCash(double cashAmount)
+		public decimal WithdrawCash(decimal cashAmount)
 		{
 			Balance -= cashAmount;
 			Transaction withdrawCashTransaction = new Transaction(
@@ -288,7 +288,7 @@ namespace Enumerables
 		/// </summary>
 		/// <param name="sourceAcc">Счет-источник</param>
 		/// <param name="wireAmount">сумма перевода</param>
-		public void ReceiveFromAccount(IAccount sourceAcc, double wireAmount)
+		public void ReceiveFromAccount(IAccount sourceAcc, decimal wireAmount)
 		{
 			Balance += wireAmount;
 			Transaction DepositFromAccountTransaction = new Transaction(
@@ -310,7 +310,7 @@ namespace Enumerables
 		/// </summary>
 		/// <param name="destAcc">Счет-получатель</param>
 		/// <param name="wireAmount">Сумма перевода</param>
-		public void SendToAccount(IAccount destAcc, double wireAmount)
+		public void SendToAccount(IAccount destAcc, decimal wireAmount)
 		{
 			Balance -= wireAmount;
 			Transaction withdrawCashTransaction = new Transaction(
@@ -338,7 +338,7 @@ namespace Enumerables
 		/// <returns>
 		/// Сумму начисленных процентов, если её надо перевести на другой счет
 		/// </returns>
-		public abstract double RecalculateInterest();
+		public abstract decimal RecalculateInterest();
 
 		/// <summary>
 		/// Закрывает счет: обнуляет баланс и накопленный процент
@@ -348,9 +348,9 @@ namespace Enumerables
 		/// <returns>
 		/// Накопленную сумму
 		/// </returns>
-		public virtual double CloseAccount()
+		public virtual decimal CloseAccount()
 		{
-			double tmp			= WithdrawCash(Balance);
+			decimal tmp			= WithdrawCash(Balance);
 			Topupable			= false;
 			WithdrawalAllowed	= false;
 			Closed				= GoodBankTime.Today;

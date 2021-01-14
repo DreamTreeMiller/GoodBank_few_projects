@@ -5,6 +5,7 @@ using DTO;
 using Enumerables;
 using Interfaces_Data;
 using System;
+using System.Data;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -28,14 +29,14 @@ namespace Account_Windows
 			set {  accountNumber = value; NotifyPropertyChanged(); }
 		}
 
-		private	double		balance;
-		public	double		Balance
+		private	decimal		balance;
+		public	decimal		Balance
 		{
 			get => balance;
 			set {  balance = value; NotifyPropertyChanged(); }
 		}
 
-		public	double		Interest	{ get; set; }
+		public	decimal		Interest	{ get; set; }
 
 		public	DateTime	Opened		{ get; set; }
 
@@ -68,8 +69,8 @@ namespace Account_Windows
 
 		public string InterestAccumulationAccNum { get; set; }
 
-		private double accumulatedInterest;
-		public  double AccumulatedInterest
+		private decimal accumulatedInterest;
+		public  decimal AccumulatedInterest
 		{ 
 			get => accumulatedInterest; 
 			set {  accumulatedInterest = value; NotifyPropertyChanged(); }
@@ -80,7 +81,7 @@ namespace Account_Windows
 		#endregion
 
 		BankActions BA;
-		IClientDTO  client;
+		DataRow  client;
 
 		public bool accountsNeedUpdate = false;
 		public bool clientsNeedUpdate  = false;
@@ -93,7 +94,7 @@ namespace Account_Windows
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 
-		public AccountWindow(BankActions ba, IAccountDTO acc)
+		public AccountWindow(BankActions ba, DataRowView acc)
 		{
 			InitializeComponent();
 			InitializeClassScopeVars(ba, acc);
@@ -102,28 +103,29 @@ namespace Account_Windows
 			ShowAccountTransactionsLog();
 		}
 
-		private void InitializeClassScopeVars(BankActions ba, IAccountDTO acc)
+		private void InitializeClassScopeVars(BankActions ba, DataRowView acc)
 		{
 			BankTodayDate.Text = $"Сегодня {GoodBankTime.Today:dd.MM.yyyy} г.";
 			BA = ba;
-			client	= BA.Clients.GetClientByID(acc.ClientID);
+			client	= BA.Clients.GetClientByID((int)acc["ClientID"]);
 
-			AccID						= acc.AccID;
-			accountType					= acc.AccType;
-			AccountNumber				= acc.AccountNumber;
-			Balance						= acc.Balance;
-			Interest					= acc.Interest;
-			Opened						= acc.Opened;
-			EndDate						= acc.EndDate;
-			AccClosed					= acc.Closed;
-			Topupable					= acc.Topupable;
-			WithdrawalAllowed			= acc.WithdrawalAllowed;
-			RecalcPeriod				= acc.RecalcPeriod;
-			Compounding					= acc.Compounding;
-			InterestAccumulationAccNum	= acc.InterestAccumulationAccNum;
-			AccumulatedInterest			= acc.AccumulatedInterest;
-			IsBlocked					= acc.IsBlocked;
-
+			AccID						= (int)acc["AccID"];
+			accountType					= (AccountType)acc["AccType"];
+			AccountNumber				= (string)acc["AccountNumber"];
+			Balance						=   (decimal)acc["CurrentAmount"]
+										  + (decimal)acc["DepositAmount"]
+										  + (decimal)acc["DebtAmount"];
+			Interest					= (decimal)acc["Interest"];
+			Opened						= (DateTime)acc["Opened"];
+			if (acc["EndDate"] != DBNull.Value) EndDate   = (DateTime)acc["EndDate"]; else EndDate   = null;
+			if (acc["Closed"]  != DBNull.Value) AccClosed = (DateTime)acc["EndDate"]; else AccClosed = null;
+			Topupable					= (int)acc["Topupable"]			== 0? false : true;
+			WithdrawalAllowed			= (int)acc["WithdrawalAllowed"] == 0? false : true;
+			RecalcPeriod				= (RecalcPeriod)acc["RecalcPeriod"];
+			Compounding					= (int)acc["Compounding"]		== 0? false : true;
+			InterestAccumulationAccNum	= (string)acc["InterestAccumulationAccNum"];
+			AccumulatedInterest			= (decimal)acc["AccumulatedInterest"];
+			IsBlocked					= (int)acc["IsBlocked"]			== 0? false : true;
 
 			DataContext = this;
 		}
@@ -147,7 +149,7 @@ namespace Account_Windows
 
 		private void InitializeClientDetails()
 		{
-			if (client.ClientType == ClientType.Organization)
+			if ((ClientType)client["ClientType"] == ClientType.Organization)
 			{
 				OrganizationInfo.Visibility = Visibility.Visible;
 				PersonalInfo.Visibility		= Visibility.Collapsed;
@@ -217,7 +219,7 @@ namespace Account_Windows
 				return;
 			}
 
-			Balance				= updatedAcc.Balance;
+			Balance				= (decimal)updatedAcc.Balance;
 			accountsNeedUpdate	= true;
 			UpdateAccountTransactionsLog();
 		}
@@ -262,7 +264,7 @@ namespace Account_Windows
 				return;
 			}
 
-			Balance = updatedAcc.Balance;
+			Balance = (decimal)updatedAcc.Balance;
 			accountsNeedUpdate = true;
 			UpdateAccountTransactionsLog();
 		}
@@ -312,7 +314,7 @@ namespace Account_Windows
 				return;
 			}
 
-			Balance -= wireAmount;
+			Balance = Balance - (decimal)wireAmount;
 			MessageBox.Show($"Сумма {wireAmount:N2} руб. успешно переведена");
 			accountsNeedUpdate = true;
 			UpdateAccountTransactionsLog();
@@ -351,10 +353,10 @@ namespace Account_Windows
 			}
 
 			// Обновляем суммы, даты, флажки в окошке
-			Balance				= closedAcc.Balance;
+			Balance				= (decimal)closedAcc.Balance;
 
 			if (closedAcc is IAccountDeposit)
-				AccumulatedInterest = (closedAcc as IAccountDeposit).AccumulatedInterest;
+				AccumulatedInterest = (decimal)(closedAcc as IAccountDeposit).AccumulatedInterest;
 
 			AccClosed			= closedAcc.Closed;
 			Topupable			= closedAcc.Topupable;

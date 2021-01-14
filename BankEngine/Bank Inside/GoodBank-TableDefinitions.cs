@@ -132,13 +132,21 @@ CREATE TABLE [dbo].[AccountsView] (
 	,[ClientName]		NVARCHAR (256)	DEFAULT ''	NOT NULL
 	,[AccountNumber]	NVARCHAR (15)	DEFAULT ''	NOT NULL
 	,[AccType]			TINYINT						NOT NULL
+--	,[Balance]			MONEY			DEFAULT 0	NOT NULL
 	,[CurrentAmount]	MONEY			DEFAULT 0	NOT NULL
 	,[DepositAmount]	MONEY			DEFAULT 0	NOT NULL
 	,[DebtAmount]		MONEY			DEFAULT 0	NOT NULL
 	,[Interest]			DECIMAL (4,2)	DEFAULT 0	NOT NULL
+--	,[Compounding]		BIT				DEFAULT 0	NOT NULL
 	,[Opened]			DATE						NOT NULL
+--	,[Duration]			INT				DEFAULT 0	NOT NULL
+--	,[MonthsElapsed]	INT				DEFAULT 0	NOT NULL
+--	,[EndDate]			DATE
 	,[Closed]			DATE
 	,[Topuble]			BIT							NOT NULL
+--	,[WithdrawalAllowed]	BIT						NOT NULL
+--	,[RecalcPeriod]		TINYINT			DEFAULT 0	NOT NULL
+--	,[IsBlocked]		BIT				DEFAULT 0	NOT NULL	-- not blocked
 );
 		"},
 		 {"ClientAccountsView", @"

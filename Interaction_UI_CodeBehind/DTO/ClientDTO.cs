@@ -16,7 +16,7 @@ namespace DTO
 	{
 		#region Свойства
 
-		public int			ID						{ get; }
+		public int			ID						{ get; set; }
 		public ClientType	ClientType				{ get; set; }
 		public string		ClientTypeTag			
 		{

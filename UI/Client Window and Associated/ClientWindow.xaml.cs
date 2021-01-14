@@ -22,26 +22,29 @@ namespace Client_Window
 		private WindowID		wid	= WindowID.EditClientVIP;
 		private IClientDTO		client = new ClientDTO();
 		private DataRowView		clientRowInTable;
-		private Action<DataRowView, IClientDTO> updateClientRow;
+
+		// Событие, возникающее тогда, когда изменились данные клиента
+		// Вне класса ClientWindow необходимо подписать на это событие обработчик
+		// который будет обновлять 
+		public delegate void UpdateClientRowHandler(DataRowView clientRowInTable, IClientDTO clientDTO); 
+		public event UpdateClientRowHandler ClientDataChanged;
 
 		public bool accountsNeedUpdate = false;
-		public bool clientsNeedUpdate  = false;
 
-		public ClientWindow(BankActions ba, DataRowView clientrowintable, Action<DataRowView, IClientDTO> ucr)
+		public ClientWindow(BankActions ba, DataRowView clientrowintable)
 		{
 			InitializeComponent();
-			InitializeAccountsView(ba, clientrowintable, ucr);
+			InitializeAccountsView(ba, clientrowintable);
 			ShowAccounts();
 		}
 
-		private void InitializeAccountsView(BankActions ba, DataRowView clientrowintable, Action<DataRowView, IClientDTO> ucr)
+		private void InitializeAccountsView(BankActions ba, DataRowView clientrowintable)
 		{
 			BankTodayDate.Text = $"Сегодня {GoodBankTime.Today:dd.MM.yyyy} г.";
 			BA = ba;
 			OrganizationInfo.Visibility = Visibility.Collapsed;
 			PersonalInfo.Visibility		= Visibility.Visible;
 			this.clientRowInTable		= clientrowintable;
-			updateClientRow				+= ucr;
 			this.client					= new ClientDTO(clientrowintable);
 			switch (this.client.ClientType)
 			{
@@ -97,17 +100,18 @@ namespace Client_Window
 			BA.Clients.UpdateClientPersonalData(client);
 
 			// Обновляем данные клиента в списке клиентов на экране в окне департамента
-			updateClientRow?.Invoke(clientRowInTable, client);
+			ClientDataChanged?.Invoke(clientRowInTable, client);
 		}
 
 		private void ClientWindow_AccountDetails_Click(object sender, RoutedEventArgs e)
 		{
-			IAccountDTO account = accountsListView.GetSelectedItem();
+			DataRowView account = accountsListView.GetSelectedItem();
 			if (account == null)
 			{
 				MessageBox.Show("Выберите счет для показа");
 				return;
 			}
+
 			AccountWindow accountWindow = new AccountWindow(BA, account);
 			accountWindow.ShowDialog();
 			if (accountWindow.accountsNeedUpdate)
@@ -115,8 +119,6 @@ namespace Client_Window
 				ShowAccounts();
 				accountsNeedUpdate = true;
 			}
-			if (accountWindow.clientsNeedUpdate) clientsNeedUpdate = true;
-
 		}
 
 		private void OpenSavingAccountButton_Click(object sender, RoutedEventArgs e)
@@ -261,7 +263,7 @@ namespace Client_Window
 			BA.Accounts.AddAccount(newAcc);
 
 			//Обновляем количество счетов у клиента в списке на экране in ClientsView Table
-			updateClientRow?.Invoke(clientRowInTable, updatedClient);
+			ClientDataChanged?.Invoke(clientRowInTable, updatedClient);
 
 			accountsNeedUpdate = true;
 			ShowAccounts();

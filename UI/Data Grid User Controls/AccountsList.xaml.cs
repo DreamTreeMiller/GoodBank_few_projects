@@ -29,9 +29,9 @@ namespace Data_Grid_User_Controls
 			CreditsTotalAmount.Text			= $"{totalCredit:N2}";
 		}
 
-		public IAccountDTO GetSelectedItem()
+		public DataRowView GetSelectedItem()
 		{
-			return AccountsDataGrid.SelectedItem as IAccountDTO;
+			return AccountsDataGrid.SelectedItem as DataRowView;
 		}
 
 		#endregion

@@ -26,7 +26,7 @@ namespace Enumerables
 		/// <summary>
 		/// Накомпленные проценты 
 		/// </summary>
-		public double AccumulatedInterest { get; set; } = 0;
+		public decimal AccumulatedInterest { get; set; } = 0;
 
 		/// <summary>
 		/// Создание счета на основе введенных данных
@@ -121,7 +121,7 @@ namespace Enumerables
 		/// Этот метод вызывается точно один раз в месяц
 		/// </summary>
 		/// <param name="date"></param>
-		public override double RecalculateInterest()
+		public override decimal RecalculateInterest()
 		{
 			if (IsBlocked) return 0;
 
@@ -131,7 +131,7 @@ namespace Enumerables
 
 			// Пересчёт не нужен. Клиент должен снять средства и закрыть счет
 			if (Duration == MonthsElapsed) return 0;
-			double calculatedInterest = 0;
+			decimal calculatedInterest = 0;
 			MonthsElapsed++;
 
 			switch (RecalcPeriod)
@@ -140,7 +140,7 @@ namespace Enumerables
 				case RecalcPeriod.AtTheEnd:
 					if (Duration == MonthsElapsed)
 					{
-						AccumulatedInterest = Balance * Interest;
+						AccumulatedInterest = Balance * (decimal)Interest;
 
 						// Срок истёк. Пополнять больше нельзя. 
 						// Владельцу счета надо снять деньги и закрыть счет
@@ -157,7 +157,7 @@ namespace Enumerables
 					// Срок год или больше, и прошёл ровно год 
 					if (MonthsElapsed % 12 == 0)
 					{
-						calculatedInterest   = Balance * Interest;
+						calculatedInterest   = Balance * (decimal)Interest;
 						AccumulatedInterest += calculatedInterest;
 
 						UpdateLog(calculatedInterest);
@@ -175,7 +175,7 @@ namespace Enumerables
 						int MonthsRemained = MonthsElapsed % 12;
 						if (MonthsRemained != 0)
 						{
-							calculatedInterest   = Balance * Interest * MonthsRemained / 12;
+							calculatedInterest   = Balance * (decimal)Interest * MonthsRemained / 12;
 							AccumulatedInterest += calculatedInterest;
 
 							UpdateLog(calculatedInterest);
@@ -184,7 +184,7 @@ namespace Enumerables
 					break;
 				// Счет, у которого начисление происходит раз в год
 				case RecalcPeriod.Monthly:
-					calculatedInterest   = Balance * Interest / 12;
+					calculatedInterest   = Balance * (decimal)Interest / 12;
 					AccumulatedInterest += calculatedInterest;
 
 					if (Duration == MonthsElapsed)
@@ -210,7 +210,7 @@ namespace Enumerables
 		/// </summary>
 		/// <param name="destAcc"></param>
 		/// <param name="accumulatedInterest"></param>
-		public void SendInterestToAccount(IAccount destAcc, double accumulatedInterest)
+		public void SendInterestToAccount(IAccount destAcc, decimal accumulatedInterest)
 		{
 			Transaction withdrawCashTransaction = new Transaction(
 				AccID,
@@ -226,12 +226,12 @@ namespace Enumerables
 			OnWriteLog(withdrawCashTransaction);
 		}
 
-		public void AddInterestToSourceAccountWhenDestinationIsNotAvailable(double amount)
+		public void AddInterestToSourceAccountWhenDestinationIsNotAvailable(decimal amount)
 		{
 			Balance += amount;
 		}
 
-		private void UpdateLog(double calculatedInterest)
+		private void UpdateLog(decimal calculatedInterest)
 		{
 			string comment;
 
@@ -259,7 +259,7 @@ namespace Enumerables
 			OnWriteLog(interestAccrualTransaction);
 		}
 
-		public override double CloseAccount()
+		public override decimal CloseAccount()
 		{
 			// Если без капитализации и накапливали на внутреннем счету,
 			// тогда этот процент переводим на основной счет

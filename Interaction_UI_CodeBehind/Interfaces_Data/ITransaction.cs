@@ -38,7 +38,7 @@ namespace Interfaces_Data
 		/// <summary>
 		/// Сумма операции. Плюс - вклад, минус - снятие
 		/// </summary>
-		double			Amount				{ get; }
+		decimal			 Amount				{ get; }
 
 		/// <summary>
 		/// Комментарий

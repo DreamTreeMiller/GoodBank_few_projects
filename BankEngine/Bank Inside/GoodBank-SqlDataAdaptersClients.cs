@@ -23,10 +23,7 @@ namespace BankInside
 			SetupAccountsViewSqlDataAdapter();
 			SetupClientAccountsViewSqlDataAdapter();
 			SetupSP_AddAccount();
-
-			//SetupAccountsParentSqlDataAdapter();
-			//SetupDepositsSqlDataAdapter();
-			//SetupCreditsSqlDataAdapter();
+			SetupSP_GetAccountDTObyID();
 
 			SetupTransactionsSqlDataAdapter();
 		}
@@ -40,6 +37,12 @@ namespace BankInside
 			string sqlExpression		= @"SELECT * FROM [dbo].[ClientsView]";
 			daClientsView.SelectCommand = new SqlCommand(sqlExpression, gbConn);
 			daClientsView.Fill(ds, "ClientsView");
+
+			// Set up primary key in order to perform Rows.Find(id)
+			DataColumn[] pk = new DataColumn[1];
+			pk[0] = ds.Tables["ClientsView"].Columns["ID"];
+			ds.Tables["ClientsView"].PrimaryKey = pk;
+
 		}
 
 		private void SetupSP_AddClient()

@@ -8,7 +8,7 @@ namespace Enumerables
 	public class AccountCredit : Account
 	{
 		public override AccountType AccType { get => AccountType.Credit; }
-		public double	AccumulatedInterest { get; set; }
+		public decimal	AccumulatedInterest { get; set; }
 
 		/// <summary>
 		/// Создание счета на основе введенных данных
@@ -81,7 +81,7 @@ namespace Enumerables
 		/// т.е. не раз в год, и не один раз в конце
 		/// </summary>
 		/// <param name="date"></param>
-		public override double RecalculateInterest()
+		public override decimal RecalculateInterest()
 		{
 			if (IsBlocked) return 0;
 
@@ -94,7 +94,7 @@ namespace Enumerables
 			if (Duration == MonthsElapsed) return 0;
 			MonthsElapsed++;
 
-			double calculatedInterest = Balance * Interest / 12;
+			decimal calculatedInterest = Balance * (decimal)Interest / 12;
 			AccumulatedInterest		 += calculatedInterest;
 			Balance					 += calculatedInterest;
 
@@ -112,7 +112,7 @@ namespace Enumerables
 			return calculatedInterest;
 		}
 
-		public override double CloseAccount()
+		public override decimal CloseAccount()
 		{
 			return base.CloseAccount();
 		}

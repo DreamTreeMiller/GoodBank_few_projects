@@ -17,7 +17,7 @@ namespace Interfaces_Data
 		/// Это избыточное поле, но так быстрее найти данные владельца 
 		/// при показе счетов одного типа клиентов
 		/// </summary>
-		int			ClientID		{ get; set; }
+		int				ClientID		{ get; set; }
 
 		/// <summary>
 		/// Тип счета текущий, вклад или кредит
@@ -27,7 +27,7 @@ namespace Interfaces_Data
 		/// <summary>
 		/// Уникальный ID счёта - используем для базы
 		/// </summary>
-		int			AccID				{ get; }
+		int				AccID				{ get; }
 
 		/// <summary>
 		/// Уникальный номер счёта. 
@@ -42,12 +42,12 @@ namespace Interfaces_Data
 		/// Вклад	- сумма вклада
 		/// Кредит	- сумма долга
 		/// </summary>
-		double			 Balance			{ get; set; }
+		decimal			 Balance			{ get; set; }
 
 		/// <summary>
 		/// Процент. 0 для текущего, прирорст для вклада, минус для долга
 		/// </summary>
-		double			 Interest		{ get; set; }
+		double			 Interest			{ get; set; }
 
 		/// <summary>
 		/// С капитализацией или без
@@ -97,26 +97,26 @@ namespace Interfaces_Data
 		/// <summary>
 		/// Пополнение счета наличкой
 		/// </summary>
-		void TopUpCash(double amount);
+		void TopUpCash(decimal amount);
 
 		/// <summary>
 		/// Снятие налички со счета
 		/// </summary>
-		double WithdrawCash(double amount);
+		decimal WithdrawCash(decimal amount);
 
 		/// <summary>
 		/// Получение перевода на счет денег со счета-источника
 		/// </summary>
 		/// <param name="wireAmount"></param>
-		void ReceiveFromAccount(IAccount sourceAcc, double wireAmount);
+		void ReceiveFromAccount(IAccount sourceAcc, decimal wireAmount);
 
 		/// <summary>
 		/// Перевод средств со счета на счет-получатель
 		/// </summary>
 		/// <param name="destAcc">Счет-получатель</param>
 		/// <param name="wireAmount">Сумма перевода</param>
-		void SendToAccount(IAccount destAcc, double wireAmount);
+		void SendToAccount(IAccount destAcc, decimal wireAmount);
 
-		double CloseAccount();
+		decimal CloseAccount();
 	}
 }
