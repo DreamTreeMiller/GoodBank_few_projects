@@ -83,7 +83,7 @@ CREATE PROC [dbo].[SP_AddAccount]
 	 @accType 						TINYINT
 	,@clientID						INT
 	,@balance						MONEY
-	,@interest						DECIMAL (4,2)
+	,@interest						FLOAT
 	,@compounding					BIT
 	,@opened						DATE
 	,@duration						INT

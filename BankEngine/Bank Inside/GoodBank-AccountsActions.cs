@@ -32,7 +32,7 @@ namespace BankInside
 			DataRow clientRow = ds.Tables["ClientsView"].Rows.Find(clientID);
 
 			accountDTO.ClientType = (ClientType)clientRow["ClientType"];
-			accountDTO.ClientName = (string)clientRow["ClientName"];
+			accountDTO.ClientName =		(string)clientRow["MainName"];
 			return accountDTO;
 		}
 
@@ -47,10 +47,10 @@ namespace BankInside
 			string accClosed = acc.Closed == null ? "NULL" : $"'{acc.Closed:yyyy-MM-yy}'";
 			string sqlCommandAddAccount = $@"
 EXEC SP_AddAccount
-	 {(byte)acc.AccType}					-- @accType
+	 {(int)acc.AccType}						-- @accType
 	,{acc.ClientID}							-- [ClientID]			INT				NOT NULL,	-- ID клиента
 	,{acc.Balance}							-- [Balance]			MONEY DEFAULT 0	NOT NULL,			
-	,{acc.Interest}							-- [Interest]			DECIMAL (4,2)	NOT NULL,
+	,{acc.Interest}							-- [Interest]			FLOAT			NOT NULL,
 	,{(acc.Compounding ? 1 : 0)}			-- [Compounding]		BIT				NOT NULL,	-- с капитали
 	,'{acc.Opened:yyyy-MM-dd}'				-- [Opened]				DATE			NOT NULL,	-- дата откры
 	,{acc.Duration}							-- [Duration]			INT				NOT NULL,	-- Количество
@@ -59,7 +59,7 @@ EXEC SP_AddAccount
 	,{accClosed}							-- [Closed]				DATE,						-- Дата закры
 	,{(acc.Topupable ? 1 : 0)}				-- [Topupable]			BIT				NOT NULL,	-- Пополняемы
 	,{(acc.WithdrawalAllowed ? 1 : 0)}		-- [WithdrawalAllowed]	BIT				NOT NULL,	-- С правом ч
-	,{(byte)acc.RecalcPeriod}				-- [RecalcPeriod]		TINYINT			NOT NULL,	-- Период пер
+	,{(int)acc.RecalcPeriod}				-- [RecalcPeriod]		TINYINT			NOT NULL,	-- Период пер
 	,{acc.InterestAccumulationAccID}		-- interest accum acc ID
 	,N'{acc.InterestAccumulationAccNum}';	-- interest accum acc Num
 			";
@@ -452,9 +452,9 @@ SELECT @ts [TotalSaving], @td [TotalDeposit], @tc [TotalCredit];
 			return accList;
 		}
 
-		public IAccount TopUpCash(int accID, double cashAmount)
+		public IAccountDTO TopUpCash(int accID, decimal cashAmount)
 		{
-			IAccount acc = GetAccountByID(accID);
+			IAccountDTO acc = GetAccountByID(accID);
 			if (acc.IsBlocked)
 				throw new AccountOperationException(ExceptionErrorCodes.AccountIsBlcoked);
 
@@ -464,13 +464,13 @@ SELECT @ts [TotalSaving], @td [TotalDeposit], @tc [TotalCredit];
 			if (!acc.Topupable)
 				throw new AccountOperationException(ExceptionErrorCodes.TopUpIsNotAllowed);
 
-			acc.TopUpCash(cashAmount);
+			//acc.TopUpCash(cashAmount);
 			return acc;
 		}
 
-		public IAccount WithdrawCash(int accID, double cashAmount)
+		public IAccountDTO WithdrawCash(int accID, decimal cashAmount)
 		{
-			IAccount acc = GetAccountByID(accID);
+			IAccountDTO acc = GetAccountByID(accID);
 			if (acc.IsBlocked)
 				throw new AccountOperationException(ExceptionErrorCodes.AccountIsBlcoked);
 
@@ -483,7 +483,7 @@ SELECT @ts [TotalSaving], @td [TotalDeposit], @tc [TotalCredit];
 			if (!acc.WithdrawalAllowed)
 				throw new AccountOperationException(ExceptionErrorCodes.WithdrawalIsNotAllowed);
 
-			acc.WithdrawCash(cashAmount);
+			//acc.WithdrawCash(cashAmount);
 			return acc;
 		}
 
@@ -493,9 +493,9 @@ SELECT @ts [TotalSaving], @td [TotalDeposit], @tc [TotalCredit];
 		/// <param name="sourceAccID"></param>
 		/// <param name="destAccID"></param>
 		/// <param name="wireAmount"></param>
-		public void Wire(int sourceAccID, int destAccID, double wireAmount)
+		public void Wire(int sourceAccID, int destAccID, decimal wireAmount)
 		{
-			var sourceAcc = GetAccountByID(sourceAccID);
+			IAccountDTO sourceAcc = GetAccountByID(sourceAccID);
 			if (sourceAcc.IsBlocked)
 				throw new AccountOperationException(ExceptionErrorCodes.AccountIsBlcoked);
 
@@ -509,8 +509,8 @@ SELECT @ts [TotalSaving], @td [TotalDeposit], @tc [TotalCredit];
 					var destAcc = GetAccountByID(destAccID);
 					if (destAcc.Topupable)
 					{
-						sourceAcc.SendToAccount(destAcc, wireAmount);
-						destAcc.ReceiveFromAccount(sourceAcc, wireAmount);
+						//sourceAcc.SendToAccount(destAcc, wireAmount);
+						//destAcc.ReceiveFromAccount(sourceAcc, wireAmount);
 					}
 					else
 						throw new AccountOperationException(ExceptionErrorCodes.RecipientCannotReceiveWire);
@@ -528,9 +528,9 @@ SELECT @ts [TotalSaving], @td [TotalDeposit], @tc [TotalCredit];
 		/// </summary>
 		/// <param name="accID"></param>
 		/// <returns></returns>
-		public IAccount CloseAccount(int accID, out double accumulatedAmount)
+		public IAccountDTO CloseAccount(int accID, out decimal accumulatedAmount)
 		{
-			IAccount acc = GetAccountByID(accID);
+			IAccountDTO acc = GetAccountByID(accID);
 			if (acc.Closed != null)
 				throw new AccountOperationException(ExceptionErrorCodes.AccountIsClosed);
 
@@ -540,7 +540,7 @@ SELECT @ts [TotalSaving], @td [TotalDeposit], @tc [TotalCredit];
 			if (acc.Balance < 0)
 				throw new AccountOperationException(ExceptionErrorCodes.CannotCloseAccountWithMinusBalance);
 
-			accumulatedAmount = acc.CloseAccount();
+			accumulatedAmount = 0; // acc.CloseAccount();
 
 			switch (acc.AccType)
 			{
@@ -565,7 +565,7 @@ SELECT @ts [TotalSaving], @td [TotalDeposit], @tc [TotalCredit];
 			for (int i = 0; i < accounts.Count; i++)
 			{
 				Account acc = accounts[i];
-				double currInterest = acc.RecalculateInterest();
+				decimal currInterest = acc.RecalculateInterest();
 				if (acc is AccountDeposit)
 				{
 					int destAccID = (acc as AccountDeposit).InterestAccumulationAccID;
@@ -573,7 +573,7 @@ SELECT @ts [TotalSaving], @td [TotalDeposit], @tc [TotalCredit];
 						destAccID != 0 &&
 						currInterest != 0)
 					{
-						IAccount destAcc = GetAccountByID(destAccID);
+						IAccountDTO destAcc = GetAccountByID(destAccID);
 						if (destAcc.Topupable)
 						{
 							WireInterestToAccount(acc as IAccountDeposit, destAcc, currInterest);
@@ -594,10 +594,10 @@ SELECT @ts [TotalSaving], @td [TotalDeposit], @tc [TotalCredit];
 		/// <param name="sourceAcc"></param>
 		/// <param name="destAcc"></param>
 		/// <param name="accumulatedInterest"></param>
-		private void WireInterestToAccount(IAccountDeposit sourceAcc, IAccount destAcc, double accumulatedInterest)
+		private void WireInterestToAccount(IAccountDeposit sourceAcc, IAccountDTO destAcc, decimal accumulatedInterest)
 		{
-			sourceAcc.SendInterestToAccount(destAcc, accumulatedInterest);
-			destAcc.ReceiveFromAccount(sourceAcc, accumulatedInterest);
+			//sourceAcc.SendInterestToAccount(destAcc, accumulatedInterest);
+			//destAcc.ReceiveFromAccount(sourceAcc, accumulatedInterest);
 		}
 
 	}

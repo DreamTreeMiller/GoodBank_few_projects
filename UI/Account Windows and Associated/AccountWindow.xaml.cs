@@ -20,7 +20,7 @@ namespace Account_Windows
 	{
 		#region Account Fields in Window
 
-		private int		AccID;
+		private int			AccID;
 		private AccountType	accountType;
 		private string		accountNumber;
 		public	string		AccountNumber
@@ -36,7 +36,7 @@ namespace Account_Windows
 			set {  balance = value; NotifyPropertyChanged(); }
 		}
 
-		public	decimal		Interest	{ get; set; }
+		public	double		Interest	{ get; set; }
 
 		public	DateTime	Opened		{ get; set; }
 
@@ -94,38 +94,37 @@ namespace Account_Windows
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 
-		public AccountWindow(BankActions ba, DataRowView acc)
+		public AccountWindow(BankActions ba, int accID)
 		{
 			InitializeComponent();
-			InitializeClassScopeVars(ba, acc);
+			InitializeClassScopeVars(ba, accID);
 			InitializeAccountFieldLabelsAndVisibility();
 			InitializeClientDetails();
 			ShowAccountTransactionsLog();
 		}
 
-		private void InitializeClassScopeVars(BankActions ba, DataRowView acc)
+		private void InitializeClassScopeVars(BankActions ba, int accID)
 		{
 			BankTodayDate.Text = $"Сегодня {GoodBankTime.Today:dd.MM.yyyy} г.";
 			BA = ba;
-			client	= BA.Clients.GetClientByID((int)acc["ClientID"]);
+			IAccountDTO acc = BA.Accounts.GetAccountByID(accID);
+			client	= BA.Clients.GetClientByID((int)acc.ClientID);
 
-			AccID						= (int)acc["AccID"];
-			accountType					= (AccountType)acc["AccType"];
-			AccountNumber				= (string)acc["AccountNumber"];
-			Balance						=   (decimal)acc["CurrentAmount"]
-										  + (decimal)acc["DepositAmount"]
-										  + (decimal)acc["DebtAmount"];
-			Interest					= (decimal)acc["Interest"];
-			Opened						= (DateTime)acc["Opened"];
-			if (acc["EndDate"] != DBNull.Value) EndDate   = (DateTime)acc["EndDate"]; else EndDate   = null;
-			if (acc["Closed"]  != DBNull.Value) AccClosed = (DateTime)acc["EndDate"]; else AccClosed = null;
-			Topupable					= (int)acc["Topupable"]			== 0? false : true;
-			WithdrawalAllowed			= (int)acc["WithdrawalAllowed"] == 0? false : true;
-			RecalcPeriod				= (RecalcPeriod)acc["RecalcPeriod"];
-			Compounding					= (int)acc["Compounding"]		== 0? false : true;
-			InterestAccumulationAccNum	= (string)acc["InterestAccumulationAccNum"];
-			AccumulatedInterest			= (decimal)acc["AccumulatedInterest"];
-			IsBlocked					= (int)acc["IsBlocked"]			== 0? false : true;
+			AccID						= acc.AccID;
+			accountType					= acc.AccType;
+			AccountNumber				= acc.AccountNumber;
+			Balance						= acc.Balance;
+			Interest					= acc.Interest;
+			Opened						= acc.Opened;
+			EndDate						= acc.EndDate;
+			AccClosed					= acc.Closed;
+			Topupable					= acc.Topupable;
+			WithdrawalAllowed			= acc.WithdrawalAllowed;
+			RecalcPeriod				= acc.RecalcPeriod;
+			Compounding					= acc.Compounding;
+			InterestAccumulationAccNum	= acc.InterestAccumulationAccNum;
+			AccumulatedInterest			= acc.AccumulatedInterest;
+			IsBlocked					= acc.IsBlocked;
 
 			DataContext = this;
 		}
@@ -199,7 +198,7 @@ namespace Account_Windows
 			var result = cashWin.ShowDialog();
 			if (result != true) return;
 
-			IAccount updatedAcc = null;
+			IAccountDTO updatedAcc = null;
 			try
 			{
 				updatedAcc = BA.Accounts.TopUpCash(AccID, cashWin.amount);
@@ -251,7 +250,7 @@ namespace Account_Windows
 			var result = cashWin.ShowDialog();
 			if (result != true) return;
 
-			IAccount updatedAcc;
+			IAccountDTO updatedAcc;
 
 			try
 			{
@@ -294,8 +293,8 @@ namespace Account_Windows
 			var result = eaawin.ShowDialog();
 			if (result != true) return;
 
-			double wireAmount = eaawin.amount;
-			int    destAccID = eaawin.destinationAccount.AccID;
+			decimal wireAmount = eaawin.amount;
+			int     destAccID = eaawin.destinationAccount.AccID;
 
 			try
 			{
@@ -322,8 +321,8 @@ namespace Account_Windows
 
 		private void CloseAccountButton_Click(object sender, RoutedEventArgs e)
 		{
-			double accumulatedAmount;
-			IAccount closedAcc;
+			decimal accumulatedAmount;
+			IAccountDTO closedAcc;
 			try
 			{
 				closedAcc = BA.Accounts.CloseAccount(AccID, out accumulatedAmount);

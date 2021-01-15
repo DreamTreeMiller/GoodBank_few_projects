@@ -191,23 +191,23 @@ namespace DTO
 
 		public AccountDTO(SqlDataReader ar)		// ar - account row, just to keep short as possible
 		{
-			ClientID			= (int)ar["ClientID"];
-			AccType				= (AccountType)ar["AccType"];
-			AccID				= (int)ar["AccID"];
-			AccountNumber		= (string)ar["AccountNumber"];
-			Balance				= (decimal)ar["Balance"];
-			Interest			= (double)ar["Interest"];
-			Compounding			= (int)ar["Compounding"]		== 0? false : true;
-			Opened				= (DateTime)ar["Opened"];
-			Duration			= (int)ar["Duration"];
-			if (ar["Closed"]  != DBNull.Value) Closed = (DateTime)ar["EndDate"]; else Closed = null;
-			Topupable			= (int)ar["Topupable"]			== 0? false : true;
-			WithdrawalAllowed	= (int)ar["WithdrawalAllowed"] == 0? false : true;
-			RecalcPeriod		= (RecalcPeriod)ar["RecalcPeriod"];
-			IsBlocked			= (int)ar["IsBlocked"]			== 0? false : true;
+			ClientID			=			(int)ar["ClientID"];
+			AccType				=	(AccountType)ar["AccType"];
+			AccID				=			(int)ar["AccID"];
+			AccountNumber		=		 (string)ar["AccountNumber"];
+			Balance				=		(decimal)ar["Balance"];
+			Interest			=		 (double)ar["Interest"];
+			Compounding			=		   (bool)ar["Compounding"];
+			Opened				=	   (DateTime)ar["Opened"];
+			Duration			=			(int)ar["Duration"];
+			if (ar["Closed"]  != DBNull.Value) Closed = (DateTime)ar["Closed"]; else Closed = null;
+			Topupable			=		   (bool)ar["Topupable"];
+			WithdrawalAllowed	=		   (bool)ar["WithdrawalAllowed"];
+			RecalcPeriod   = (RecalcPeriod)(byte)ar["RecalcPeriod"];
+			IsBlocked			=		   (bool)ar["IsBlocked"];
 
-			InterestAccumulationAccNum	= (string)ar["InterestAccumulationAccNum"];
-			AccumulatedInterest			= (decimal)ar["AccumulatedInterest"];
+			InterestAccumulationAccNum = (string)ar["InterestAccumulationAccNum"];
+			AccumulatedInterest		  = (decimal)ar["AccumulatedInterest"];
 		}
 	}
 }

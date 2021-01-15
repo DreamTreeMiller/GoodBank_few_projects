@@ -81,7 +81,7 @@ CREATE TABLE [dbo].[AccountsParent] (
 	FOREIGN KEY ([ClientID]) REFERENCES [dbo].[ClientsMain]([ID]) ON DELETE CASCADE,
 	[AccountNumber]		NVARCHAR (15)	DEFAULT '' NOT NULL,		
 	[Balance]			MONEY DEFAULT 0	NOT NULL,			
-	[Interest]			DECIMAL (4,2)	NOT NULL,
+	[Interest]			FLOAT			NOT NULL,
 	[Compounding]		BIT				NOT NULL,	-- с капитализацией или без 
 	[Opened]			DATE			NOT NULL,	-- дата открытия счета 
 	[Duration]			INT				NOT NULL,	-- Количество месяцев, на который открыт вклад, выдан кредит.  
@@ -136,15 +136,15 @@ CREATE TABLE [dbo].[AccountsView] (
 	,[CurrentAmount]	MONEY			DEFAULT 0	NOT NULL
 	,[DepositAmount]	MONEY			DEFAULT 0	NOT NULL
 	,[DebtAmount]		MONEY			DEFAULT 0	NOT NULL
-	,[Interest]			DECIMAL (4,2)	DEFAULT 0	NOT NULL
+	,[Interest]			FLOAT			DEFAULT 0	NOT NULL
 --	,[Compounding]		BIT				DEFAULT 0	NOT NULL
 	,[Opened]			DATE						NOT NULL
 --	,[Duration]			INT				DEFAULT 0	NOT NULL
 --	,[MonthsElapsed]	INT				DEFAULT 0	NOT NULL
 --	,[EndDate]			DATE
 	,[Closed]			DATE
-	,[Topuble]			BIT							NOT NULL
---	,[WithdrawalAllowed]	BIT						NOT NULL
+	,[Topupable]		BIT							NOT NULL
+--	,[WithdrawalAllowed] BIT						NOT NULL
 --	,[RecalcPeriod]		TINYINT			DEFAULT 0	NOT NULL
 --	,[IsBlocked]		BIT				DEFAULT 0	NOT NULL	-- not blocked
 );
@@ -162,7 +162,7 @@ CREATE TABLE [dbo].[ClientAccountsView] (
 	,[CurrentAmount]	MONEY			DEFAULT 0	NOT NULL
 	,[DepositAmount]	MONEY			DEFAULT 0	NOT NULL
 	,[DebtAmount]		MONEY			DEFAULT 0	NOT NULL
-	,[Interest]			DECIMAL (4,2)	DEFAULT 0	NOT NULL
+	,[Interest]			FLOAT			DEFAULT 0	NOT NULL
 	,[Opened]			DATE						NOT NULL
 	,[Closed]			DATE
 	,[Topuble]			BIT							NOT NULL

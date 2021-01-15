@@ -162,7 +162,7 @@ namespace Department_Window
 				MessageBox.Show("Выберите счет для показа");
 				return;
 			}
-			AccountWindow accountWindow = new AccountWindow(BA, account);
+			AccountWindow accountWindow = new AccountWindow(BA, (int)account["AccID"]);
 			accountWindow.ShowDialog();
 			//if (accountWindow.clientsNeedUpdate)  InitializeClientsAndWindowTypes();
 			if (accountWindow.accountsNeedUpdate) ShowAccounts();

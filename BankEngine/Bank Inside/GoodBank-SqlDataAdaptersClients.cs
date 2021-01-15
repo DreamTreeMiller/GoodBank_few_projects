@@ -6,7 +6,7 @@ namespace BankInside
 	public partial class GoodBank
 	{
 		private DataSet			ds;
-		private SqlDataAdapter	daClientsView, daClientsMain, daVIPclients, daSIMclients, daORGclients;
+		private SqlDataAdapter	daClientsView;
 		private SqlConnection	gbConn;
 		private SqlCommand		sqlCommand;
 

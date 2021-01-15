@@ -23,7 +23,7 @@ namespace Client_Window
 	/// </summary>
 	public partial class OpenSavingAccountWindow : Window
 	{
-		public double startAmount = 0;
+		public decimal startAmount = 0;
 
 		public DateTime	Opened { get; } = GoodBankTime.Today;
 
@@ -46,7 +46,7 @@ namespace Client_Window
 		/// <param name="input">Введенная строка</param>
 		/// <param name="tmp">Преобразованное значение. Если ввод некорректный, то значение неопределено</param>
 		/// <returns>true/false. Если true, то в tmp результат преобразования</returns>
-		private bool IsInputValid(string input, out double tmp)
+		private bool IsInputValid(string input, out decimal tmp)
 		{
 			if(String.IsNullOrEmpty(input))
 			{
@@ -59,7 +59,7 @@ namespace Client_Window
 				tmp = 0;
 				return false;
 			}
-			if (!Double.TryParse(input, out tmp))
+			if (!Decimal.TryParse(input, out tmp))
 			{
 				MessageBox.Show("Некорректрый ввод! Введите число.");
 				Dispatcher.BeginInvoke((ThreadStart)delegate
@@ -85,7 +85,7 @@ namespace Client_Window
 
 		private void btnOk_OpenSavingAccount_Click(object sender, RoutedEventArgs e)
 		{
-			if (IsInputValid(StartAmountEntryBox.Text, out double tmp))
+			if (IsInputValid(StartAmountEntryBox.Text, out decimal tmp))
 			{
 				startAmount  = tmp;
 				DialogResult = true;

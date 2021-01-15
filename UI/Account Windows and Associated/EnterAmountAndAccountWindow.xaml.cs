@@ -12,7 +12,7 @@ namespace Account_Windows
 	/// </summary>
 	public partial class EnterAmountAndAccountWindow : Window
 	{
-		public double amount = 0;
+		public decimal amount = 0;
 
 		/// <summary>
 		/// Проверяет, является ли введенная строка корректным числом с плав. запятой
@@ -20,7 +20,7 @@ namespace Account_Windows
 		/// <param name="input">Введенная строка</param>
 		/// <param name="tmp">Преобразованное значение. Если ввод некорректный, то значение неопределено</param>
 		/// <returns>true/false. Если true, то в tmp результат преобразования</returns>
-		private bool IsInputValid(string input, out double tmp)
+		private bool IsInputValid(string input, out decimal tmp)
 		{
 			if (String.IsNullOrEmpty(input))
 			{
@@ -35,7 +35,7 @@ namespace Account_Windows
 				return false;
 			}
 
-			if (!Double.TryParse(input, out tmp))
+			if (!decimal.TryParse(input, out tmp))
 			{
 				MessageBox.Show("Некорректрый ввод! Введите число.");
 				Dispatcher.BeginInvoke((ThreadStart)delegate
@@ -85,7 +85,7 @@ namespace Account_Windows
 				MessageBox.Show("Выберите номер счета для перевода");
 				return;
 			}
-			if (IsInputValid(AmountEnterBox.Text, out double tmp))
+			if (IsInputValid(AmountEnterBox.Text, out decimal tmp))
 			{
 				destinationAccount = DestinationAccount.SelectedItem as IAccount;
 				amount = tmp;

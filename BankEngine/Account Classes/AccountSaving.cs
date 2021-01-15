@@ -75,7 +75,7 @@ namespace Enumerables
 			OnWriteLog(openAccountTransaction);
 		}
 
-		public override double RecalculateInterest()
+		public override decimal RecalculateInterest()
 		{
 			if (IsBlocked) return 0;
 
@@ -84,7 +84,7 @@ namespace Enumerables
 			return 0;
 		}
 
-		public override double CloseAccount()
+		public override decimal CloseAccount()
 		{
 			return base.CloseAccount();
 		}

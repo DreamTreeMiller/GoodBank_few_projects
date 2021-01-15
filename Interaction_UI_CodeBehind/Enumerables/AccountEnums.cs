@@ -8,12 +8,6 @@
 		Total   = 3
 	}
 
-	public enum AccountStatus
-	{
-		Opened,
-		Closed
-	}
-
 	public enum OperationType
 	{
 		OpenAccount,

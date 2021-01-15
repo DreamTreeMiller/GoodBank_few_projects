@@ -12,7 +12,7 @@ namespace Interfaces_Actions
 		/// </summary>
 		/// <param name="accountRow"></param>
 		/// <returns></returns>
-		//IAccountDTO GetAccountByID(int accID);
+		IAccountDTO GetAccountByID(int accID);
 
 		/// <summary>
 		/// Находит список всех счетов, принадлежащих клиентам данного типа
@@ -35,13 +35,13 @@ namespace Interfaces_Actions
 
 		void AddAccount(IAccountDTO acc); 
 
-		IAccount TopUpCash(int accID, double cashAmount);
+		IAccountDTO TopUpCash(int accID, decimal cashAmount);
 
-		IAccount WithdrawCash(int accID, double amount);
+		IAccountDTO WithdrawCash(int accID, decimal amount);
 
-		IAccount CloseAccount(int accID, out double accumulatedAmount);
+		IAccountDTO CloseAccount(int accID, out decimal accumulatedAmount);
 
-		void Wire(int sourceAccID, int destAccID, double amount);
+		void Wire(int sourceAccID, int destAccID, decimal amount);
 
 		/// <summary>
 		/// Увеличивает внутреннюю дату на 1 месяц и пересчитывает проценты у всех счетов

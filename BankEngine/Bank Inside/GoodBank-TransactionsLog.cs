@@ -8,7 +8,7 @@ namespace BankInside
 {
 	public partial class GoodBank : ITransactions
 	{
-		private List<Transaction> log;
+		private List<Transaction> log = new List<Transaction>();
 
 		public void WriteLog(Transaction t)
 		{

@@ -112,7 +112,7 @@ namespace Client_Window
 				return;
 			}
 
-			AccountWindow accountWindow = new AccountWindow(BA, account);
+			AccountWindow accountWindow = new AccountWindow(BA, (int)account["AccID"]);
 			accountWindow.ShowDialog();
 			if (accountWindow.accountsNeedUpdate)
 			{
