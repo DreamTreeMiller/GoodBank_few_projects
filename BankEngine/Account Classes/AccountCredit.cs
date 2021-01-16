@@ -1,6 +1,6 @@
 ﻿using BankTime;
 using Interfaces_Data;
-using Transaction_Class;
+using Transaction;
 using System;
 
 namespace Enumerables
@@ -29,12 +29,12 @@ namespace Enumerables
 		/// WithdrawalAllowed	=					--> false
 		/// RecalcPeriod  =							--> monthly
 		/// EndDate		  =							--> из IAccountDTO acc 
-		public AccountCredit(IAccountDTO acc, Action<Transaction> writeloghandler)
+		public AccountCredit(IAccountDTO acc, Action<TransactionDTO> writeloghandler)
 			: base( "CRE", acc.ClientID, acc.ClientType,
 					acc.Balance, acc.Compounding, acc.Interest,
 					true, false, RecalcPeriod.Monthly, acc.Duration, writeloghandler)
 		{
-			Transaction openAccountTransaction = new Transaction(
+			TransactionDTO openAccountTransaction = new TransactionDTO(
 				AccID,
 				GoodBankTime.GetBanksTodayWithCurrentTime(),
 				"",
@@ -54,7 +54,7 @@ namespace Enumerables
 		/// </summary>
 		/// <param name="acc"></param>
 		/// <param name="opened"></param>
-		public AccountCredit(IAccountDTO acc, DateTime opened, Action<Transaction> writeloghandler)
+		public AccountCredit(IAccountDTO acc, DateTime opened, Action<TransactionDTO> writeloghandler)
 			: base( "CRE", acc.ClientID, acc.ClientType,
 					acc.Balance, acc.Compounding, acc.Interest,
 					opened,
@@ -62,7 +62,7 @@ namespace Enumerables
 					acc.MonthsElapsed,
 					writeloghandler)
 		{
-			Transaction openAccountTransaction = new Transaction(
+			TransactionDTO openAccountTransaction = new TransactionDTO(
 				AccID,
 				Opened,
 				"",
@@ -98,7 +98,7 @@ namespace Enumerables
 			AccumulatedInterest		 += calculatedInterest;
 			Balance					 += calculatedInterest;
 
-			Transaction interestAccrualTransaction = new Transaction(
+			TransactionDTO interestAccrualTransaction = new TransactionDTO(
 				AccID,
 				GoodBankTime.GetBanksTodayWithCurrentTime(),
 				"",

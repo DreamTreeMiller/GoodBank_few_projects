@@ -10,7 +10,7 @@ namespace BankInside
 		private SqlConnection	gbConn;
 		private SqlCommand		sqlCommand;
 
-		public void PopulateTables()
+		public void SetupSqlDataAdaptersAndStoredProceduresForTables()
 		{
 			ds = new DataSet();
 			gbConn = SetGoodBankConnection();
@@ -25,7 +25,7 @@ namespace BankInside
 			SetupSP_AddAccount();
 			SetupSP_GetAccountDTObyID();
 
-			SetupTransactionsSqlDataAdapter();
+			SetupTransactionsSqlDataAdapter(ds);
 		}
 
 		/// <summary>

@@ -1,32 +1,32 @@
 ﻿using BankTime;
 using Interfaces_Data;
-using Transaction_Class;
+using Transaction;
 using System;
 
 namespace Enumerables
 {
 	public class AccountDeposit : Account, IAccountDeposit
 	{
-		public override AccountType AccType { get => AccountType.Deposit; }
+		public override	AccountType AccType			{ get => AccountType.Deposit; }
 
 		/// <summary>
 		/// ID счета, куда перечислять проценты.
 		/// При капитализации, совпадает с ИД счета депозита
 		/// Без капитализации равен 0
 		/// </summary>
-		public int InterestAccumulationAccID { get; } = 0;
+		public int		InterestAccumulationAccID	{ get; } = 0;
 
 		/// <summary>
 		/// Номер счета, куда перечислять проценты.
 		/// При капитализации, совпадает с номером счета депозита
 		/// Без капитализации имеет значение "внутренний счет"
 		/// </summary>
-		public string InterestAccumulationAccNum { get; } 
+		public string	InterestAccumulationAccNum	{ get; } 
 
 		/// <summary>
 		/// Накомпленные проценты 
 		/// </summary>
-		public decimal AccumulatedInterest { get; set; } = 0;
+		public decimal	AccumulatedInterest			{ get; set; } = 0;
 
 		/// <summary>
 		/// Создание счета на основе введенных данных
@@ -47,7 +47,7 @@ namespace Enumerables
 		/// WithdrawalAllowed	=					--> из IAccountDTO acc
 		/// RecalcPeriod  =							--> из IAccountDTO acc
 		/// EndDate		  =							--> из IAccountDTO acc 
-		public AccountDeposit(IAccountDTO acc, Action<Transaction> writeloghandler)
+		public AccountDeposit(IAccountDTO acc, Action<TransactionDTO> writeloghandler)
 			: base( "DEP", acc.ClientID, acc.ClientType, 
 					acc.Balance, acc.Compounding, acc.Interest,
 					acc.Topupable, acc.WithdrawalAllowed, acc.RecalcPeriod, acc.Duration,
@@ -64,7 +64,7 @@ namespace Enumerables
 				InterestAccumulationAccNum = acc.InterestAccumulationAccNum;
 			}
 
-			Transaction openAccountTransaction = new Transaction(
+			TransactionDTO openAccountTransaction = new TransactionDTO(
 				AccID,
 				GoodBankTime.GetBanksTodayWithCurrentTime(),
 				"",
@@ -84,7 +84,7 @@ namespace Enumerables
 		/// </summary>
 		/// <param name="acc"></param>
 		/// <param name="opened"></param>
-		public AccountDeposit(IAccountDTO acc, DateTime opened, Action<Transaction> writeloghandler)
+		public AccountDeposit(IAccountDTO acc, DateTime opened, Action<TransactionDTO> writeloghandler)
 			: base( "DEP", acc.ClientID, acc.ClientType,
 					acc.Balance, acc.Compounding, acc.Interest,
 					opened,
@@ -103,7 +103,7 @@ namespace Enumerables
 				InterestAccumulationAccNum = acc.InterestAccumulationAccNum;
 			}
 
-			Transaction openAccountTransaction = new Transaction(
+			TransactionDTO openAccountTransaction = new TransactionDTO(
 				AccID,
 				Opened,
 				"",
@@ -212,7 +212,7 @@ namespace Enumerables
 		/// <param name="accumulatedInterest"></param>
 		public void SendInterestToAccount(IAccount destAcc, decimal accumulatedInterest)
 		{
-			Transaction withdrawCashTransaction = new Transaction(
+			TransactionDTO withdrawCashTransaction = new TransactionDTO(
 				AccID,
 				GoodBankTime.GetBanksTodayWithCurrentTime(),
 				"накопленный процент",
@@ -246,7 +246,7 @@ namespace Enumerables
 			}
 
 
-			Transaction interestAccrualTransaction = new Transaction(
+			TransactionDTO interestAccrualTransaction = new TransactionDTO(
 				AccID,
 				GoodBankTime.GetBanksTodayWithCurrentTime(),
 				"",

@@ -218,7 +218,7 @@ namespace Account_Windows
 				return;
 			}
 
-			Balance				= (decimal)updatedAcc.Balance;
+			Balance				= updatedAcc.Balance;
 			accountsNeedUpdate	= true;
 			UpdateAccountTransactionsLog();
 		}
@@ -263,7 +263,7 @@ namespace Account_Windows
 				return;
 			}
 
-			Balance = (decimal)updatedAcc.Balance;
+			Balance = updatedAcc.Balance;
 			accountsNeedUpdate = true;
 			UpdateAccountTransactionsLog();
 		}
@@ -294,7 +294,7 @@ namespace Account_Windows
 			if (result != true) return;
 
 			decimal wireAmount = eaawin.amount;
-			int     destAccID = eaawin.destinationAccount.AccID;
+			int     destAccID = eaawin.destinationAccID;
 
 			try
 			{
@@ -313,7 +313,7 @@ namespace Account_Windows
 				return;
 			}
 
-			Balance = Balance - (decimal)wireAmount;
+			Balance -= wireAmount;
 			MessageBox.Show($"Сумма {wireAmount:N2} руб. успешно переведена");
 			accountsNeedUpdate = true;
 			UpdateAccountTransactionsLog();

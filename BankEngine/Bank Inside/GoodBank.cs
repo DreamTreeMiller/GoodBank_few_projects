@@ -5,14 +5,17 @@ using System.Configuration;
 using Interfaces_Data;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Transaction;
 
 namespace BankInside
 {
 	public partial class GoodBank : IGoodBank
 	{
-		private string masterCS = default;
-		private string GoodBankCS = default;
-		private string gbdbName = default;
+		private string				masterCS	= default;
+		private string				GoodBankCS	= default;
+		private string				gbdbName	= default;
+		private UnifiedAccount		AccountAction;
+		private TransactionAction	TransactionAction;
 
 		/// <summary>
 		/// Инициализирует рабочую базу данных. 
@@ -36,7 +39,11 @@ namespace BankInside
 			// Checks if the db has all tables
 			// If some table is missing creates it
 			CheckThenCreateTables();
-			PopulateTables();
+			SetupSqlDataAdaptersAndStoredProceduresForTables();
+
+			AccountAction			= new UnifiedAccount();
+			TransactionAction		= new TransactionAction(GoodBankCS);
+			AccountAction.WriteLog += TransactionAction.WriteLog;
 		}
 
 		/// <summary>

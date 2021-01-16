@@ -1,6 +1,6 @@
 ﻿using BankTime;
 using Interfaces_Data;
-using Transaction_Class;
+using Transaction;
 using System;
 
 namespace Enumerables
@@ -28,12 +28,12 @@ namespace Enumerables
 		/// WithdrawalAllowed	=					--> ture
 		/// RecalcPeriod  =							--> No recalc period
 		/// EndDate		  =							--> null 
-		public AccountSaving(IAccountDTO acc, Action<Transaction> writeloghandler)
+		public AccountSaving(IAccountDTO acc, Action<TransactionDTO> writeloghandler)
 			: base( "SAV", acc.ClientID, acc.ClientType, 
 					acc.Balance, acc.Compounding, acc.Interest,
 					true, true, RecalcPeriod.NoRecalc, 0, writeloghandler)
 		{
-			Transaction openAccountTransaction = new Transaction(
+			TransactionDTO openAccountTransaction = new TransactionDTO(
 				AccID,
 				GoodBankTime.GetBanksTodayWithCurrentTime(),
 				"",
@@ -53,7 +53,7 @@ namespace Enumerables
 		/// </summary>
 		/// <param name="acc"></param>
 		/// <param name="opened"></param>
-		public AccountSaving(IAccountDTO acc, DateTime opened, Action<Transaction> writeloghandler)
+		public AccountSaving(IAccountDTO acc, DateTime opened, Action<TransactionDTO> writeloghandler)
 			: base( "SAV", acc.ClientID, acc.ClientType, 
 					acc.Balance, acc.Compounding, acc.Interest,
 					opened,
@@ -61,7 +61,7 @@ namespace Enumerables
 					0, // months elapsed
 					writeloghandler)
 		{
-			Transaction openAccountTransaction = new Transaction(
+			TransactionDTO openAccountTransaction = new TransactionDTO(
 				AccID,
 				Opened,
 				"",

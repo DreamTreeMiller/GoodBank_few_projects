@@ -56,6 +56,7 @@ CREATE TABLE [dbo].[ORGclients] (
 		 {"ClientsView", @"
 CREATE TABLE [dbo].[ClientsView] (
 	 [ID]						INT	IDENTITY (1, 1)			NOT NULL	PRIMARY KEY
+	 FOREIGN KEY ([ID]) REFERENCES [dbo].[ClientsMain]([ID]) ON DELETE CASCADE,
 	,[ClientType]				TINYINT						NOT NULL
 	,[ClientTypeTag]			NVARCHAR (5)	DEFAULT ''	NOT NULL
 	,[FirstName]				NVARCHAR (50)	DEFAULT ''	NOT NULL
@@ -131,7 +132,7 @@ CREATE TABLE [dbo].[AccountsView] (
 	,[ClientTypeTag]	NVARCHAR (5)	DEFAULT ''	NOT NULL
 	,[ClientName]		NVARCHAR (256)	DEFAULT ''	NOT NULL
 	,[AccountNumber]	NVARCHAR (15)	DEFAULT ''	NOT NULL
-	,[AccType]			TINYINT						NOT NULL
+	,[AccType]			INT							NOT NULL
 --	,[Balance]			MONEY			DEFAULT 0	NOT NULL
 	,[CurrentAmount]	MONEY			DEFAULT 0	NOT NULL
 	,[DepositAmount]	MONEY			DEFAULT 0	NOT NULL
@@ -158,7 +159,7 @@ CREATE TABLE [dbo].[ClientAccountsView] (
 	,[ClientTypeTag]	NVARCHAR (5)	DEFAULT ''	NOT NULL
 	,[ClientName]		NVARCHAR (256)	DEFAULT ''	NOT NULL
 	,[AccountNumber]	NVARCHAR (15)	DEFAULT ''	NOT NULL
-	,[AccType]			TINYINT						NOT NULL
+	,[AccType]			INT							NOT NULL
 	,[CurrentAmount]	MONEY			DEFAULT 0	NOT NULL
 	,[DepositAmount]	MONEY			DEFAULT 0	NOT NULL
 	,[DebtAmount]		MONEY			DEFAULT 0	NOT NULL
@@ -176,7 +177,7 @@ CREATE TABLE [dbo].[Transactions] (
 	[TransactionDateTime]	SMALLDATETIME				NOT NULL,
 	[SourceAccount]			NVARCHAR (15)	DEFAULT ''	NOT NULL,
 	[DestinationAccount]	NVARCHAR (15)	DEFAULT ''	NOT NULL,
-	[OperationType]			TINYINT						NOT NULL,
+	[OperationType]			INT							NOT NULL,
 	[Amount]				MONEY			DEFAULT 0	NOT NULL,
 	[Comment]				NVARCHAR (256)	DEFAULT ''	NOT NULL
 );"

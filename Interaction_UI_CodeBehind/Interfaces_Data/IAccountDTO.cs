@@ -68,6 +68,7 @@ namespace Interfaces_Data
 		/// </summary>
 		RecalcPeriod RecalcPeriod		{ get; set; }
 
+		int			NumberOfTopUpsInDay { get; set; }
 		bool		IsBlocked			{ get; set; }
 
 	}

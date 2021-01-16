@@ -2,9 +2,9 @@
 using Interfaces_Data;
 using System;
 
-namespace Transaction_Class
+namespace Transaction
 {
-	public class Transaction : ITransaction
+	public class TransactionDTO : ITransaction
 	{
 		#region Статический генератор уникального ID
 
@@ -16,7 +16,7 @@ namespace Transaction_Class
 		/// <summary>
 		/// Статический конструктор. Обнуляет счетчик ID
 		/// </summary>
-		static Transaction()
+		static TransactionDTO()
 		{
 			staticID = 0;
 		}
@@ -41,7 +41,7 @@ namespace Transaction_Class
 		/// <summary>
 		/// Счет, над которым совершено действие
 		/// </summary>
-		public int TransactionAccountID { get; }
+		public int				TransactionAccountID { get; }
 
 		/// <summary>
 		/// Дата и время транзакции
@@ -73,6 +73,7 @@ namespace Transaction_Class
 		/// </summary>
 		public string			Comment				{ get; }
 
+		
 		/// <summary>
 		/// Конструктор для создания новой транзакции
 		/// </summary>
@@ -83,7 +84,7 @@ namespace Transaction_Class
 		/// <param name="amount">Сумма операции. Плюс - вклад, минус - снятие</param>
 		/// <param name="interest">Процент в операции. 0 - текщий счет</param>
 		/// <param name="comment">Комментарий</param>
-		public Transaction( int				senderAccID,
+		public TransactionDTO( int				senderAccID,
 							DateTime		dt,
 							string			sourceAcc,
 							string			destinationAcc,
@@ -100,6 +101,5 @@ namespace Transaction_Class
 			Amount				 = amount;
 			Comment				 = comment;
 		}
-
 	}
 }

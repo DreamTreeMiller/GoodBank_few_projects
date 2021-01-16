@@ -97,6 +97,8 @@ namespace DTO
 		/// </summary>
 		public RecalcPeriod	RecalcPeriod	{ get; set; }
 
+		public int		NumberOfTopUpsInDay { get; set; }
+
 		public bool			IsBlocked		{ get; set; }
 
 		/// <summary>
@@ -204,8 +206,8 @@ namespace DTO
 			Topupable			=		   (bool)ar["Topupable"];
 			WithdrawalAllowed	=		   (bool)ar["WithdrawalAllowed"];
 			RecalcPeriod   = (RecalcPeriod)(byte)ar["RecalcPeriod"];
+			NumberOfTopUpsInDay =			(int)ar["NumberOfTopUpsInDay"];
 			IsBlocked			=		   (bool)ar["IsBlocked"];
-
 			InterestAccumulationAccNum = (string)ar["InterestAccumulationAccNum"];
 			AccumulatedInterest		  = (decimal)ar["AccumulatedInterest"];
 		}

@@ -203,26 +203,28 @@ SELECT
 	,[Topupable]			
 	,[WithdrawalAllowed]
 	,[RecalcPeriod]		
+	,[NumberOfTopUpsInDay]
 	,[IsBlocked]		
 FROM 
 (SELECT	 [AccID]
-			,[ClientID]
-			,[AccountNumber]
-			,0  AS [AccType]		-- Saving account
-			,[Balance]
-			,[Interest]
-			,[Compounding]
-			,0  AS [InterestAccumulationAccID]		-- only deposit field
-			,'' AS [InterestAccumulationAccNum]		-- only deposit field
-			,0  AS [AccumulatedInterest]				-- only deposit field
-			,[Opened]
-			,[Duration]			
-			,[MonthsElapsed]	
-			,[Closed]
-			,[Topupable]			
-			,[WithdrawalAllowed]
-			,[RecalcPeriod]		
-			,[IsBlocked]		
+		,[ClientID]
+		,[AccountNumber]
+		,0  AS [AccType]		-- Saving account
+		,[Balance]
+		,[Interest]
+		,[Compounding]
+		,0  AS [InterestAccumulationAccID]		-- only deposit field
+		,'' AS [InterestAccumulationAccNum]		-- only deposit field
+		,0  AS [AccumulatedInterest]			-- only deposit field
+		,[Opened]
+		,[Duration]			
+		,[MonthsElapsed]	
+		,[Closed]
+		,[Topupable]			
+		,[WithdrawalAllowed]
+		,[RecalcPeriod]		
+		,[NumberOfTopUpsInDay]
+		,[IsBlocked]		
 	 FROM	[dbo].[SavingAccounts], [dbo].[AccountsParent]
 	 WHERE [SavingAccounts].[id] = [AccountsParent].[AccID] 
 	 UNION	SELECT   [AccID]
@@ -234,7 +236,7 @@ FROM
 				,[Compounding]
 				,[InterestAccumulationAccID]		-- only deposit field
 				,[InterestAccumulationAccNum]		-- only deposit field
-				,[AccumulatedInterest]				-- only deposit field
+				,[AccumulatedInterest]				-- deposit and credit field
 				,[Opened]
 				,[Duration]			
 				,[MonthsElapsed]	
@@ -242,6 +244,7 @@ FROM
 				,[Topupable]			
 				,[WithdrawalAllowed]
 				,[RecalcPeriod]		
+				,[NumberOfTopUpsInDay]
 				,[IsBlocked]		
 			FROM	[dbo].[DepositAccounts], [dbo].[AccountsParent]
 			WHERE [DepositAccounts].[id] = [AccountsParent].[AccID] 
@@ -254,7 +257,7 @@ FROM
 				,[Compounding]
 				,0  AS [InterestAccumulationAccID]		-- only deposit field
 				,'' AS [InterestAccumulationAccNum]		-- only deposit field
-				,[AccumulatedInterest]					-- only deposit field
+				,[AccumulatedInterest]					-- deposit and credit field
 				,[Opened]
 				,[Duration]			
 				,[MonthsElapsed]	
@@ -262,6 +265,7 @@ FROM
 				,[Topupable]			
 				,[WithdrawalAllowed]
 				,[RecalcPeriod]		
+				,[NumberOfTopUpsInDay]
 				,[IsBlocked]		
 			FROM	[dbo].[CreditAccounts], [dbo].[AccountsParent]
 			WHERE [CreditAccounts].[id] = [AccountsParent].[AccID] ) AS Accounts
@@ -271,7 +275,62 @@ WHERE	[Accounts].[AccID]  = @accID
 				sqlCommand.ExecuteNonQuery();
 			}
 		}
-		private void SetupTransactionsSqlDataAdapter()
+
+		private void SetupSP_UpdateAccount()
+		{
+			using (gbConn = SetGoodBankConnection())
+			{
+				gbConn.Open();
+				string sqlExpression = @"
+IF EXISTS (SELECT [name],[type] FROM sys.objects WHERE [name]='SP_UpdateAccount' AND [type]='P')
+	DROP PROC [dbo].[SP_UpdateAccount];
+				";
+				sqlCommand = new SqlCommand(sqlExpression, gbConn);
+				sqlCommand.ExecuteNonQuery();
+
+				sqlExpression = @"
+CREATE PROC [dbo].[SP_UpdateAccount]
+-- parameters to select account
+	 @accountID						INT			-- need to identify account
+	,@accType 						TINYINT		-- need to identify type
+-- parameters to update in account
+	,@balance						MONEY
+	,@accumulatedInterest			MONEY
+	,@monthsElapsed					INT
+	,@closed						DATE
+	,@topupable						BIT
+	,@withdrawalAllowed				BIT
+	,@numberOfTopUpsInDay			INT
+	,@isBlocked						BIT
+AS
+BEGIN
+	UPDATE	 [dbo].[AccountsParent]
+	SET		 [Balance]				= @balance
+			,[MonthsElapsed]		= @monthsElapsed
+			,[Closed]				= @closed
+			,[Topupable]			= @topupable
+			,[WithdrawalAllowed]	= @withdrawalAllowed
+			,[NumberOfTopUpsInDay]	= @numberOfTopUpsInDay
+			,[IsBlocked]			= @isBlocked
+	WHERE	 [AccID] =  @accountID;
+
+	IF @accType=1	-- Deposit
+		UPDATE	[dbo].[DepositAccounts] 
+		SET		[AccumulatedInterest] = @accumulatedInterest
+		WHERE	[id] = @accountID
+	ELSE 
+	IF @accType=2	-- Credit
+		UPDATE	[dbo].[CreditAccounts]
+		SET		[AccumulatedInterest] = @accumulatedInterest
+		WHERE	[id] = @accountID
+END;			
+				";
+				sqlCommand = new SqlCommand(sqlExpression, gbConn);
+				sqlCommand.ExecuteNonQuery();
+			}
+		}
+
+		private void SetupTransactionsSqlDataAdapter(DataSet ds)
 		{
 			gbConn = SetGoodBankConnection();
 			daTransactions = new SqlDataAdapter();
@@ -310,7 +369,7 @@ WHERE	[Accounts].[AccID]  = @accID
 			daTransactions.InsertCommand.Parameters.
 				Add("@destinationAccount",	 SqlDbType.NVarChar,	  15,	"DestinationAccount");
 			daTransactions.InsertCommand.Parameters.
-				Add("@operationType",		 SqlDbType.TinyInt,		  1,	"OperationType");
+				Add("@operationType",		 SqlDbType.Int,			  1,	"OperationType");
 			daTransactions.InsertCommand.Parameters.
 				Add("@amount",				 SqlDbType.Money,		  4,	"Amount");
 			daTransactions.InsertCommand.Parameters.

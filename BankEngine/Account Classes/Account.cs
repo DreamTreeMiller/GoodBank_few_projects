@@ -1,6 +1,6 @@
 ﻿using BankTime;
 using Interfaces_Data;
-using Transaction_Class;
+using Transaction;
 using System;
 using DTO;
 
@@ -153,7 +153,7 @@ namespace Enumerables
 		public Account( string accPrefix, int clientID, ClientType clientType,
 						decimal balance, bool compounding, double interest,
 						bool topup, bool withdrawal, RecalcPeriod recalc, int duration,
-						Action<Transaction> writeloghandler)
+						Action<TransactionDTO> writeloghandler)
 		{
 			AccID				= NextID();
 			ClientID			= clientID;
@@ -185,7 +185,7 @@ namespace Enumerables
 						DateTime opened,
 						bool topup, bool withdrawal, RecalcPeriod recalc, int duration,
 						int monthsElapsed,
-						Action<Transaction> writeloghandler)
+						Action<TransactionDTO> writeloghandler)
 		{
 			AccID				= NextID();
 			ClientID			= clientID;
@@ -211,9 +211,9 @@ namespace Enumerables
 		/// <summary>
 		/// Запись транзакции в журнал
 		/// </summary>
-		public event Action<Transaction> WriteLog;
+		public event Action<TransactionDTO> WriteLog;
 
-		protected virtual void OnWriteLog(Transaction tr)
+		protected virtual void OnWriteLog(TransactionDTO tr)
 		{
 			WriteLog?.Invoke(tr);
 		}
@@ -232,11 +232,11 @@ namespace Enumerables
 			{
 				if (++NumberOfTopUpsInDay > 3)
 				{
-					Topupable = false;
-					WithdrawalAllowed = false;
-					IsBlocked = true;
+					Topupable			= false;
+					WithdrawalAllowed	= false;
+					IsBlocked			= true;
 
-					Transaction blockAccountTransaction = new Transaction(
+					TransactionDTO blockAccountTransaction = new TransactionDTO(
 						AccID,
 						GoodBankTime.GetBanksTodayWithCurrentTime(),
 						"",
@@ -251,7 +251,7 @@ namespace Enumerables
 				}
 			}
 			Balance += cashAmount;
-			Transaction topUpCashTransaction = new Transaction(
+			TransactionDTO topUpCashTransaction = new TransactionDTO(
 				AccID,
 				GoodBankTime.GetBanksTodayWithCurrentTime(),
 				"",
@@ -270,7 +270,7 @@ namespace Enumerables
 		public decimal WithdrawCash(decimal cashAmount)
 		{
 			Balance -= cashAmount;
-			Transaction withdrawCashTransaction = new Transaction(
+			TransactionDTO withdrawCashTransaction = new TransactionDTO(
 				AccID,
 				GoodBankTime.GetBanksTodayWithCurrentTime(),
 				AccountNumber,
@@ -291,7 +291,7 @@ namespace Enumerables
 		public void ReceiveFromAccount(IAccount sourceAcc, decimal wireAmount)
 		{
 			Balance += wireAmount;
-			Transaction DepositFromAccountTransaction = new Transaction(
+			TransactionDTO DepositFromAccountTransaction = new TransactionDTO(
 				AccID,
 				GoodBankTime.GetBanksTodayWithCurrentTime(),
 				sourceAcc.AccountNumber,
@@ -313,7 +313,7 @@ namespace Enumerables
 		public void SendToAccount(IAccount destAcc, decimal wireAmount)
 		{
 			Balance -= wireAmount;
-			Transaction withdrawCashTransaction = new Transaction(
+			TransactionDTO withdrawCashTransaction = new TransactionDTO(
 				AccID,
 				GoodBankTime.GetBanksTodayWithCurrentTime(),
 				AccountNumber,
@@ -355,7 +355,7 @@ namespace Enumerables
 			WithdrawalAllowed	= false;
 			Closed				= GoodBankTime.Today;
 
-			Transaction closeTransaction = new Transaction(
+			TransactionDTO closeTransaction = new TransactionDTO(
 				AccID,
 				GoodBankTime.GetBanksTodayWithCurrentTime(),
 				"",

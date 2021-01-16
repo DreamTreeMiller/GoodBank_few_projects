@@ -118,6 +118,36 @@ EXEC [dbo].[SP_UpdateNumberOfAccounts]
 		}
 
 		/// <summary>
+		/// Обновляет поля счета в базе
+		/// </summary>
+		/// <param name="acc">Данные счета с обновлёнными полями</param>
+		public void UpdateAccountInDB(IAccountDTO acc)
+		{
+			string accClosed = acc.Closed == null ? "NULL" : $"'{acc.Closed:yyyy-MM-yy}'";
+			string sqlCommandAddAccount = $@"
+EXEC SP_UpdateAccount
+-- parameters to select account
+	 {acc.AccID}					-- INT			-- need to identify account
+	,{(int)acc.AccType} 			-- TINYINT		-- need to identify type
+-- parameters to update in account
+	,{acc.Balance}					-- [Balance]			 MONEY DEFAULT 0	NOT NULL
+	,{acc.AccumulatedInterest}		-- [AccumulatedInterest] MONEY DEFAULT 0	NOT NULL
+	,{acc.MonthsElapsed}				-- [MonthsElapsed]		INT				NOT NULL
+	,{accClosed}						-- [Closed]				DATE
+	,{(acc.Topupable ? 1 : 0)}			-- [Topupable]			BIT				NOT NULL
+	,{(acc.WithdrawalAllowed ? 1 : 0)}	-- [WithdrawalAllowed]	BIT				NOT NULL
+	,{acc.NumberOfTopUpsInDay}			-- [NumberOfTopUpsInDay] INT DEFAULT 0	NOT NULL
+	,{(acc.IsBlocked ? 1 : 0)};			-- interest accum acc Num
+			";
+			using (gbConn = SetGoodBankConnection())
+			{
+				gbConn.Open();
+				sqlCommand = new SqlCommand(sqlCommandAddAccount, gbConn);
+				sqlCommand.ExecuteNonQuery();
+			}
+		}
+
+		/// <summary>
 		/// Удаляет и заново создаёт таблицу [dbo].[AccountsView], 
 		/// в которой собраны счета всех трёх типов клиентов
 		/// </summary>
@@ -430,26 +460,27 @@ SELECT @ts [TotalSaving], @td [TotalDeposit], @tc [TotalCredit];
 		/// <returns></returns>
 		public DataView GetClientAccountsToAccumulateInterest(int clientID)
 		{
-			string rowfilter = "ClientID = " + clientID
-								+ " AND Topupable <> 0";        // Topupable == true
+			string rowfilter =    "ClientID = " + clientID
+								+ " AND Topupable <> 0";		// Topupable == true
 			DataView clientAccountsViewTable =
-				new DataView(ds.Tables["ClientAccountsView"],           // Table to show
-							 rowfilter,                         // Row filter (select type)
-							 "AccType ASC",                     // Sort ascending by 'AccType' field
+				new DataView(ds.Tables["ClientAccountsView"],	// Table to show
+							 rowfilter,							// Row filter (select type)
+							 "AccType ASC",						// Sort ascending by 'AccType' field
 							 DataViewRowState.CurrentRows);
-
 			return clientAccountsViewTable;
 		}
 
+
 		public DataView GetTopupableAccountsToWireFrom(int sourceAccID)
 		{
-			DataView accList = new DataView();
-			for (int i = 0; i < accounts.Count; i++)
-				if (accounts[i].Topupable && accounts[i].AccID != sourceAccID)
-				{
-					//accList.Add(accounts[i]);
-				}
-			return accList;
+			string rowfilter =	  "AccID <> " + sourceAccID
+								+ " AND Topupable <> 0";		// Topupable == true
+			DataView clientAccountsViewTable =
+				new DataView(ds.Tables["AccountsView"],			// Table to show
+							 rowfilter,							// Row filter (select type)
+							 "AccType ASC",						// Sort ascending by 'AccType' field
+							 DataViewRowState.CurrentRows);
+			return clientAccountsViewTable;
 		}
 
 		public IAccountDTO TopUpCash(int accID, decimal cashAmount)
@@ -464,8 +495,9 @@ SELECT @ts [TotalSaving], @td [TotalDeposit], @tc [TotalCredit];
 			if (!acc.Topupable)
 				throw new AccountOperationException(ExceptionErrorCodes.TopUpIsNotAllowed);
 
-			//acc.TopUpCash(cashAmount);
-			return acc;
+			IAccountDTO updatedAcc = AccountAction.TopUpCash(acc, cashAmount);
+			UpdateAccountInDB(updatedAcc);
+			return updatedAcc;
 		}
 
 		public IAccountDTO WithdrawCash(int accID, decimal cashAmount)
@@ -483,34 +515,38 @@ SELECT @ts [TotalSaving], @td [TotalDeposit], @tc [TotalCredit];
 			if (!acc.WithdrawalAllowed)
 				throw new AccountOperationException(ExceptionErrorCodes.WithdrawalIsNotAllowed);
 
-			//acc.WithdrawCash(cashAmount);
-			return acc;
+			IAccountDTO updatedAcc = AccountAction.WithdrawCash(acc, cashAmount);
+			UpdateAccountInDB(updatedAcc);
+			return updatedAcc;
 		}
 
 		/// <summary>
 		/// Перевод средств со счета на счет
 		/// </summary>
-		/// <param name="sourceAccID"></param>
-		/// <param name="destAccID"></param>
+		/// <param name="senderAccID"></param>
+		/// <param name="recipientAccID"></param>
 		/// <param name="wireAmount"></param>
-		public void Wire(int sourceAccID, int destAccID, decimal wireAmount)
+		public void Wire(int senderAccID, int recipientAccID, decimal wireAmount)
 		{
-			IAccountDTO sourceAcc = GetAccountByID(sourceAccID);
-			if (sourceAcc.IsBlocked)
+			IAccountDTO senderAcc = GetAccountByID(senderAccID);
+			if (senderAcc.IsBlocked)
 				throw new AccountOperationException(ExceptionErrorCodes.AccountIsBlcoked);
 
-			if (sourceAcc.Closed != null)
+			if (senderAcc.Closed != null)
 				throw new AccountOperationException(ExceptionErrorCodes.AccountIsClosed);
 
-			if (sourceAcc.WithdrawalAllowed)
+			if (senderAcc.WithdrawalAllowed)
 			{
-				if (sourceAcc.Balance >= wireAmount)
+				if (senderAcc.Balance >= wireAmount)
 				{
-					var destAcc = GetAccountByID(destAccID);
-					if (destAcc.Topupable)
+					IAccountDTO recipientAcc = GetAccountByID(recipientAccID);
+					if (recipientAcc.Topupable)
 					{
-						//sourceAcc.SendToAccount(destAcc, wireAmount);
-						//destAcc.ReceiveFromAccount(sourceAcc, wireAmount);
+						senderAcc = AccountAction.SendToAccount(senderAcc, recipientAcc.AccountNumber, wireAmount);
+						UpdateAccountInDB(senderAcc);
+
+						recipientAcc = AccountAction.ReceiveFromAccount(senderAcc.AccountNumber, recipientAcc, wireAmount);
+						UpdateAccountInDB(recipientAcc);
 					}
 					else
 						throw new AccountOperationException(ExceptionErrorCodes.RecipientCannotReceiveWire);
@@ -540,7 +576,8 @@ SELECT @ts [TotalSaving], @td [TotalDeposit], @tc [TotalCredit];
 			if (acc.Balance < 0)
 				throw new AccountOperationException(ExceptionErrorCodes.CannotCloseAccountWithMinusBalance);
 
-			accumulatedAmount = 0; // acc.CloseAccount();
+			acc = AccountAction.CloseAccount(acc, out accumulatedAmount);
+			UpdateAccountInDB(acc);
 
 			switch (acc.AccType)
 			{

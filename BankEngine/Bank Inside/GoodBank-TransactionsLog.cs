@@ -1,6 +1,6 @@
 ﻿using Interfaces_Actions;
 using Interfaces_Data;
-using Transaction_Class;
+using Transaction;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
@@ -8,9 +8,9 @@ namespace BankInside
 {
 	public partial class GoodBank : ITransactions
 	{
-		private List<Transaction> log = new List<Transaction>();
+		private List<TransactionDTO> log = new List<TransactionDTO>();
 
-		public void WriteLog(Transaction t)
+		public void WriteLog(TransactionDTO t)
 		{
 			log.Add(t);
 		}

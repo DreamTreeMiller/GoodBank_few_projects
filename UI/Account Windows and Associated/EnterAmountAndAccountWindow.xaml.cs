@@ -61,7 +61,7 @@ namespace Account_Windows
 			return true;
 		}
 
-		public IAccount destinationAccount;
+		public int destinationAccID;
 
 		ObservableCollection<IAccount> destinationAccountsList { get; set; }
 		public EnterAmountAndAccountWindow(DataView destAccList)
@@ -87,7 +87,9 @@ namespace Account_Windows
 			}
 			if (IsInputValid(AmountEnterBox.Text, out decimal tmp))
 			{
-				destinationAccount = DestinationAccount.SelectedItem as IAccount;
+				int selectedAccIndx = DestinationAccount.SelectedIndex;
+				DataRowView selectedAccount = DestinationAccount.Items[selectedAccIndx] as DataRowView;
+				destinationAccID = (int)selectedAccount["AccID"];
 				amount = tmp;
 				DialogResult = true;
 			}
