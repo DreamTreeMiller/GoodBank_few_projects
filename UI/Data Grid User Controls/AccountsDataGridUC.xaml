@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Data_Grid_User_Controls.AccountsList"
+﻿<UserControl x:Class="Data_Grid_User_Controls.AccountsDataGridUC"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -133,6 +133,7 @@
 			</DataGrid.Columns>
 		</DataGrid>
 		<StackPanel x:Name="AccountsTotalsBar"
+					DataContext="{Binding}"
 					Orientation="Horizontal"
 					Grid.Row="2" Grid.Column="1"
 					VerticalAlignment="Center"
@@ -143,7 +144,7 @@
 						FontWeight="Bold"
 						Foreground="DarkSlateGray"
 						/>
-			<TextBlock x:Name="AccountsTotalNumberValue"
+			<TextBlock Text="{Binding AccountsTotalNumber}"
 					   Margin="10,0,0,0"
 					   FontSize="14"
 					   FontWeight="Bold"
@@ -154,7 +155,7 @@
 						Foreground="DarkSlateGray"
 						Margin="10, 0"
 						/>
-			<TextBlock x:Name="CurrentTotalAmount" 
+			<TextBlock  Text="{Binding StringFormat={}{0:N2}, Path=SavingTotalAmount}"
 						FontSize="14"
 						FontWeight="Bold"
 						Foreground="DarkBlue"
@@ -164,7 +165,7 @@
 						Foreground="DarkSlateGray"
 						Margin="10, 0"
 						/>
-			<TextBlock x:Name="DepositsTotalAmount" 
+			<TextBlock Text="{Binding StringFormat={}{0:N2}, Path=DepositsTotalAmount}" 
 						FontSize="14"
 						FontWeight="Bold"
 						Foreground="DarkBlue"
@@ -174,7 +175,7 @@
 						Foreground="DarkSlateGray"
 						Margin="10, 0"
 						/>
-			<TextBlock x:Name="CreditsTotalAmount" 
+			<TextBlock Text="{Binding StringFormat={}{0:N2}, Path=CreditsTotalAmount}" 
 						FontSize="14"
 						FontWeight="Bold"
 						Foreground="Red"

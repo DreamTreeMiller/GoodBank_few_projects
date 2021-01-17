@@ -6,15 +6,16 @@ namespace Interfaces_Data
 	public interface IAccountDTO 
 	{
 		ClientType	ClientType		{ get; set; }
+		string		ClientTypeTag	{ get; set; }
 		string		ClientName		{ get; set; }
 		int			ClientID		{ get; set; }
 		AccountType	AccType			{ get; set; }
-		int			AccID			{ get; }
+		int			AccID			{ get; set; }
 		string		AccountNumber	{ get; set; }
 		decimal		Balance			{ get; set; }
-		string		CurrentAmount	{ get; }
-		string		DepositAmount	{ get; }
-		string		DebtAmount		{ get; }
+		decimal		CurrentAmount	{ get; }
+		decimal		DepositAmount	{ get; }
+		decimal		DebtAmount		{ get; }
 		double		Interest		{ get; set; }
 
 		/// <summary>

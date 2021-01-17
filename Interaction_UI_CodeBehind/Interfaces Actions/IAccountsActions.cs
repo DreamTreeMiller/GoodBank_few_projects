@@ -33,7 +33,7 @@ namespace Interfaces_Actions
 
 		DataView GetTopupableAccountsToWireFrom(int sourceAccID);
 
-		void AddAccount(IAccountDTO acc); 
+		IAccountDTO AddAccount(IAccountDTO acc); 
 
 		IAccountDTO TopUpCash(int accID, decimal cashAmount);
 

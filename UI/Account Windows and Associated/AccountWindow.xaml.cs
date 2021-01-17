@@ -81,7 +81,8 @@ namespace Account_Windows
 		#endregion
 
 		BankActions BA;
-		DataRow  client;
+		DataRow		clientRow;
+		IClientDTO	client;
 
 		public bool accountsNeedUpdate = false;
 		public bool clientsNeedUpdate  = false;
@@ -108,7 +109,8 @@ namespace Account_Windows
 			BankTodayDate.Text = $"Сегодня {GoodBankTime.Today:dd.MM.yyyy} г.";
 			BA = ba;
 			IAccountDTO acc = BA.Accounts.GetAccountByID(accID);
-			client	= BA.Clients.GetClientByID((int)acc.ClientID);
+			clientRow		= BA.Clients.GetClientByID((int)acc.ClientID);
+			client			= new ClientDTO(clientRow);
 
 			AccID						= acc.AccID;
 			accountType					= acc.AccType;
@@ -148,7 +150,7 @@ namespace Account_Windows
 
 		private void InitializeClientDetails()
 		{
-			if ((ClientType)client["ClientType"] == ClientType.Organization)
+			if (client.ClientType == ClientType.Organization)
 			{
 				OrganizationInfo.Visibility = Visibility.Visible;
 				PersonalInfo.Visibility		= Visibility.Collapsed;
@@ -170,7 +172,7 @@ namespace Account_Windows
 
 		private void UpdateAccountTransactionsLog()
 		{
-			var accTransLog = BA.Log.GetAccountTransactionsLog(AccID);
+			DataView accTransLog = BA.Log.GetAccountTransactionsLog(AccID);
 			transLogUC.SetTransactionsLogItemsSource(accTransLog);
 		}
 		private void TopUpButton_Click(object sender, RoutedEventArgs e)

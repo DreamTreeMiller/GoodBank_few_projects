@@ -3,30 +3,39 @@ using Enumerables;
 using System.Data;
 using System.Windows;
 using System.Windows.Controls;
+using System;
 
 namespace Data_Grid_User_Controls
 {
 	/// <summary>
 	/// Interaction logic for AccountsList.xaml
 	/// </summary>
-	public partial class AccountsList : UserControl
+	public partial class AccountsDataGridUC : UserControl
 	{
+		public int		AccountsTotalNumber	{ get; set; }
+		public decimal	SavingTotalAmount	{ get; set; }
+		public decimal	DepositsTotalAmount { get; set; }
+		public decimal	CreditsTotalAmount	{ get; set; }
+
+		private DataView accountsListSource;
+
 		#region Accessors to UserControl properties
 
 		public void SetAccountsDataGridItemsSource(DataView accountsList, ClientType ct)
 		{
-			AccountsDataGrid.ItemsSource = accountsList;
+			accountsListSource = accountsList;
+			AccountsDataGrid.ItemsSource = accountsListSource;
 			if (ct == ClientType.All)
 				ClientTypeColumn.Visibility = Visibility.Visible;
 		}
 
 		public void SetAccountsTotals(int totalAccounts, 
-									  decimal totalCurr, decimal totalDeposit, decimal totalCredit)
+									  decimal totalSaving, decimal totalDeposit, decimal totalCredit)
 		{
-			AccountsTotalNumberValue.Text	= $"{totalAccounts:N0}";
-			CurrentTotalAmount.Text			= $"{totalCurr:N2}";
-			DepositsTotalAmount.Text		= $"{totalDeposit:N2}";
-			CreditsTotalAmount.Text			= $"{totalCredit:N2}";
+			AccountsTotalNumber	= totalAccounts;
+			SavingTotalAmount	= totalSaving;
+			DepositsTotalAmount	= totalDeposit;
+			CreditsTotalAmount	= totalCredit;
 		}
 
 		public DataRowView GetSelectedItem()
@@ -35,11 +44,13 @@ namespace Data_Grid_User_Controls
 		}
 
 		#endregion
-		public AccountsList()
+
+		public AccountsDataGridUC()
 		{
 			InitializeComponent();
 			AccountsDataGrid.Items.Clear(); // Почему-то вставляется пустой элемент после инициализации
 											// надо удалить, чтобы корректно всё работало
+			DataContext = this;
 		}
 
 		#region Accounts DataGrid CheckBoxes handlers
@@ -122,6 +133,38 @@ namespace Data_Grid_User_Controls
 
 		#endregion
 
+		public void AddNewAccountToDataGrid(IAccountDTO addedAcc)
+		{
+			DataRowView newAccRow = accountsListSource.AddNew();
+			UpdateAccountRowInDataGrid(newAccRow, addedAcc);
+			++AccountsTotalNumber;
+		}
+
+		public void UpdateAccountRowInDataGrid(DataRowView newAccRow, IAccountDTO updatedAcc)
+		{
+			newAccRow["AccID"]			= updatedAcc.AccID;
+			newAccRow["ClientID"]		= updatedAcc.ClientID;
+			newAccRow["ClientType"]		= updatedAcc.ClientType;
+			newAccRow["ClientTypeTag"]	= updatedAcc.ClientTypeTag;
+			newAccRow["ClientName"]		= updatedAcc.ClientName;
+			newAccRow["AccountNumber"]	= updatedAcc.AccountNumber;
+			newAccRow["AccType"]		= updatedAcc.AccType;
+			newAccRow["CurrentAmount"]	= updatedAcc.CurrentAmount;
+			newAccRow["DepositAmount"]	= updatedAcc.DepositAmount;
+			newAccRow["DebtAmount"]		= updatedAcc.DebtAmount;
+			newAccRow["Interest"]		= updatedAcc.Interest;
+			newAccRow["Opened"]			= updatedAcc.Opened;
+			if (updatedAcc.Closed == null)
+			{ newAccRow["Closed"] = DBNull.Value; }
+			else
+			{ newAccRow["Closed"] = updatedAcc.Closed; }
+			newAccRow["Topupable"]		= updatedAcc.Topupable;
+
+			SavingTotalAmount   += updatedAcc.CurrentAmount;
+			DepositsTotalAmount += updatedAcc.DepositAmount;
+			CreditsTotalAmount  += updatedAcc.DebtAmount;
+
+		}
 	}
 
 }

@@ -1,10 +1,9 @@
-﻿using Interfaces_Data;
-using System.Collections.ObjectModel;
+﻿using System.Data;
 
 namespace Interfaces_Actions
 {
 	public interface ITransactions
 	{
-		ObservableCollection<ITransaction> GetAccountTransactionsLog(int accID);
+		DataView GetAccountTransactionsLog(int accID);
 	}
 }

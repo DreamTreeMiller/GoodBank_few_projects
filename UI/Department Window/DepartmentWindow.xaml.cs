@@ -20,14 +20,14 @@ namespace Department_Window
 		private WindowID			wid;
 
 		private WindowNameTags		deptwinnametags;
-		private ClientsList			clientsListView;
+		private ClientsDataGridUC	clientsTableInDeptWindowUC;
 		private ClientsViewNameTags	clntag;
 		private WindowID			addClientWID;
-		private DataView			clientsTable;
+		private DataView			clientsListToShow;
 
 		private ClientType			ClientTypeForAccountsList;
-		private AccountsList		accountsListView;
-		private DataView			accountsList;
+		private AccountsDataGridUC	accountsTableInDeptWindowUC;
+		private DataView			accountsListToShow;
 
 		public DepartmentWindow(WindowID wid, BankActions ba)
 		{
@@ -54,59 +54,74 @@ namespace Department_Window
 			WinMenu_SelectClient.Content = deptwinnametags.SelectClientTag;
 			   WinMenu_AddClient.Content = deptwinnametags.AddClientTag;
 
-			// Создаем область для списка клиентов. Вставляем нужные надписи
-			clntag				= new ClientsViewNameTags(wid);
-			clientsListView		= new ClientsList(clntag, BA);
-			ClientsList.Content = clientsListView;
+			// Создаем вложенное окно(область) для показа списка клиентов. 
+			// Вставляем нужные надписи
+			clntag							= new ClientsViewNameTags(wid);
+			clientsTableInDeptWindowUC		= new ClientsDataGridUC(clntag, BA);
+			// Привязываем DataGrid UserControl к окну Department
+			ClientsTableViewArea.Content	= clientsTableInDeptWindowUC;
 
-			// Создаем область для списка счетов. Вставляем нужные надписи
-			accountsListView	= new AccountsList();
-			AccountsList.Content = accountsListView;
+			// Создаем вложенное окно(область) для показа списка счетов. Вставляем нужные надписи
+			accountsTableInDeptWindowUC		= new AccountsDataGridUC();
+			// Привязываем DataGrid UserControl к окну Department
+			AccountsTableViewArea.Content	= accountsTableInDeptWindowUC;
 		}
 
+		/// <summary>
+		/// Получает список клиентов для показа в окне департамента.
+		/// Связывает этот список с вложенным окном Clients Data Grid User Control 
+		/// </summary>
 		private void InitializeClientsAndWindowTypes()
 		{
 			switch (wid)
 			{
 				case WindowID.DepartmentVIP:
-					clientsTable = BA.Clients.GetClientsTable(ClientType.VIP);
+					clientsListToShow = BA.Clients.GetClientsTable(ClientType.VIP);
 					ClientTypeForAccountsList	= ClientType.VIP;
 					addClientWID				= WindowID.AddClientVIP;
 					break;
 				case WindowID.DepartmentSIM:
-					clientsTable = BA.Clients.GetClientsTable(ClientType.Simple);
+					clientsListToShow = BA.Clients.GetClientsTable(ClientType.Simple);
 					ClientTypeForAccountsList	= ClientType.Simple;
 					addClientWID				= WindowID.AddClientSIM;
 					break;
 				case WindowID.DepartmentORG:
-					clientsTable = BA.Clients.GetClientsTable(ClientType.Organization);
+					clientsListToShow = BA.Clients.GetClientsTable(ClientType.Organization);
 					ClientTypeForAccountsList	= ClientType.Organization;
 					addClientWID				= WindowID.AddClientORG;
 					break;
 				case WindowID.DepartmentALL:
-					clientsTable = BA.Clients.GetClientsTable(ClientType.All);
+					clientsListToShow = BA.Clients.GetClientsTable(ClientType.All);
 					ClientTypeForAccountsList	= ClientType.All;
 					addClientWID				= WindowID.AddClientALL;
 					break;
 			}
-			clientsListView.SetClientsDataGridItemsSource(clientsTable);
-			clientsListView.SetClientsTotal(clientsTable.Count);
+			clientsTableInDeptWindowUC.SetClientsDataGridItemsSource(clientsListToShow);
+			clientsTableInDeptWindowUC.SetClientsTotal(clientsListToShow.Count);
 		}
 
 		private void ShowAccounts()
 		{
-			var accList = BA.Accounts.GetAccountsList(ClientTypeForAccountsList);
-			accountsList = accList.accountsViewTable;
-			accountsListView.SetAccountsDataGridItemsSource(accountsList, ClientTypeForAccountsList);
-			accountsListView.SetAccountsTotals(accList.accountsViewTable.Count,
-				accList.totalSaving, accList.totalDeposit, accList.totalCredit);
+			// Получаем список счетов для показа в области счетов в окне департамента
+			// и сумму денег по каждой категории счетов
+			var accListAndTotals	= BA.Accounts.GetAccountsList(ClientTypeForAccountsList);
+			accountsListToShow		= accListAndTotals.accountsViewTable; // DataView
+			// Привязывает список счетов к обласи показа DataGrid UserControl
+			accountsTableInDeptWindowUC.
+				SetAccountsDataGridItemsSource(accountsListToShow, ClientTypeForAccountsList);
+			
+			accountsTableInDeptWindowUC.
+				SetAccountsTotals(accListAndTotals.accountsViewTable.Count, 
+								  accListAndTotals.totalSaving, 
+								  accListAndTotals.totalDeposit, 
+								  accListAndTotals.totalCredit);
 		}
 
 		#endregion
 
 		private void WinMenu_SelectClient_Click(object sender, RoutedEventArgs e)
 		{
-			DataRowView client = clientsListView.GetSelectedItem();
+			DataRowView client = clientsTableInDeptWindowUC.GetSelectedItem();
 			if (client == null)
 			{
 				MessageBox.Show("Выберите клиента для показа");
@@ -119,7 +134,9 @@ namespace Department_Window
 			// Подписываемся на событие, возникающее, когда изменились данные клиента:
 			// Подцепляем к этому событию обработчик - метод обновления данных клиента в списке на экране.
 			// Этот метод содержится в UserControl ClientsList
-			clientWindow.ClientDataChanged += clientsListView.UpdateClientRowInView;
+			clientWindow.ClientDataChanged	+= clientsTableInDeptWindowUC.UpdateClientRowInView;
+			clientWindow.NewAccountAdded	+= AddNewAccountToDataGrid;
+			clientWindow.AccountDataChanged += UpdateAccountInDataGrid;
 			clientWindow.ShowDialog();
 
 			if (clientWindow.accountsNeedUpdate) ShowAccounts();
@@ -139,7 +156,6 @@ namespace Department_Window
 
 			// Добавляем нового клиента в список на экране
 			AddNewClientToDataGrid(newClient);
-			//InitializeClientsAndWindowTypes();
 		}
 
 		/// <summary>
@@ -149,14 +165,14 @@ namespace Department_Window
 		/// <param name="addedClient"></param>
 		private void AddNewClientToDataGrid(IClientDTO addedClient)
 		{
-			DataRowView newClient = clientsTable.AddNew();
-			clientsListView.UpdateClientRowInView(newClient, addedClient);
-			clientsListView.SetClientsTotal(clientsTable.Count);
+			DataRowView newClient = clientsListToShow.AddNew();
+			clientsTableInDeptWindowUC.UpdateClientRowInView(newClient, addedClient);
+			clientsTableInDeptWindowUC.SetClientsTotal(clientsListToShow.Count);
 		}
 
 		private void WinMenu_SelectAccount_Click(object sender, RoutedEventArgs e)
 		{
-			DataRowView account = accountsListView.GetSelectedItem();
+			DataRowView account = accountsTableInDeptWindowUC.GetSelectedItem();
 			if (account == null)
 			{
 				MessageBox.Show("Выберите счет для показа");
@@ -164,8 +180,23 @@ namespace Department_Window
 			}
 			AccountWindow accountWindow = new AccountWindow(BA, (int)account["AccID"]);
 			accountWindow.ShowDialog();
-			//if (accountWindow.clientsNeedUpdate)  InitializeClientsAndWindowTypes();
+
 			if (accountWindow.accountsNeedUpdate) ShowAccounts();
+		}
+
+		/// <summary>
+		/// Добавляет только что созданный счёт к списку на экране
+		/// Это делается вместо получения заново всего списка счетов одного типа
+		/// </summary>
+		/// <param name="addedClient"></param>
+		private void AddNewAccountToDataGrid(IAccountDTO addedAccount)
+		{
+			accountsTableInDeptWindowUC.AddNewAccountToDataGrid(addedAccount);
+		}
+
+		private void UpdateAccountInDataGrid(DataRowView accRowInTable, IAccountDTO updatedAcc)
+		{
+			accountsTableInDeptWindowUC.UpdateAccountRowInDataGrid(accRowInTable, updatedAcc);
 		}
 	}
 

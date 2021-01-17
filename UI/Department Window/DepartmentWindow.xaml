@@ -157,7 +157,7 @@
 			</Button>
 		</UniformGrid>
 		<!-- Чекбоксы, список клиентов и сводные данные-->
-		<ContentPresenter x:Name="ClientsList"
+		<ContentPresenter x:Name="ClientsTableViewArea"
 						  Grid.Row="2" Grid.Column="1"
 						  />
 		<GridSplitter Grid.Row="3" Grid.Column="1" 
@@ -165,7 +165,7 @@
 					  HorizontalAlignment="Stretch"
 					  Background="DarkGray" 
 					  />
-		<ContentPresenter x:Name="AccountsList"
+		<ContentPresenter x:Name="AccountsTableViewArea"
 						  Grid.Row="4" Grid.Column="1"
 						  />
 	</Grid>

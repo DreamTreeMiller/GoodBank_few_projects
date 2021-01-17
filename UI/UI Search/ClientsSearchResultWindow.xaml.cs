@@ -15,7 +15,7 @@ namespace UI_Search
 	public partial class ClientsSearchResultWindow : Window
 	{
 		private BankActions BA;
-		private ClientsList clientsListUserControl;
+		private ClientsDataGridUC clientsListUserControl;
 
 		public void SetMainTitle(string text)
 		{
@@ -38,7 +38,7 @@ namespace UI_Search
 		{
 			BA = ba;
 			ClientsViewNameTags tags = new ClientsViewNameTags(searchType);
-			clientsListUserControl = new ClientsList(tags, BA);
+			clientsListUserControl = new ClientsDataGridUC(tags, BA);
 			//clientsListUserControl.SetClientsDataGridItemsSource(searchResult);
 			clientsListUserControl.SetClientsTotal(searchResult.Count);
 			ClientsList.Content = clientsListUserControl;

@@ -11,7 +11,7 @@ namespace Data_Grid_User_Controls
 	/// <summary>
 	/// Interaction logic for ClientsList.xaml
 	/// </summary>
-	public partial class ClientsList : UserControl
+	public partial class ClientsDataGridUC : UserControl
 	{
 		BankActions BA;
 		#region Accessors to UserControl properties
@@ -32,7 +32,7 @@ namespace Data_Grid_User_Controls
 		}
 
 		#endregion
-		public ClientsList(ClientsViewNameTags tags, BankActions ba)
+		public ClientsDataGridUC(ClientsViewNameTags tags, BankActions ba)
 		{
 			InitializeComponent();
 			BA = ba;

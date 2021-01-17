@@ -18,16 +18,30 @@ namespace Client_Window
 	public partial class ClientWindow : Window
 	{
 		private BankActions		BA;
-		private AccountsList	accountsListView;
+		private AccountsDataGridUC	accountsListView;
 		private WindowID		wid	= WindowID.EditClientVIP;
 		private IClientDTO		client = new ClientDTO();
 		private DataRowView		clientRowInTable;
 
-		// Событие, возникающее тогда, когда изменились данные клиента
-		// Вне класса ClientWindow необходимо подписать на это событие обработчик
-		// который будет обновлять 
 		public delegate void UpdateClientRowHandler(DataRowView clientRowInTable, IClientDTO clientDTO); 
+		/// <summary>
+		/// Событие, возникающее тогда, когда изменились данные клиента
+		/// Вне класса ClientWindow необходимо подписать на это событие обработчик
+		/// который будет обновлять данные клиента в табличке на экране
+		/// </summary>
 		public event UpdateClientRowHandler ClientDataChanged;
+
+		public delegate void AddAccountRowHandler(IAccountDTO newAccount);
+		/// <summary>
+		/// Событие, возникающее тогда, когда добавили новый счёт
+		/// </summary>
+		public event AddAccountRowHandler NewAccountAdded;
+
+		public delegate void UpdateAccountRowHandler(DataRowView accountRowInTable, IAccountDTO accountDTO);
+		/// <summary>
+		/// Событие, возникающее тогда, когда поменялись данные по счёту
+		/// </summary>
+		public event UpdateAccountRowHandler AccountDataChanged;
 
 		public bool accountsNeedUpdate = false;
 
@@ -66,8 +80,10 @@ namespace Client_Window
 					break;
 			}
 
-			ClientInfo.DataContext	= client;
-			accountsListView		= new AccountsList();
+			ClientInfo.DataContext	= clientRowInTable; // client;
+			accountsListView		= new AccountsDataGridUC();
+			NewAccountAdded		   += accountsListView.AddNewAccountToDataGrid;
+			AccountDataChanged	   += accountsListView.UpdateAccountRowInDataGrid;
 			AccountsList.Content	= accountsListView;
 
 		}
@@ -75,6 +91,7 @@ namespace Client_Window
 		private void ShowAccounts()
 		{
 			var accList = BA.Accounts.GetClientAccounts(client.ID);
+
 			var accountsList = accList.accountsViewTable;
 			accountsListView.SetAccountsDataGridItemsSource(accountsList, client.ClientType);
 			accountsListView.SetAccountsTotals(accList.accountsViewTable.Count,
@@ -260,13 +277,15 @@ namespace Client_Window
 		{
 			// Добавляем счет в базу в бэкенд
 			// Также обновляется количество счетов у клиента в базе
-			BA.Accounts.AddAccount(newAcc);
+			newAcc = BA.Accounts.AddAccount(newAcc);
+			newAcc.ClientType	 = client.ClientType;
+			newAcc.ClientTypeTag = client.ClientTypeTag;
+			newAcc.ClientName	 = client.MainName;
 
 			//Обновляем количество счетов у клиента в списке на экране in ClientsView Table
 			ClientDataChanged?.Invoke(clientRowInTable, updatedClient);
 
-			accountsNeedUpdate = true;
-			ShowAccounts();
+			NewAccountAdded?.Invoke(newAcc);
 		}
 	}
 }

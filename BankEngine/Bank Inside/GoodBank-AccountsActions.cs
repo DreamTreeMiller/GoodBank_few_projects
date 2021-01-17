@@ -41,7 +41,7 @@ namespace BankInside
 		/// </summary>
 		/// <param name="acc">Данные счета</param>
 		/// <returns>Возвращает созданный счет с уникальным ID счета</returns>
-		public void AddAccount(IAccountDTO acc)
+		public IAccountDTO AddAccount(IAccountDTO acc)
 		{
 			string accEndDate = acc.EndDate == null ? "NULL" : $"'{acc.EndDate:yyyy-MM-yy}'";
 			string accClosed = acc.Closed == null ? "NULL" : $"'{acc.Closed:yyyy-MM-yy}'";
@@ -63,11 +63,19 @@ EXEC SP_AddAccount
 	,{acc.InterestAccumulationAccID}		-- interest accum acc ID
 	,N'{acc.InterestAccumulationAccNum}';	-- interest accum acc Num
 			";
+
 			using (gbConn = SetGoodBankConnection())
 			{
 				gbConn.Open();
 				sqlCommand = new SqlCommand(sqlCommandAddAccount, gbConn);
-				sqlCommand.ExecuteNonQuery();
+				SqlDataReader newAccIDandNumber = sqlCommand.ExecuteReader();
+				if (newAccIDandNumber.Read())
+				{
+					acc.AccID = (int)newAccIDandNumber["NewAccID"];
+					acc.AccountNumber = (string)newAccIDandNumber["NewAccNumber"];
+				}
+				else
+					throw new AccountOperationException(ExceptionErrorCodes.CannotObtainAccountID);
 
 				switch (acc.AccType)
 				{
@@ -82,6 +90,7 @@ EXEC SP_AddAccount
 						break;
 				}
 			}
+			return acc;
 		}
 
 		/// <summary>

@@ -159,7 +159,7 @@ BEGIN
 	IF @accType=2	-- Credit
 		INSERT INTO [dbo].[CreditAccounts] ([id])
 		VALUES (@accountID);
-	RETURN;
+	SELECT @accountID AS [NewAccID], @accountNumber AS [NewAccNumber];
 END;			
 ";
 				sqlCommand = new SqlCommand(sqlExpression, gbConn);
