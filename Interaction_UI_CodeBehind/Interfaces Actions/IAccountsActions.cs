@@ -33,7 +33,7 @@ namespace Interfaces_Actions
 
 		DataView GetTopupableAccountsToWireFrom(int sourceAccID);
 
-		void AddAccount(IAccountDTO acc); 
+		IAccountDTO AddAccount(IAccountDTO acc); 
 
 		IAccountDTO TopUpCash(int accID, decimal cashAmount);
 
@@ -41,7 +41,7 @@ namespace Interfaces_Actions
 
 		IAccountDTO CloseAccount(int accID, out decimal accumulatedAmount);
 
-		void Wire(int sourceAccID, int destAccID, decimal amount);
+		(IAccountDTO senderAcc, IAccountDTO recipientAcc) Wire(int sourceAccID, int destAccID, decimal amount);
 
 		/// <summary>
 		/// Увеличивает внутреннюю дату на 1 месяц и пересчитывает проценты у всех счетов

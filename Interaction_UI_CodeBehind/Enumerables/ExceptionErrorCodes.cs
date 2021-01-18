@@ -8,7 +8,8 @@
 		TopUpIsNotAllowed,
 		WithdrawalIsNotAllowed,
 		NotEnoughMoneyOnAccount,
-		RecipientCannotReceiveWire
+		RecipientCannotReceiveWire,
+		CannotObtainAccountID
 	}
 
 	public static class Error
@@ -23,7 +24,8 @@
 			"Пополнение невозможно",
 			"Снятие невозможно",
 			"Недостаточно средств на счете",
-			"Получатель не может принять деньги на счет"
+			"Получатель не может принять деньги на счет",
+			"Невозможно получить ID нового счета"
 		};
 	}
 }

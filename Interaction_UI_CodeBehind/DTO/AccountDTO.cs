@@ -14,26 +14,27 @@ namespace DTO
 	public class AccountDTO : IAccountDTO
 	{
 		public ClientType	ClientType		{ get; set; }
+		public string		ClientTypeTag	{ get; set; }
 		public int			ClientID		{ get; set; }
 		public string		ClientName		{ get; set; }
 		public AccountType	AccType			{ get; set; }
-		public int			AccID			{ get; } = 0;
+		public int			AccID			{ get; set; } = 0;
 		public string		AccountNumber	{ get; set; }
 		public decimal		Balance			{ get; set; }
 
-		public string		CurrentAmount	
+		public decimal		CurrentAmount	
 		{
-			get => AccType == AccountType.Saving ? $"{Balance:N2}" : "";
+			get => AccType == AccountType.Saving ? Balance : 0;
 		}
 
-		public string		DepositAmount
+		public decimal		DepositAmount
 		{
-			get => AccType == AccountType.Deposit ? $"{Balance:N2}" : ""; 
+			get => AccType == AccountType.Deposit ? Balance : 0; 
 		}
 
-		public string		DebtAmount
+		public decimal		DebtAmount
 		{
-			get => AccType == AccountType.Credit ? $"{Balance:N2}" : ""; 
+			get => AccType == AccountType.Credit ? Balance : 0; 
 		}
 
 		public double		Interest		{ get; set; }

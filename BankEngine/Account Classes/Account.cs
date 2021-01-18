@@ -40,7 +40,7 @@ namespace Enumerables
 		/// <summary>
 		/// Уникальный ID счёта - используем для базы
 		/// </summary>
-		public int AccID { get; }
+		public int				AccID				{ get; set; }
 
 		/// <summary>
 		/// Тип счета текущий, вклад или кредит

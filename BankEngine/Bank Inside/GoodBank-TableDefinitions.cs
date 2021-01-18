@@ -125,29 +125,21 @@ CREATE TABLE [dbo].[CreditAccounts] (
 		 },
 		 {"AccountsView", @"
 CREATE TABLE [dbo].[AccountsView] (
+	,FOREIGN KEY ([ClientID]) REFERENCES [dbo].[ClientsMain]([ID]) ON DELETE CASCADE
 	 [AccID]			INT	IDENTITY (1, 1)			NOT NULL	PRIMARY KEY
 	,[ClientID]			INT							NOT NULL
-	,FOREIGN KEY ([ClientID]) REFERENCES [dbo].[ClientsMain]([ID]) ON DELETE CASCADE
 	,[ClientType]		TINYINT						NOT NULL
 	,[ClientTypeTag]	NVARCHAR (5)	DEFAULT ''	NOT NULL
 	,[ClientName]		NVARCHAR (256)	DEFAULT ''	NOT NULL
 	,[AccountNumber]	NVARCHAR (15)	DEFAULT ''	NOT NULL
 	,[AccType]			INT							NOT NULL
---	,[Balance]			MONEY			DEFAULT 0	NOT NULL
 	,[CurrentAmount]	MONEY			DEFAULT 0	NOT NULL
 	,[DepositAmount]	MONEY			DEFAULT 0	NOT NULL
 	,[DebtAmount]		MONEY			DEFAULT 0	NOT NULL
 	,[Interest]			FLOAT			DEFAULT 0	NOT NULL
---	,[Compounding]		BIT				DEFAULT 0	NOT NULL
 	,[Opened]			DATE						NOT NULL
---	,[Duration]			INT				DEFAULT 0	NOT NULL
---	,[MonthsElapsed]	INT				DEFAULT 0	NOT NULL
---	,[EndDate]			DATE
 	,[Closed]			DATE
 	,[Topupable]		BIT							NOT NULL
---	,[WithdrawalAllowed] BIT						NOT NULL
---	,[RecalcPeriod]		TINYINT			DEFAULT 0	NOT NULL
---	,[IsBlocked]		BIT				DEFAULT 0	NOT NULL	-- not blocked
 );
 		"},
 		 {"ClientAccountsView", @"

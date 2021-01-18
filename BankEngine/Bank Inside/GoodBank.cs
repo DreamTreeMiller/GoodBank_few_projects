@@ -42,7 +42,7 @@ namespace BankInside
 			SetupSqlDataAdaptersAndStoredProceduresForTables();
 
 			AccountAction			= new UnifiedAccount();
-			TransactionAction		= new TransactionAction(GoodBankCS);
+			TransactionAction		= new TransactionAction(GoodBankCS, ds);
 			AccountAction.WriteLog += TransactionAction.WriteLog;
 		}
 

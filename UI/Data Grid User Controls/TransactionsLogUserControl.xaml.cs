@@ -1,5 +1,4 @@
-﻿using Interfaces_Data;
-using System.Collections.ObjectModel;
+﻿using System.Data;
 using System.Windows.Controls;
 
 namespace Data_Grid_User_Controls
@@ -9,7 +8,7 @@ namespace Data_Grid_User_Controls
 	/// </summary>
 	public partial class TransactionsLogUserControl : UserControl
 	{
-		public void SetTransactionsLogItemsSource(ObservableCollection<ITransaction> transactions)
+		public void SetTransactionsLogItemsSource(DataView transactions)
 		{
 			TransactionsLog.ItemsSource = transactions;
 		}
