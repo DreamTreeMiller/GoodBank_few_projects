@@ -6,6 +6,7 @@ using Account_Windows;
 using Client_Window;
 using Data_Grid_User_Controls;
 using Window_Name_Tags;
+using DTO;
 using System.Windows;
 using System.Data;
 
@@ -166,6 +167,32 @@ namespace Department_Window
 			accountWindow.ShowDialog();
 			//if (accountWindow.clientsNeedUpdate)  InitializeClientsAndWindowTypes();
 			if (accountWindow.accountsNeedUpdate) ShowAccounts();
+			if (accountWindow.accountWasClosed)
+			{
+				DataRow clientRow = BA.Clients.GetClientByID(accountWindow.ClientID);
+				IClientDTO client = new ClientDTO(clientRow);
+				switch (accountWindow.AccType)
+				{
+					case AccountType.Saving: client.NumberOfSavingAccounts--; break;
+					case AccountType.Deposit: client.NumberOfDeposits--; break;
+					case AccountType.Credit: client.NumberOfCredits--; break;
+				}
+				client.NumberOfClosedAccounts++;
+				BA.Clients.UpdateClientPersonalData(client);
+
+				DataRowView clientRowInTable = FindClientRow(client.ID);
+				//Обновляем количество счетов у клиента в списке на экране in ClientsView Table
+				if (clientRowInTable == null) return;
+				clientsListView.UpdateClientRowInView(clientRowInTable, client);
+			}
+
+		}
+
+		private DataRowView FindClientRow(int clientID)
+		{
+			foreach (DataRowView dr in clientsTable)
+				if ((int)dr["ID"] == clientID) return dr;
+			return null;
 		}
 	}
 

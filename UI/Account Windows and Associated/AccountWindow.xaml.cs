@@ -22,6 +22,12 @@ namespace Account_Windows
 
 		private int			AccID;
 		private AccountType	accountType;
+		public	AccountType AccType
+		{
+			get => accountType;
+			set => accountType = value;
+		}
+		public int ClientID { get; set; }
 		private string		accountNumber;
 		public	string		AccountNumber
 		{
@@ -78,21 +84,21 @@ namespace Account_Windows
 
 		private bool IsBlocked;
 
-		#endregion
-
-		BankActions BA;
-		DataRow  client;
-
-		public bool accountsNeedUpdate = false;
-		public bool clientsNeedUpdate  = false;
-		TransactionsLogUserControl transLogUC;
-
 		public event PropertyChangedEventHandler PropertyChanged;
 
 		private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
 		{
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
+
+		#endregion
+
+		BankActions BA;
+		DataRow  client;
+
+		public bool accountsNeedUpdate = false;
+		public bool accountWasClosed = false;
+		TransactionsLogUserControl transLogUC;
 
 		public AccountWindow(BankActions ba, int accID)
 		{
@@ -111,8 +117,9 @@ namespace Account_Windows
 			client	= BA.Clients.GetClientByID((int)acc.ClientID);
 
 			AccID						= acc.AccID;
-			accountType					= acc.AccType;
+			AccType						= acc.AccType;
 			AccountNumber				= acc.AccountNumber;
+			ClientID					= acc.ClientID;
 			Balance						= acc.Balance;
 			Interest					= acc.Interest;
 			Opened						= acc.Opened;
@@ -354,8 +361,8 @@ namespace Account_Windows
 			// Обновляем суммы, даты, флажки в окошке
 			Balance				= (decimal)closedAcc.Balance;
 
-			if (closedAcc is IAccountDeposit)
-				AccumulatedInterest = (decimal)(closedAcc as IAccountDeposit).AccumulatedInterest;
+			if (closedAcc.AccType == AccountType.Deposit)
+				AccumulatedInterest = closedAcc.AccumulatedInterest;
 
 			AccClosed			= closedAcc.Closed;
 			Topupable			= closedAcc.Topupable;
@@ -366,7 +373,7 @@ namespace Account_Windows
 				);
 
 			accountsNeedUpdate = true;
-			clientsNeedUpdate  = true;
+			accountWasClosed = true;
 			UpdateAccountTransactionsLog();
 		}
 	}

@@ -26,8 +26,7 @@ namespace Client_Window
 		// Событие, возникающее тогда, когда изменились данные клиента
 		// Вне класса ClientWindow необходимо подписать на это событие обработчик
 		// который будет обновлять 
-		public delegate void UpdateClientRowHandler(DataRowView clientRowInTable, IClientDTO clientDTO); 
-		public event UpdateClientRowHandler ClientDataChanged;
+		public event Action<DataRowView, IClientDTO> ClientDataChanged;
 
 		public bool accountsNeedUpdate = false;
 
@@ -118,6 +117,19 @@ namespace Client_Window
 			{
 				ShowAccounts();
 				accountsNeedUpdate = true;
+			}
+			if (accountWindow.accountWasClosed)
+			{
+				switch (accountWindow.AccType)
+				{
+					case AccountType.Saving:  client.NumberOfSavingAccounts--;	break;
+					case AccountType.Deposit: client.NumberOfDeposits--;		break;
+					case AccountType.Credit:  client.NumberOfCredits--;			break;
+				}
+				client.NumberOfClosedAccounts++;
+
+				//Обновляем количество счетов у клиента в списке на экране in ClientsView Table
+				ClientDataChanged?.Invoke(clientRowInTable, client);
 			}
 		}
 
