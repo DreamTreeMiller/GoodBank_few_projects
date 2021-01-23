@@ -27,7 +27,7 @@ namespace Account_Windows
 			get => accountType;
 			set => accountType = value;
 		}
-		public int ClientID { get; set; }
+		public	int			ClientID { get; set; }
 		private string		accountNumber;
 		public	string		AccountNumber
 		{

@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 
-namespace BankInside
+namespace SQL
 {
-	public partial class GoodBank
+	public static class SqlTables
 	{
-		private Dictionary<string, string> tables = new Dictionary<string, string>()
+		public static Dictionary<string, string> definition = new Dictionary<string, string>()
 		{{"ClientsMain", @"
 CREATE TABLE [dbo].[ClientsMain] (
 	[ID]						INT			IDENTITY(1,1)	NOT NULL PRIMARY KEY,

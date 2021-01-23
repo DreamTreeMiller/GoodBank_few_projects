@@ -10,14 +10,14 @@
 
 	public enum OperationType
 	{
-		OpenAccount,
-		CloseAccount,
-		CashDeposit,
-		CashWithdrawal,
-		ReceiveWireFromAccount,
-		SendWireToAccount,
-		InterestAccrual,
-		BlockAccount
+		OpenAccount				= 0,
+		CloseAccount			= 1,
+		CashDeposit				= 2,
+		CashWithdrawal			= 3,
+		ReceiveWireFromAccount	= 4,
+		SendWireToAccount		= 5,
+		InterestAccrual			= 6,
+		BlockAccount			= 7
 	}
 
 	public enum RecalcPeriod

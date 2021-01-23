@@ -6,6 +6,7 @@ using Interfaces_Data;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Transaction;
+using SQL;
 
 namespace BankInside
 {
@@ -267,14 +268,14 @@ namespace BankInside
 			// Если база не содержит ни одной таблицы - создать
 			if (tablesList.Count == 0)
 			{
-				foreach (var keyValuePair in tables)
+				foreach (var keyValuePair in SqlTables.definition)
 					CreateTable(keyValuePair.Key, keyValuePair.Value);
 			}
 			else
 			// Если уже есть таблицы, то создать недостающие
 			{
-				foreach (var nd in tables)
-					if (!tablesList.Contains(nd.Key)) CreateTable(nd.Key, tables[nd.Key]);
+				foreach (var nd in SqlTables.definition)
+					if (!tablesList.Contains(nd.Key)) CreateTable(nd.Key, SqlTables.definition[nd.Key]);
 			}
 		}
 

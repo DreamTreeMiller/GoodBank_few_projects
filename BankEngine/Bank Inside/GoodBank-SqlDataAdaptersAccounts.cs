@@ -329,51 +329,5 @@ END;
 				sqlCommand.ExecuteNonQuery();
 			}
 		}
-
-		private void SetupTransactionsSqlDataAdapter(DataSet ds)
-		{
-			gbConn = SetGoodBankConnection();
-			daTransactions = new SqlDataAdapter();
-
-			string sqlCommand = @"SELECT * FROM [dbo].[Transactions];";
-			daTransactions.SelectCommand = new SqlCommand(sqlCommand, gbConn);
-			daTransactions.Fill(ds, "Transactions");
-
-			sqlCommand = @"
-			INSERT INTO [dbo].[Transactions] 
-				([TransactionAccountID]	-- INT							NOT NULL,
-				,[TransactionDateTime]	-- SMALLDATETIME				NOT NULL,
-				,[SourceAccount]		-- NVARCHAR (15)	DEFAULT ''	NOT NULL,
-				,[DestinationAccount]	-- NVARCHAR (15)	DEFAULT ''	NOT NULL,
-				,[OperationType]		-- TINYINT						NOT NULL,
-				,[Amount]				-- MONEY			DEFAULT 0	NOT NULL,
-				,[Comment]				-- NVARCHAR (256)	DEFAULT ''	NOT NULL
-				)
-			VALUES 
-				(@transactionAccountID
-				,@transactionDateTime
-				,@sourceAccount
-				,@destinationAccount
-				,@operationType
-				,@amount
-				,@comment
-				);
-			";
-			daTransactions.InsertCommand = new SqlCommand(sqlCommand, gbConn);
-			daTransactions.InsertCommand.Parameters.
-				Add("@transactionAccountID", SqlDbType.Int,			  4,	"TransactionAccountID");
-			daTransactions.InsertCommand.Parameters.
-				Add("@transactionDateTime",  SqlDbType.SmallDateTime, 4,	"TransactionDateTime");
-			daTransactions.InsertCommand.Parameters.
-				Add("@sourceAccount",		 SqlDbType.NVarChar,	  15,	"SourceAccount");
-			daTransactions.InsertCommand.Parameters.
-				Add("@destinationAccount",	 SqlDbType.NVarChar,	  15,	"DestinationAccount");
-			daTransactions.InsertCommand.Parameters.
-				Add("@operationType",		 SqlDbType.Int,			  1,	"OperationType");
-			daTransactions.InsertCommand.Parameters.
-				Add("@amount",				 SqlDbType.Money,		  4,	"Amount");
-			daTransactions.InsertCommand.Parameters.
-				Add("@Comment",				 SqlDbType.NVarChar,	  256,	"Comment");
-		}
 	}
 }
