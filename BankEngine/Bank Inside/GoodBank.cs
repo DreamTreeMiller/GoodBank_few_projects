@@ -33,7 +33,7 @@ namespace BankInside
 		public GoodBank()
 		{
 			masterCS = GetMasterConnectionString();
-			GoodBankCS = GetGoodBankConfigurationString();
+			GoodBankCS = GetGoodBankConnectionString();
 			gbdbName = ExtractDBname(GoodBankCS);
 
 			if (!DoesDBExist(gbdbName)) CreateDB(gbdbName);
@@ -55,7 +55,7 @@ namespace BankInside
 		/// Configuration string associated with "GoodBank",
 		/// null otherwise
 		/// </returns>
-		private string GetGoodBankConfigurationString()
+		private string GetGoodBankConnectionString()
 		{
 			string GoodBankCS = null;
 			// here we set the users connection string for the database

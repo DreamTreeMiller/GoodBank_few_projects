@@ -84,9 +84,12 @@ namespace BankInside
 		}
 
 		/// <summary>
-		/// Получение перевода на счет денег со счета-источника
+		/// Получение перевода на счет денег со счета-источника. 
+		/// Увеличивает поле Balance в ДТО поле получатея. Базу не меняет!
+		/// Записывает транзакцию
 		/// </summary>
-		/// <param name="senderAcc">Счет-источник</param>
+		/// <param name="senderAccNumber">Номер счета-источника</param>
+		/// <param name="recipientAcc">ДТО счета получателя</param>
 		/// <param name="wireAmount">сумма перевода</param>
 		public IAccountDTO ReceiveFromAccount(string senderAccNumber, IAccountDTO recipientAcc, decimal wireAmount)
 		{
@@ -131,17 +134,6 @@ namespace BankInside
 
 		#endregion
 
-		#region Абстрактные и виртуальные методы
-
-		/// <summary>
-		/// Делает пересчет процентов на указанную дату
-		/// Вызывается извне при изменении даты
-		/// </summary>
-		/// <returns>
-		/// Сумму начисленных процентов, если её надо перевести на другой счет
-		/// </returns>
-		//public decimal RecalculateInterest();
-
 		/// <summary>
 		/// Закрывает счет: обнуляет баланс и накопленный процент
 		/// ставит запрет на пополнение и снятие.
@@ -171,7 +163,5 @@ namespace BankInside
 
 			return acc;
 		}
-
-		#endregion
 	}
 }

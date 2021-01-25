@@ -24,6 +24,7 @@ namespace BankInside
 			SetupClientAccountsViewSqlDataAdapter();
 			SetupSP_AddAccount();
 			SetupSP_GetAccountDTObyID();
+			SetupSP_UpdateAccount();
 		}
 
 		/// <summary>

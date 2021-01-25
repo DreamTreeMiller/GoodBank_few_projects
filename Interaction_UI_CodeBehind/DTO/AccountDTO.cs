@@ -79,6 +79,11 @@ namespace DTO
 			Duration == 0 ? null : (DateTime?)Opened.AddMonths(Duration);
 
 		/// <summary>
+		/// Закончился ли период вклада/кредита, чтобы больше не пересчитывать проценты
+		/// </summary>
+		public bool			StopRecalculate { get; set; } = false;
+
+		/// <summary>
 		/// Дата фактического закрытия вклада
 		/// </summary>
 		public DateTime?	Closed			{ get; set; }
@@ -203,6 +208,7 @@ namespace DTO
 			Compounding			=		   (bool)ar["Compounding"];
 			Opened				=	   (DateTime)ar["Opened"];
 			Duration			=			(int)ar["Duration"];
+			StopRecalculate		=		   (bool)ar["StopRecalculate"];
 			if (ar["Closed"]  != DBNull.Value) Closed = (DateTime)ar["Closed"]; else Closed = null;
 			Topupable			=		   (bool)ar["Topupable"];
 			WithdrawalAllowed	=		   (bool)ar["WithdrawalAllowed"];

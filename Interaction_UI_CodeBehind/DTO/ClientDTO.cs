@@ -223,7 +223,7 @@ namespace DTO
 		public ClientDTO(DataRowView c)
 		{
 			ID						= (int)c["ID"];
-			ClientType				= (ClientType)c["ClientType"];
+			ClientType				= (ClientType)(int)c["ClientType"];
 			FirstName				= (string)c["FirstName"];
 			MiddleName				= (string)c["MiddleName"];
 			LastName				= (string)c["LastName"];

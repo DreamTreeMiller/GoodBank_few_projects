@@ -52,6 +52,10 @@ namespace Interfaces_Data
 		/// </summary>
 		DateTime?	EndDate				{ get; }
 
+		/// <summary>
+		/// Закончился ли период вклада/кредита, чтобы больше не пересчитывать проценты
+		/// </summary>
+		bool		StopRecalculate		{ get; set; }
 		DateTime?	Closed				{ get; set; }
 
 		/// <summary>

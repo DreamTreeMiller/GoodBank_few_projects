@@ -55,8 +55,8 @@ CREATE TABLE [dbo].[ORGclients] (
 		"},
 		 {"ClientsView", @"
 CREATE TABLE [dbo].[ClientsView] (
-	 [ID]						INT	IDENTITY (1, 1)			NOT NULL	PRIMARY KEY
-	 FOREIGN KEY ([ID]) REFERENCES [dbo].[ClientsMain]([ID]) ON DELETE CASCADE,
+	 [ID]						INT							NOT NULL	PRIMARY KEY
+	,FOREIGN KEY ([ID]) REFERENCES [dbo].[ClientsMain]([ID]) ON DELETE CASCADE
 	,[ClientType]				TINYINT						NOT NULL
 	,[ClientTypeTag]			NVARCHAR (5)	DEFAULT ''	NOT NULL
 	,[FirstName]				NVARCHAR (50)	DEFAULT ''	NOT NULL
@@ -88,6 +88,7 @@ CREATE TABLE [dbo].[AccountsParent] (
 	[Duration]			INT				NOT NULL,	-- Количество месяцев, на который открыт вклад, выдан кредит.  
 	[MonthsElapsed]		INT				NOT NULL,	-- Количество месяцев, прошедших с открытия вклада 
 	[EndDate]			DATE,						-- Дата окончания вклада/кредита. null - бессрочно 
+	[StopRecalculate]	BIT	DEFAULT 0	NOT NULL,	-- зкончился ли срок, чтобы остановить пересчёт процентов
 	[Closed]			DATE,						-- Дата закрытия счета. null - счет открыт 
 	[Topupable]			BIT				NOT NULL,	-- Пополняемый счет или нет. У закрытого счета - (0) false 
 	[WithdrawalAllowed]	BIT				NOT NULL,	-- С правом частичного снятия или нет. У закрытого счета - false 
@@ -118,17 +119,17 @@ CREATE TABLE [dbo].[DepositAccounts] (
 		 },
 		 {"CreditAccounts", @"
 CREATE TABLE [dbo].[CreditAccounts] (
-	[id]					INT					NOT NULL PRIMARY KEY,
+	[id]							INT							NOT NULL PRIMARY KEY,
 	FOREIGN KEY ([id]) REFERENCES [dbo].[AccountsParent]([AccID]) ON DELETE CASCADE,
-	[AccumulatedInterest]	MONEY	DEFAULT 0	NOT NULL
+	[AccumulatedInterest]			MONEY			DEFAULT 0	NOT NULL
 );"
 		 },
 		 {"AccountsView", @"
 CREATE TABLE [dbo].[AccountsView] (
-	,FOREIGN KEY ([ClientID]) REFERENCES [dbo].[ClientsMain]([ID]) ON DELETE CASCADE
 	 [AccID]			INT	IDENTITY (1, 1)			NOT NULL	PRIMARY KEY
 	,[ClientID]			INT							NOT NULL
-	,[ClientType]		TINYINT						NOT NULL
+	,FOREIGN KEY ([ClientID]) REFERENCES [dbo].[ClientsMain]([ID]) ON DELETE CASCADE
+	,[ClientType]		INT							NOT NULL
 	,[ClientTypeTag]	NVARCHAR (5)	DEFAULT ''	NOT NULL
 	,[ClientName]		NVARCHAR (256)	DEFAULT ''	NOT NULL
 	,[AccountNumber]	NVARCHAR (15)	DEFAULT ''	NOT NULL
@@ -147,7 +148,7 @@ CREATE TABLE [dbo].[ClientAccountsView] (
 	 [AccID]			INT	IDENTITY (1, 1)			NOT NULL	PRIMARY KEY
 	,[ClientID]			INT							NOT NULL
 	,FOREIGN KEY ([ClientID]) REFERENCES [dbo].[ClientsMain]([ID]) ON DELETE CASCADE
-	,[ClientType]		TINYINT						NOT NULL
+	,[ClientType]		INT							NOT NULL
 	,[ClientTypeTag]	NVARCHAR (5)	DEFAULT ''	NOT NULL
 	,[ClientName]		NVARCHAR (256)	DEFAULT ''	NOT NULL
 	,[AccountNumber]	NVARCHAR (15)	DEFAULT ''	NOT NULL
@@ -167,7 +168,7 @@ CREATE TABLE [dbo].[Transactions] (
 	[TransactionAccountID]	INT							NOT NULL,
 	FOREIGN KEY ([TransactionAccountID]) REFERENCES [dbo].[AccountsParent]([AccID]) ON DELETE CASCADE,
 	[TransactionDateTime]	SMALLDATETIME				NOT NULL,
-	[SourceAccount]			NVARCHAR (15)	DEFAULT ''	NOT NULL,
+	[SourceAccount]			NVARCHAR (20)	DEFAULT ''	NOT NULL,
 	[DestinationAccount]	NVARCHAR (15)	DEFAULT ''	NOT NULL,
 	[OperationType]			INT							NOT NULL,
 	[Amount]				MONEY			DEFAULT 0	NOT NULL,

@@ -12,14 +12,13 @@ namespace Binding_UI_CodeBehind
 		public ISqlDA			SqlDA;
 
 		private GoodBank		bank = new GoodBank();
-		//private GoodBankDB bank = new GoodBankDB();
 
 		public BankActions()
 		{
-			Clients  = bank as IClientsActions;
-			Accounts = bank as IAccountsActions;
-			Log		 = bank as ITransactions;
-			Search	 = bank as ISearch;
+			Clients  = bank;
+			Accounts = bank;
+			Log		 = bank;
+			Search	 = bank;
 			SqlDA	 = bank as ISqlDA;
 		}
 	}

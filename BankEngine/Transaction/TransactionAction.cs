@@ -6,24 +6,24 @@ namespace Transaction
 	public class TransactionAction
 	{
 		private string			gbConnectionString;
-		private DataSet			ds;
+		private DataTable		dTableTransactions;
 		private SqlDataAdapter	daTransactions;
 		public TransactionAction (string gbCS, DataSet ds) 
 		{
 			gbConnectionString = gbCS;
-			this.ds = ds;
 			daTransactions = new SqlDataAdapter();
-			SetupTransactionsSqlDataAdapter();
+			SetupTransactionsSqlDataAdapter(ds);
 			SetupSP_WriteLog();
 		}
 
-		private void SetupTransactionsSqlDataAdapter()
+		private void SetupTransactionsSqlDataAdapter(DataSet ds)
 		{
 			SqlConnection gbConn = new SqlConnection(gbConnectionString);
 
 			string sqlCommand = @"SELECT * FROM [dbo].[Transactions];";
 			daTransactions.SelectCommand = new SqlCommand(sqlCommand, gbConn);
 			daTransactions.Fill(ds, "Transactions");
+			dTableTransactions = ds.Tables["Transactions"];
 
 			sqlCommand = @"
 			INSERT INTO [dbo].[Transactions] 
@@ -47,19 +47,29 @@ namespace Transaction
 			";
 			daTransactions.InsertCommand = new SqlCommand(sqlCommand, gbConn);
 			daTransactions.InsertCommand.Parameters.
-				Add("@transactionAccountID", SqlDbType.Int, 4, "TransactionAccountID");
+				Add("@transactionAccountID", SqlDbType.Int,			  4,	"TransactionAccountID");
 			daTransactions.InsertCommand.Parameters.
-				Add("@transactionDateTime", SqlDbType.SmallDateTime, 4, "TransactionDateTime");
+				Add("@transactionDateTime",	 SqlDbType.SmallDateTime, 4,	"TransactionDateTime");
 			daTransactions.InsertCommand.Parameters.
-				Add("@sourceAccount", SqlDbType.NVarChar, 15, "SourceAccount");
+				Add("@sourceAccount",		 SqlDbType.NVarChar,	  20,	"SourceAccount");
 			daTransactions.InsertCommand.Parameters.
-				Add("@destinationAccount", SqlDbType.NVarChar, 15, "DestinationAccount");
+				Add("@destinationAccount",	 SqlDbType.NVarChar,	  15,	"DestinationAccount");
 			daTransactions.InsertCommand.Parameters.
-				Add("@operationType", SqlDbType.Int, 1, "OperationType");
+				Add("@operationType",		 SqlDbType.Int,			  1,	"OperationType");
 			daTransactions.InsertCommand.Parameters.
-				Add("@amount", SqlDbType.Money, 4, "Amount");
+				Add("@amount",				 SqlDbType.Money,		  4,	"Amount");
 			daTransactions.InsertCommand.Parameters.
-				Add("@Comment", SqlDbType.NVarChar, 256, "Comment");
+				Add("@Comment",				 SqlDbType.NVarChar,	  256,	"Comment");
+		}
+
+		public void Clear()
+		{
+			dTableTransactions.Clear();
+		}
+
+		public void Update()
+		{
+			daTransactions.Update(dTableTransactions);
 		}
 
 		private void SetupSP_WriteLog()
@@ -114,8 +124,8 @@ AS
 EXEC SP_WriteLog
 			 {tr.TransactionAccountID}
 			,'{tr.TransactionDateTime:yyyy-MM-dd HH:mm:ss}'
-			,'{tr.SourceAccount}'
-			,'{tr.DestinationAccount}'
+			,N'{tr.SourceAccount}'
+			,N'{tr.DestinationAccount}'
 			,{(int)tr.OperationType}
 			,{tr.Amount}
 			,N'{tr.Comment}'
@@ -128,6 +138,7 @@ EXEC SP_WriteLog
 				sqlCommand.ExecuteNonQuery();
 			}
 		}
+
 		/// <summary>
 		/// Формирует список всех транзакций указанного счета
 		/// </summary>
@@ -135,12 +146,12 @@ EXEC SP_WriteLog
 		/// <returns></returns>
 		public DataView GetAccountTransactionsLog(int accID)
 		{
-			ds.Tables["Transactions"].Clear();
-			daTransactions.Fill(ds, "Transactions");
+			dTableTransactions.Clear();
+			daTransactions.Fill(dTableTransactions);
 
 			string rowfilter = "TransactionAccountID = " + accID;
 			DataView TransactionsLogView =
-				new DataView(ds.Tables["Transactions"],   // Table to show
+				new DataView(dTableTransactions,   // Table to show
 							 rowfilter,
 							 "TransactionID ASC",                     // Sort ascending by 'ID' field
 							 DataViewRowState.CurrentRows);

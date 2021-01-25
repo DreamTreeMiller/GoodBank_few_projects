@@ -1,19 +1,18 @@
-﻿using Enumerables;
+﻿using System.Data;
+using System.Data.SqlClient;
+using System.Collections.Generic;
+using Enumerables;
 using Interfaces_Actions;
 using Interfaces_Data;
 using DTO;
+using SQL;
 using BankTime;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Data;
-using System.Data.SqlClient;
+using Transaction;
 
 namespace BankInside
 {
 	public partial class GoodBank : IAccountsActions
 	{
-		private List<Account> accounts;
-
 		public IAccountDTO GetAccountByID(int id)
 		{
 			AccountDTO accountDTO;
@@ -31,8 +30,8 @@ namespace BankInside
 			int clientID = accountDTO.ClientID;
 			DataRow clientRow = ds.Tables["ClientsView"].Rows.Find(clientID);
 
-			accountDTO.ClientType = (ClientType)clientRow["ClientType"];
-			accountDTO.ClientName =		(string)clientRow["MainName"];
+			accountDTO.ClientType = (ClientType)(int)clientRow["ClientType"];
+			accountDTO.ClientName =			 (string)clientRow["MainName"];
 			return accountDTO;
 		}
 
@@ -76,20 +75,40 @@ EXEC SP_AddAccount
 				}
 				else
 					throw new AccountOperationException(ExceptionErrorCodes.CannotObtainAccountID);
-
-				switch (acc.AccType)
-				{
-					case AccountType.Saving:
-						UpdateNumberOfAccounts(acc.ClientID, 1, 0, 0, 0);
-						break;
-					case AccountType.Deposit:
-						UpdateNumberOfAccounts(acc.ClientID, 0, 1, 0, 0);
-						break;
-					case AccountType.Credit:
-						UpdateNumberOfAccounts(acc.ClientID, 0, 0, 1, 0);
-						break;
-				}
 			}
+
+			string comment = "";
+			switch (acc.AccType)
+			{
+				case AccountType.Saving:
+					UpdateNumberOfAccounts(acc.ClientID, 1, 0, 0, 0);
+					comment =	  "Текущий счет " + acc.AccountNumber
+								+ $" с начальной суммой {acc.Balance:N2} руб."
+								+ " открыт.";
+					break;
+				case AccountType.Deposit:
+					UpdateNumberOfAccounts(acc.ClientID, 0, 1, 0, 0);
+					comment =	  "Вклад " + acc.AccountNumber
+								+ $" с начальной суммой {acc.Balance:N2} руб."
+								+ " открыт.";
+					break;
+				case AccountType.Credit:
+					UpdateNumberOfAccounts(acc.ClientID, 0, 0, 1, 0);
+					comment =    "Кредитный счет " + acc.AccountNumber
+								+ $" с начальной суммой {acc.Balance:N2} руб."
+								+ " открыт.";
+					break;
+			}
+			TransactionDTO DepositFromAccountTransaction = new TransactionDTO(
+				acc.AccID,
+				acc.Opened,
+				"",
+				acc.AccountNumber,
+				OperationType.OpenAccount,
+				acc.Balance,
+				comment
+				);
+			TransactionAction.WriteLog(DepositFromAccountTransaction);
 			return acc;
 		}
 
@@ -136,12 +155,13 @@ EXEC [dbo].[SP_UpdateNumberOfAccounts]
 			string sqlCommandAddAccount = $@"
 EXEC SP_UpdateAccount
 -- parameters to select account
-	 {acc.AccID}					-- INT			-- need to identify account
-	,{(int)acc.AccType} 			-- TINYINT		-- need to identify type
+	 {acc.AccID}						-- INT			-- need to identify account
+	,{(int)acc.AccType} 				-- TINYINT		-- need to identify type
 -- parameters to update in account
-	,{acc.Balance}					-- [Balance]			 MONEY DEFAULT 0	NOT NULL
-	,{acc.AccumulatedInterest}		-- [AccumulatedInterest] MONEY DEFAULT 0	NOT NULL
+	,{acc.Balance}						-- [Balance]			 MONEY DEFAULT 0	NOT NULL
+	,{acc.AccumulatedInterest}			-- [AccumulatedInterest] MONEY DEFAULT 0	NOT NULL
 	,{acc.MonthsElapsed}				-- [MonthsElapsed]		INT				NOT NULL
+	,{(acc.StopRecalculate? 1 :0)}		-- [StopRecalculate]	BIT				NOT NULL
 	,{accClosed}						-- [Closed]				DATE
 	,{(acc.Topupable ? 1 : 0)}			-- [Topupable]			BIT				NOT NULL
 	,{(acc.WithdrawalAllowed ? 1 : 0)}	-- [WithdrawalAllowed]	BIT				NOT NULL
@@ -608,45 +628,11 @@ SELECT @ts [TotalSaving], @td [TotalDeposit], @tc [TotalCredit];
 
 		public void AddOneMonth()
 		{
-			GoodBankTime.Today = GoodBankTime.Today.AddMonths(1);
 
-			for (int i = 0; i < accounts.Count; i++)
-			{
-				Account acc = accounts[i];
-				decimal currInterest = acc.RecalculateInterest();
-				if (acc is AccountDeposit)
-				{
-					int destAccID = (acc as AccountDeposit).InterestAccumulationAccID;
-					if (!(acc as AccountDeposit).Compounding &&
-						destAccID != 0 &&
-						currInterest != 0)
-					{
-						IAccountDTO destAcc = GetAccountByID(destAccID);
-						if (destAcc.Topupable)
-						{
-							WireInterestToAccount(acc as IAccountDeposit, destAcc, currInterest);
-						}
-						else
-						{
-							(acc as AccountDeposit).
-								AddInterestToSourceAccountWhenDestinationIsNotAvailable(currInterest);
-						}
-					}
-				}
-			}
+			SqlAccounts accounts = new SqlAccounts(GoodBankCS, TransactionAction);
+			GoodBankTime.Today	 = GoodBankTime.Today.AddMonths(1);
+			accounts.RecalculateInterest(GoodBankTime.Today, GetAccountByID, AccountAction.ReceiveFromAccount);
+			accounts.Dispose();
 		}
-
-		/// <summary>
-		/// Вызывается методом ежемесячного обновления счетов
-		/// </summary>
-		/// <param name="sourceAcc"></param>
-		/// <param name="destAcc"></param>
-		/// <param name="accumulatedInterest"></param>
-		private void WireInterestToAccount(IAccountDeposit sourceAcc, IAccountDTO destAcc, decimal accumulatedInterest)
-		{
-			//sourceAcc.SendInterestToAccount(destAcc, accumulatedInterest);
-			//destAcc.ReceiveFromAccount(sourceAcc, accumulatedInterest);
-		}
-
 	}
 }

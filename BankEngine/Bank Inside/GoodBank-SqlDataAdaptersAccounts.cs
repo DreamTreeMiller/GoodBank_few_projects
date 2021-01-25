@@ -6,9 +6,7 @@ namespace BankInside
 {
 	public partial class GoodBank
 	{
-		private SqlDataAdapter	daAccountsView, daClientAccountsView,
-								daAccountsParent, daDeposits, daCredits, // no da for Saving accounts
-								daTransactions;
+		private SqlDataAdapter	daAccountsView, daClientAccountsView;
 
 		private void SetupSP_GetAccountsViewTotals()
 		{
@@ -198,7 +196,8 @@ SELECT
 	,[AccumulatedInterest]				-- deposit and credit field
 	,[Opened]			
 	,[Duration]			
-	,[MonthsElapsed]	
+	,[MonthsElapsed]
+	,[StopRecalculate]
 	,[Closed]			
 	,[Topupable]			
 	,[WithdrawalAllowed]
@@ -219,6 +218,7 @@ FROM
 		,[Opened]
 		,[Duration]			
 		,[MonthsElapsed]	
+		,[StopRecalculate]
 		,[Closed]
 		,[Topupable]			
 		,[WithdrawalAllowed]
@@ -240,6 +240,7 @@ FROM
 				,[Opened]
 				,[Duration]			
 				,[MonthsElapsed]	
+				,[StopRecalculate]
 				,[Closed]
 				,[Topupable]			
 				,[WithdrawalAllowed]
@@ -261,6 +262,7 @@ FROM
 				,[Opened]
 				,[Duration]			
 				,[MonthsElapsed]	
+				,[StopRecalculate]
 				,[Closed]
 				,[Topupable]			
 				,[WithdrawalAllowed]
@@ -297,6 +299,7 @@ CREATE PROC [dbo].[SP_UpdateAccount]
 	,@balance						MONEY
 	,@accumulatedInterest			MONEY
 	,@monthsElapsed					INT
+	,@stopRecalculate				BIT
 	,@closed						DATE
 	,@topupable						BIT
 	,@withdrawalAllowed				BIT
@@ -307,6 +310,7 @@ BEGIN
 	UPDATE	 [dbo].[AccountsParent]
 	SET		 [Balance]				= @balance
 			,[MonthsElapsed]		= @monthsElapsed
+			,[StopRecalculate]		= @stopRecalculate
 			,[Closed]				= @closed
 			,[Topupable]			= @topupable
 			,[WithdrawalAllowed]	= @withdrawalAllowed

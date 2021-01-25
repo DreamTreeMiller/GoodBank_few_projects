@@ -10,7 +10,7 @@ namespace Data_Grid_User_Controls
 	{
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
-			switch ((OperationType)(byte)value)
+			switch ((OperationType)(int)value)
 			{
 				case OperationType.OpenAccount:
 					return "открытие счета";

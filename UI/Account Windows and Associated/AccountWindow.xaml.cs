@@ -94,7 +94,7 @@ namespace Account_Windows
 		#endregion
 
 		BankActions BA;
-		DataRow  client;
+		IClientDTO	client;
 
 		public bool accountsNeedUpdate = false;
 		public bool accountWasClosed = false;
@@ -113,8 +113,9 @@ namespace Account_Windows
 		{
 			BankTodayDate.Text = $"Сегодня {GoodBankTime.Today:dd.MM.yyyy} г.";
 			BA = ba;
-			IAccountDTO acc = BA.Accounts.GetAccountByID(accID);
-			client	= BA.Clients.GetClientByID((int)acc.ClientID);
+			IAccountDTO acc		= BA.Accounts.GetAccountByID(accID);
+			DataRow clientDR	= BA.Clients.GetClientByID((int)acc.ClientID);
+			client				= new ClientDTO(clientDR);
 
 			AccID						= acc.AccID;
 			AccType						= acc.AccType;
@@ -155,7 +156,7 @@ namespace Account_Windows
 
 		private void InitializeClientDetails()
 		{
-			if ((ClientType)client["ClientType"] == ClientType.Organization)
+			if (client.ClientType == ClientType.Organization)
 			{
 				OrganizationInfo.Visibility = Visibility.Visible;
 				PersonalInfo.Visibility		= Visibility.Collapsed;
