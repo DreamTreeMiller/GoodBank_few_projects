@@ -10,7 +10,7 @@ using SQL;
 
 namespace BankInside
 {
-	public partial class GoodBank : IGoodBank
+	public partial class GoodBank
 	{
 		private string				masterCS	= default;
 		private string				GoodBankCS	= default;
