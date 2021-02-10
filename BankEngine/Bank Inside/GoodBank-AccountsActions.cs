@@ -7,7 +7,7 @@ using Interfaces_Data;
 using DTO;
 using SQL;
 using BankTime;
-using Transaction;
+using Log;
 
 namespace BankInside
 {

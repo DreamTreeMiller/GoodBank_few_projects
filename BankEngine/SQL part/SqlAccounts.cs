@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Data;
-using Transaction;
+using Log;
 using Enumerables;
 using Interfaces_Data;
 
@@ -13,7 +13,7 @@ namespace SQL
 		private SqlDataAdapterSavingAccounts  SavingAccounts;
 		private SqlDataAdapterDepositAccounts DepositAccounts;
 		private SqlDataAdapterCreditAccounts  CreditAccounts;
-		private TransactionAction			  TrAct;
+		private LogAction			  TrAct;
 
 		private DataTable accountsDT;
 		private DataTable savingDT;
@@ -40,7 +40,7 @@ namespace SQL
 		/// </summary>
 		/// <param name="gbCS">Строка подключения базы</param>
 		/// <param name="transactionAction">Табилца транзакций и класс работы с ними</param>
-		public SqlAccounts(string gbCS, TransactionAction transactionAction)
+		public SqlAccounts(string gbCS, LogAction transactionAction)
 		{
 			// создаём временное хранилище базы
 			ds = new DataSet();

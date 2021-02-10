@@ -7,7 +7,7 @@ namespace Binding_UI_CodeBehind
 	{
 		public IClientsActions	Clients;
 		public IAccountsActions	Accounts;
-		public ITransactions	Log;
+		public ILogActions		Log;
 
 		private GoodBank		bank = new GoodBank();
 

@@ -3,7 +3,7 @@ using System.Data;
 
 namespace BankInside
 {
-	public partial class GoodBank : ITransactions
+	public partial class GoodBank : ILogActions
 	{
 
 		/// <summary>

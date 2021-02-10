@@ -2,9 +2,9 @@
 using Interfaces_Data;
 using System;
 
-namespace Transaction
+namespace Log
 {
-	public class TransactionDTO : ITransaction
+	public class TransactionDTO
 	{
 		#region Статический генератор уникального ID
 

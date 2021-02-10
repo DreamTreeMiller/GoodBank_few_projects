@@ -2,7 +2,7 @@
 
 namespace Interfaces_Actions
 {
-	public interface ITransactions
+	public interface ILogActions
 	{
 		DataView GetAccountTransactionsLog(int accID);
 	}

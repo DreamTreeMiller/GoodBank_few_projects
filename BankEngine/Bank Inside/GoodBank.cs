@@ -5,7 +5,7 @@ using System.Configuration;
 using Interfaces_Data;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Transaction;
+using Log;
 using SQL;
 
 namespace BankInside
@@ -16,7 +16,7 @@ namespace BankInside
 		private string				GoodBankCS	= default;
 		private string				gbdbName	= default;
 		private UnifiedAccount		AccountAction;
-		private TransactionAction	TransactionAction;
+		private LogAction	TransactionAction;
 
 		/// <summary>
 		/// Инициализирует рабочую базу данных. 
@@ -43,7 +43,7 @@ namespace BankInside
 			SetupSqlDataAdaptersAndStoredProceduresForTables();
 
 			AccountAction			= new UnifiedAccount();
-			TransactionAction		= new TransactionAction(GoodBankCS, ds);
+			TransactionAction		= new LogAction(GoodBankCS, ds);
 			AccountAction.WriteLog += TransactionAction.WriteLog;
 		}
 

@@ -1,14 +1,14 @@
 ﻿using System.Data;
 using System.Data.SqlClient;
 
-namespace Transaction
+namespace Log
 {
-	public class TransactionAction
+	public class LogAction
 	{
 		private string			gbConnectionString;
 		private DataTable		dTableTransactions;
 		private SqlDataAdapter	daTransactions;
-		public TransactionAction (string gbCS, DataSet ds) 
+		public LogAction (string gbCS, DataSet ds) 
 		{
 			gbConnectionString = gbCS;
 			daTransactions = new SqlDataAdapter();
