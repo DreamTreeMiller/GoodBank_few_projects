@@ -7,7 +7,6 @@ using Window_Name_Tags;
 using System.Collections.ObjectModel;
 using Imitation;
 using Generate_Clients_and_Accounts;
-using UI_Search;
 using System.Threading;
 
 namespace GoodBankNS
@@ -80,51 +79,6 @@ namespace GoodBankNS
 						  + "Пересчитаны проценты на всех счетах.");
 
 		}
-		#endregion
-
-		#region Search menu handler
-
-		private void SearchPeopleButton_Click(object sender, RoutedEventArgs e)
-		{
-			IndividualsSearchRequestWindow esriw = new IndividualsSearchRequestWindow();
-			var result = esriw.ShowDialog();
-			if (result != true) return;
-
-			ObservableCollection<IClientDTO> searchResult = BA.Search.FindClients(esriw.CheckAllFields);
-			ShowPersonsSearchResult(searchResult);
-		}
-
-		private void ShowPersonsSearchResult(ObservableCollection<IClientDTO> searchResult)
-		{
-			ClientsSearchResultWindow csrw = 
-				new ClientsSearchResultWindow(BA, searchResult, WindowID.SearchResultPersons);
-			csrw.SetMainTitle("РЕЗУЛЬТАТ ПОИСКА ВИП И ФИЗИКОВ");
-			csrw.ShowDialog();
-		}
-
-		private void SearchOrgButton_Click(object sender, RoutedEventArgs e)
-		{
-			OrganizationsSearchRequestWindow osriw = new OrganizationsSearchRequestWindow();
-			var result = osriw.ShowDialog();
-			if (result != true) return;
-
-			ObservableCollection<IClientDTO> searchResult = BA.Search.FindClients(osriw.CheckAllFields);
-			ShowOrganizationsSearchResult(searchResult);
-		}
-
-		private void ShowOrganizationsSearchResult(ObservableCollection<IClientDTO> searchResult)
-		{
-			ClientsSearchResultWindow csrw = 
-				new ClientsSearchResultWindow(BA, searchResult, WindowID.SearchResultOrganizations);
-			csrw.SetMainTitle("РЕЗУЛЬТАТ ПОИСКА ЮРИКОВ");
-			csrw.ShowDialog();
-		}
-
-		private void SearchAccountsButton_Click(object sender, RoutedEventArgs e)
-		{
-
-		}
-
 		#endregion
 
 		#region Data Source button handler

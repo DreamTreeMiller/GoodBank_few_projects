@@ -140,63 +140,6 @@ namespace DTO
 
 		}
 
-	/// <summary>
-	/// Конструктор для формирования ДТО для ПОКАЗА счетов
-	/// </summary>
-	/// <param name="c">Клиент</param>
-	/// <param name="acc">Счет</param>
-	public AccountDTO(IClient c, IAccount acc)
-		{
-			ClientID			= c.ID;
-			AccType				= acc.AccType;
-			AccID				= acc.AccID;
-			AccountNumber		= acc.AccountNumber;
-			Balance				= acc.Balance;
-			Interest			= acc.Interest;
-			Compounding			= acc.Compounding;
-			Opened				= acc.Opened;
-			Duration			= acc.Duration;
-			Closed				= acc.Closed;
-			Topupable			= acc.Topupable;
-			WithdrawalAllowed	= acc.WithdrawalAllowed;
-			RecalcPeriod		= acc.RecalcPeriod;
-			IsBlocked			= acc.IsBlocked;
-
-			if (acc is IAccountDeposit)
-			{
-				InterestAccumulationAccID  = (acc as IAccountDeposit).InterestAccumulationAccID;
-				InterestAccumulationAccNum = (acc as IAccountDeposit).InterestAccumulationAccNum;
-				AccumulatedInterest		   = (acc as IAccountDeposit).AccumulatedInterest;
-			}
-
-			if (c is IClientVIP)
-			{
-				ClientType = ClientType.VIP;
-				ClientName =
-					(c as IClientVIP).LastName + " " +
-					(c as IClientVIP).FirstName +
-					(String.IsNullOrEmpty((c as IClientVIP).MiddleName) ? "" : " ") +
-					(c as IClientVIP).MiddleName;
-			}
-
-			if (c is IClientSimple)
-			{
-				ClientType = ClientType.Simple;
-				ClientName =
-					(c as IClientSimple).LastName + " " +
-					(c as IClientSimple).FirstName +
-					(String.IsNullOrEmpty((c as IClientSimple).MiddleName) ? "" : " ") +
-					(c as IClientSimple).MiddleName;
-			}
-
-			if (c is IClientOrg)
-			{
-				ClientType = ClientType.Organization;
-				ClientName = (c as IClientOrg).OrgName;
-			}
-
-		}
-
 		public AccountDTO(SqlDataReader ar)		// ar - account row, just to keep short as possible
 		{
 			ClientID			=			(int)ar["ClientID"];

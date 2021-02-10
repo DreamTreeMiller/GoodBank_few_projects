@@ -63,7 +63,6 @@ namespace Account_Windows
 
 		public int destinationAccID;
 
-		ObservableCollection<IAccount> destinationAccountsList { get; set; }
 		public EnterAmountAndAccountWindow(DataView destAccList)
 		{
 			InitializeComponent();

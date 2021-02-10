@@ -90,7 +90,7 @@
 				  FontSize="14"
 				  FontWeight="Bold"
 				  Background="Aquamarine"
-				  Foreground="DarkSlateGray"
+				  Foreground="Gray"
 				  >
 				<Menu.ItemsPanel>
 					<ItemsPanelTemplate>
@@ -98,9 +98,11 @@
 					</ItemsPanelTemplate>
 				</Menu.ItemsPanel>
 				<MenuItem Header="        Поиск        ">
+					<!--
 					<MenuItem x:Name="SearchPeopleButton"	Header="Людей"		 Click="SearchPeopleButton_Click"	/>
-					<MenuItem x:Name="SearchOrgButton"		Header="Организаций" Click="SearchOrgButton_Click" />
-					<MenuItem x:Name="SearchAccountsButton"	Header="Счетов"		 Click="SearchAccountsButton_Click"		 />
+					<MenuItem x:Name="SearchOrgButton"		Header="Организаций" Click="SearchOrgButton_Click"		/>
+					<MenuItem x:Name="SearchAccountsButton"	Header="Счетов"		 Click="SearchAccountsButton_Click"	/>
+					-->
 				</MenuItem>
 			</Menu>
 			<Button x:Name="TimeMachineButton"

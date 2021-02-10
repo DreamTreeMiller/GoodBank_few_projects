@@ -260,55 +260,6 @@ namespace DTO
 
 
 		/// <summary>
-		/// Конструктор для выборки из базы и показа в списке
-		/// Подразумевается, что все данные введены корректно
-		/// </summary>
-		/// <param name="c">Клиент из базы</param>
-		public ClientDTO(IClient c)
-		{
-			ID						= c.ID;
-			_telephone				= c.Telephone;
-			_email					= c.Email;
-			_address				= c.Address;
-			NumberOfSavingAccounts = c.NumberOfSavingAccounts;
-			NumberOfDeposits		= c.NumberOfDeposits;
-			NumberOfCredits			= c.NumberOfCredits;
-			NumberOfClosedAccounts  = c.NumberOfClosedAccounts;
-
-			if (c is IClientVIP)
-			{
-				ClientType		= ClientType.VIP;
-				_firstName		= (c as IClientVIP).FirstName;
-				_middleName		= (c as IClientVIP).MiddleName;
-				_lastName		= (c as IClientVIP).LastName;
-				_passportOrTIN	= (c as IClientVIP).PassportNumber;
-				_creationDate	= (c as IClientVIP).BirthDate;
-				return;
-			}
-
-			if (c is IClientSimple)
-			{
-				ClientType		= ClientType.Simple;
-				_firstName		= (c as IClientSimple).FirstName;
-				_middleName		= (c as IClientSimple).MiddleName;
-				_lastName		= (c as IClientSimple).LastName;
-				_passportOrTIN	= (c as IClientSimple).PassportNumber;
-				_creationDate	= (c as IClientSimple).BirthDate;
-			}
-
-			if (c is IClientOrg)
-			{
-				ClientType		= ClientType.Organization;
-				_orgName		= (c as IClientOrg).OrgName;
-				_firstName		= (c as IClientOrg).DirectorFirstName;
-				_middleName		= (c as IClientOrg).DirectorMiddleName;
-				_lastName		= (c as IClientOrg).DirectorLastName;
-				_passportOrTIN	= (c as IClientOrg).TIN;
-				_creationDate	= (c as IClientOrg).RegistrationDate;
-			}
-		}
-
-		/// <summary>
 		/// Конструктор для клонирования объекта
 		/// </summary>
 		/// <param name="c"></param>

@@ -8,7 +8,6 @@ namespace Binding_UI_CodeBehind
 		public IClientsActions	Clients;
 		public IAccountsActions	Accounts;
 		public ITransactions	Log;
-		public ISearch			Search;
 		public ISqlDA			SqlDA;
 
 		private GoodBank		bank = new GoodBank();
@@ -18,7 +17,6 @@ namespace Binding_UI_CodeBehind
 			Clients  = bank;
 			Accounts = bank;
 			Log		 = bank;
-			Search	 = bank;
 			SqlDA	 = bank as ISqlDA;
 		}
 	}
